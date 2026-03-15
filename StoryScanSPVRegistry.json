@@ -1,0 +1,360 @@
+{
+  "$schema": "https://storyscan.io/registry-schema.json",
+  "registryConfiguration": {
+    "name": "Gladiator Holdings Dual-SPV Registry",
+    "version": "1.0.0",
+    "chainId": 1514,
+    "chainName": "Story Protocol Mainnet",
+    "explorerUrl": "https://storyscan.io"
+  },
+  "parentEntity": {
+    "name": "Gladiator Holdings LLC",
+    "entityId": "0008034162",
+    "entryNumber": "5095898",
+    "jurisdiction": "New Mexico",
+    "effectiveDate": "2025-06-27",
+    "secretaryOfState": "Maggie Toulouse Oliver",
+    "parentIPID": "0x98971c660ac20880b60F86Cc3113eBd979eb3aAE",
+    "tokenId": 15192,
+    "ownerAddress": "0x597856e93f19877a399f686D2F43b298e2268618",
+    "coinbaseWallet": "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a"
+  },
+  "spvRegistrations": [
+    {
+      "spvName": "Millionaire Resilience LLC",
+      "spvType": "PROTECTED_SPV",
+      "ein": "41-3789881",
+      "irsNotice": "CP 575 G",
+      "irsNoticeDate": "2026-01-22",
+      "jurisdiction": "New Mexico",
+      "registryStatus": "PENDING_REGISTRATION",
+      "riskStatus": "PROTECTED",
+      "collateralStatus": "EXCLUDED",
+      "defaultTransfer": false,
+      "ipAsset": {
+        "name": "Millionaire Resilience IP Portfolio",
+        "description": "IP-Backed Lending Platform with protected intellectual property assets including platform architecture, amortization engine, legal document generation, and AI chat assistant.",
+        "ipType": "DERIVATIVE",
+        "parentIPID": "0x98971c660ac20880b60F86Cc3113eBd979eb3aAE",
+        "derivativeIPID": "[TO_BE_ASSIGNED]",
+        "tokenId": "[TO_BE_ASSIGNED]"
+      },
+      "valuation": {
+        "presentValue": 95000000,
+        "fiveYearProjection": 500000000,
+        "tenYearProjection": 1700000000,
+        "patentSightScore": 92,
+        "valuationMethodology": "DCF + PatentSight+ PAI",
+        "valuationDate": "2026-02-05"
+      },
+      "pilLicensing": {
+        "enabled": true,
+        "revenueEscrowed": false,
+        "projectedAnnualRevenue": 3372500,
+        "revenueAllocation": {
+          "treasury": 100,
+          "loanRepayment": 0
+        }
+      },
+      "ipAssets": {
+        "trademarks": [
+          {
+            "name": "Millionaire Resilience™",
+            "status": "PROTECTED",
+            "serialNumber": "[TBD]"
+          }
+        ],
+        "copyrights": [
+          "IP-Backed Lending Protocol Architecture",
+          "Amortization Engine Source Code",
+          "Legal Document Generation System",
+          "AI Chat Assistant Implementation"
+        ],
+        "smartContracts": [
+          "MillionaireResilience.sol",
+          "GladiatorHoldingsSpvLoan.sol"
+        ]
+      },
+      "storyProtocolConfig": {
+        "registryAddress": "0x1a9d0d28a0422F26D31Be72Edc6f13ea4371E11B",
+        "licensingModuleAddress": "0xd81fd78f557b457b4350cB95D20b547bFEb4D857",
+        "royaltyModuleAddress": "0xcc8b9f0c9dC370ED1F41D95f74C9F72E08f24C90",
+        "metadata": {
+          "uri": "ipfs://[TO_BE_UPLOADED]/mr-spv-metadata.json",
+          "hash": "[TO_BE_COMPUTED]"
+        }
+      },
+      "ucc1Reference": {
+        "filingStatus": "DEBTOR",
+        "filingDocument": "documents/UCC1_MillionaireResilience_NewMexico.md",
+        "collateralType": "NONE_EXCLUDED",
+        "protection": "IP_PROTECTED_IMMUTABLY"
+      }
+    },
+    {
+      "spvName": "Slaps Streaming LLC",
+      "spvType": "AT_RISK_SPV",
+      "ein": "41-4045773",
+      "irsNotice": "CP 575 B",
+      "irsNoticeDate": "2026-02-03",
+      "jurisdiction": "New Mexico",
+      "registryStatus": "PENDING_REGISTRATION",
+      "riskStatus": "AT_RISK",
+      "collateralStatus": "SECONDARY_COLLATERAL",
+      "defaultTransfer": true,
+      "ipAsset": {
+        "name": "SLAPS Streaming IP Portfolio",
+        "description": "Decentralized music streaming platform with mintable posts, proof-of-signal logic, and on-chain royalty routing. Pledged as secondary collateral for $5M USDC loan.",
+        "ipType": "DERIVATIVE",
+        "parentIPID": "0x98971c660ac20880b60F86Cc3113eBd979eb3aAE",
+        "derivativeIPID": "[TO_BE_ASSIGNED]",
+        "tokenId": "[TO_BE_ASSIGNED]"
+      },
+      "valuation": {
+        "presentValue": 75000000,
+        "fiveYearProjection": 400000000,
+        "tenYearProjection": 1350000000,
+        "patentSightScore": 88,
+        "valuationMethodology": "DCF + PatentSight+ PAI",
+        "valuationDate": "2026-02-05"
+      },
+      "pilLicensing": {
+        "enabled": true,
+        "revenueEscrowed": true,
+        "escrowAllocation": 100,
+        "projectedAnnualRevenue": 3525000,
+        "monthlyProjected": 293750,
+        "revenueAllocation": {
+          "treasury": 0,
+          "loanRepayment": 100
+        },
+        "licenseTypes": [
+          {
+            "type": "PIL-PER",
+            "royaltyRate": 0.01,
+            "annualRevenue": 750000,
+            "escrowed": true
+          },
+          {
+            "type": "PIL-COM",
+            "royaltyRate": 0.05,
+            "annualRevenue": 1875000,
+            "escrowed": true
+          },
+          {
+            "type": "PIL-ENT",
+            "royaltyRate": 0.12,
+            "annualRevenue": 900000,
+            "escrowed": true
+          }
+        ]
+      },
+      "ipAssets": {
+        "trademarks": [
+          {
+            "name": "SLAPS™",
+            "status": "AT_RISK",
+            "serialNumber": "[TBD]"
+          },
+          {
+            "name": "PROOF-OF-SIGNAL™",
+            "status": "AT_RISK",
+            "serialNumber": "[TBD]"
+          }
+        ],
+        "copyrights": [
+          "SLAPS Platform Source Code",
+          "Mintable Posts Content Format Specification",
+          "Proof-of-Signal Licensing Logic Implementation",
+          "On-Chain Royalty Routing System Architecture"
+        ],
+        "smartContracts": [
+          "SlapsStreaming.sol",
+          "SlapsSPV.sol"
+        ]
+      },
+      "storyProtocolConfig": {
+        "registryAddress": "0x1a9d0d28a0422F26D31Be72Edc6f13ea4371E11B",
+        "licensingModuleAddress": "0xd81fd78f557b457b4350cB95D20b547bFEb4D857",
+        "royaltyModuleAddress": "0xcc8b9f0c9dC370ED1F41D95f74C9F72E08f24C90",
+        "metadata": {
+          "uri": "ipfs://[TO_BE_UPLOADED]/slaps-spv-metadata.json",
+          "hash": "[TO_BE_COMPUTED]"
+        }
+      },
+      "ucc1Reference": {
+        "filingStatus": "COLLATERAL_PROVIDER",
+        "filingDocument": "documents/UCC1_MillionaireResilience_NewMexico.md",
+        "collateralType": "SECONDARY",
+        "collateralPriority": 3,
+        "defaultTransferEnabled": true,
+        "protection": "NONE_AT_RISK"
+      },
+      "loanCollateral": {
+        "loanAmount": 5000000,
+        "currency": "USDC",
+        "platform": "Coinbase",
+        "primaryCollateral": "Bitcoin (BTC)",
+        "secondaryCollateral": "This SPV IP Portfolio",
+        "collateralCoverageRatio": 1500,
+        "enforcementCascade": [
+          "PIL Revenue Acceleration",
+          "BTC Liquidation",
+          "SLAPS IP Transfer"
+        ]
+      }
+    }
+  ],
+  "deploymentChecklist": {
+    "preDeployment": [
+      {
+        "step": 1,
+        "task": "Acquire $IP tokens for gas",
+        "status": "pending",
+        "estimatedCost": "$500-$1000"
+      },
+      {
+        "step": 2,
+        "task": "Configure Alchemy API for gas optimization",
+        "status": "pending",
+        "reference": "contracts/story/AlchemyGasOptimization.json"
+      },
+      {
+        "step": 3,
+        "task": "Upload SPV metadata to IPFS",
+        "status": "pending",
+        "estimatedCost": "$5-$20"
+      },
+      {
+        "step": 4,
+        "task": "File UCC-1 with NM Secretary of State",
+        "status": "pending",
+        "estimatedCost": "$90-$190"
+      }
+    ],
+    "deployment": [
+      {
+        "step": 5,
+        "task": "Deploy GladiatorHoldingsSpvLoan.sol to Story Protocol",
+        "status": "pending",
+        "estimatedCost": "$32-$55 (Alchemy optimized)"
+      },
+      {
+        "step": 6,
+        "task": "Register Millionaire Resilience SPV on StoryScan",
+        "status": "pending",
+        "estimatedCost": "$14-$22 (Alchemy optimized)"
+      },
+      {
+        "step": 7,
+        "task": "Register Slaps Streaming SPV on StoryScan",
+        "status": "pending",
+        "estimatedCost": "$14-$22 (Alchemy optimized)"
+      },
+      {
+        "step": 8,
+        "task": "Attach PIL licenses to SLAPS IP",
+        "status": "pending",
+        "estimatedCost": "$16-$33 (Alchemy optimized)"
+      },
+      {
+        "step": 9,
+        "task": "Create Story Attestations (4 types)",
+        "status": "pending",
+        "estimatedCost": "$16-$32 (Alchemy optimized)"
+      },
+      {
+        "step": 10,
+        "task": "Record UCC-1 filing hash on-chain",
+        "status": "pending",
+        "estimatedCost": "$4-$8 (Alchemy optimized)"
+      },
+      {
+        "step": 11,
+        "task": "Configure PIL revenue escrow routing",
+        "status": "pending",
+        "estimatedCost": "$5-$11 (Alchemy optimized)"
+      },
+      {
+        "step": 12,
+        "task": "Seal Hermetic Loop",
+        "status": "pending",
+        "estimatedCost": "$3-$5 (Alchemy optimized)"
+      }
+    ],
+    "postDeployment": [
+      {
+        "step": 13,
+        "task": "Verify contracts on StoryScan.io",
+        "status": "pending",
+        "estimatedCost": "FREE"
+      },
+      {
+        "step": 14,
+        "task": "Test PIL revenue collection",
+        "status": "pending",
+        "estimatedCost": "Minimal"
+      },
+      {
+        "step": 15,
+        "task": "Verify Hermetic Seal integrity",
+        "status": "pending",
+        "estimatedCost": "FREE"
+      }
+    ]
+  },
+  "totalCostSummary": {
+    "withoutAlchemyOptimization": {
+      "onChainGas": {
+        "low": 128,
+        "mid": 200,
+        "high": 300
+      },
+      "offChainLegal": {
+        "low": 90,
+        "mid": 140,
+        "high": 190
+      },
+      "ipTokenBuffer": {
+        "low": 200,
+        "mid": 350,
+        "high": 500
+      },
+      "totalUSD": {
+        "low": 418,
+        "mid": 690,
+        "high": 990
+      }
+    },
+    "withAlchemyOptimization": {
+      "onChainGas": {
+        "low": 92,
+        "mid": 144,
+        "high": 216
+      },
+      "offChainLegal": {
+        "low": 90,
+        "mid": 140,
+        "high": 190
+      },
+      "ipTokenBuffer": {
+        "low": 150,
+        "mid": 250,
+        "high": 400
+      },
+      "totalUSD": {
+        "low": 332,
+        "mid": 534,
+        "high": 806
+      },
+      "savingsFromAlchemy": {
+        "low": 86,
+        "mid": 156,
+        "high": 184,
+        "percentage": "18-21%"
+      }
+    },
+    "recommendedBudget": 750,
+    "notes": "Includes buffer for gas fluctuations and retries"
+  }
+}

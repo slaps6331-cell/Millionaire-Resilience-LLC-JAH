@@ -1,0 +1,134 @@
+{
+  "$schema": "https://docs.story.foundation/ipa-metadata-schema.json",
+  "title": "Gladiator Holdings IP Portfolio",
+  "description": "Multi-SPV IP-Backed Lending Platform with segregated portfolio risk. $5M USDC Stablecoin Bitcoin Loan via Coinbase with SLAPS IP as secondary collateral. Millionaire Resilience LLC (EIN: 41-3789881) is UCC-1 Filing Debtor in New Mexico. Millionaire Resilience IP ($95M) is PROTECTED. SLAPS Streaming IP ($75M) is AT RISK as secondary collateral.",
+  "createdAt": "1738713600",
+  "image": "ipfs://TO_BE_UPLOADED/gladiator-holdings-logo.png",
+  "imageHash": "0x9d327eb7fdae91d33c186a9d3b770f5004f679a70a34aeb94716042978a8a4fa",
+  "mediaUrl": "ipfs://TO_BE_UPLOADED/gladiator-holdings-certificate.pdf",
+  "mediaHash": "0x9d327eb7fdae91d33c186a9d3b770f5004f679a70a34aeb94716042978a8a4fa",
+  "mediaType": "image/jpeg",
+  "creators": [
+    {
+      "name": "Gladiator Holdings LLC",
+      "address": "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a",
+      "description": "Parent Holding Company - NM Entity ID 0008034162",
+      "contributionPercent": 100,
+      "socialMedia": [
+        {
+          "platform": "Website",
+          "url": "https://millionaireresilience.com"
+        }
+      ]
+    }
+  ],
+  "attributes": [
+    {"trait_type": "IP_Type", "value": "Multi-SPV Portfolio"},
+    {"trait_type": "Corporate_Structure", "value": "Gladiator Holdings LLC"},
+    {"trait_type": "Entity_ID", "value": "0008034162"},
+    {"trait_type": "Entry_Number", "value": "5095898"},
+    {"trait_type": "Effective_Date", "value": "June 27, 2025"},
+    {"trait_type": "State", "value": "New Mexico"},
+    {"trait_type": "Combined_Valuation_USD", "value": "300000000"},
+    {"trait_type": "MR_Valuation_USD", "value": "95000000"},
+    {"trait_type": "MR_Status", "value": "PROTECTED"},
+    {"trait_type": "SLAPS_Valuation_USD", "value": "75000000"},
+    {"trait_type": "SLAPS_Status", "value": "AT_RISK"},
+    {"trait_type": "License_Type", "value": "PIL"},
+    {"trait_type": "Chain", "value": "Story Protocol"},
+    {"trait_type": "PatentSight_Score", "value": "92"},
+    {"trait_type": "SEP_Count", "value": "42"},
+    {"trait_type": "Primary_Loan_Principal", "value": "5000000"},
+    {"trait_type": "Primary_Loan_Platform", "value": "Coinbase"},
+    {"trait_type": "Primary_Collateral", "value": "Bitcoin (BTC)"},
+    {"trait_type": "Secondary_Collateral", "value": "SLAPS IP Portfolio"},
+    {"trait_type": "Filing_Debtor", "value": "Millionaire Resilience LLC"},
+    {"trait_type": "Filing_Jurisdiction", "value": "New Mexico"}
+  ],
+  "tags": [
+    "IP-Backed Lending",
+    "DeFi",
+    "Multi-SPV",
+    "Stablecoin",
+    "PIL License",
+    "PatentSight+",
+    "Coinbase",
+    "Base L2",
+    "USDC"
+  ],
+  "ipType": "Corporate IP Portfolio",
+  "riskSegregation": {
+    "millionaireResilience": {
+      "ein": "41-3789881",
+      "status": "PROTECTED",
+      "atRisk": false,
+      "ipId": "0x98971c660ac20880b60F86Cc3113eBd979eb3aAE",
+      "role": "UCC-1 Filing Debtor"
+    },
+    "slapsStreaming": {
+      "ein": "41-4045773",
+      "status": "AT_RISK",
+      "atRisk": true,
+      "pledgedForLoan": 5000000,
+      "role": "Secondary IP Collateral Provider"
+    }
+  },
+  "loanStructure": {
+    "type": "Stablecoin Bitcoin Loan with SLAPS IP Collateral Package",
+    "principal": 5000000,
+    "currency": "USDC",
+    "platform": "Coinbase",
+    "primaryCollateral": "Bitcoin (BTC)",
+    "secondaryCollateral": "SLAPS IP Portfolio",
+    "filingDebtor": "Millionaire Resilience LLC",
+    "filingJurisdiction": "New Mexico",
+    "ucc1Document": "documents/UCC1_MillionaireResilience_NewMexico.md",
+    "repaymentSource": "100% PIL Licensing Revenue"
+  },
+  "documentHashes": {
+    "certificateOfOrganization": "0x9d327eb7fdae91d33c186a9d3b770f5004f679a70a34aeb94716042978a8a4fa",
+    "noticeOfFilingApproval": "0x244a289d2c997f7f9d5d01ba8640ff7883b138d97ce7bdb0113e1d99b6f971a3",
+    "storyDocsMetadata": "0xde04cdf71218df1d466b53f7d730ed8e9c8599472abaea515fd62352d030c7c9"
+  },
+  "revenueEscrow": {
+    "enabled": true,
+    "escrowAgent": "Story Protocol Royalty Module",
+    "royaltyModuleAddress": "0xcc8b9f0c9dC370ED1F41D95f74C9F72E08f24C90",
+    "collectionWallet": "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a",
+    "allocationPercentage": 100,
+    "annualProjectedRevenue": 3525000,
+    "monthlyProjectedRevenue": 293750,
+    "projectedLoanPayoffMonths": 18
+  },
+  "hermeticSeal": {
+    "enabled": true,
+    "components": [
+      "UCC-1 Filing (NM SOS)",
+      "Story Protocol IP Registration",
+      "PIL License Attachment",
+      "Direct PIL Revenue Routing to Loan Repayment",
+      "Revenue Escrow Configuration",
+      "Attestation Service Verification"
+    ],
+    "status": "PENDING_DEPLOYMENT"
+  },
+  "alchemyIntegration": {
+    "enabled": true,
+    "configFile": "contracts/story/AlchemyGasOptimization.json",
+    "expectedSavings": "27-30%"
+  },
+  "storyScanRegistry": {
+    "configFile": "contracts/story/StoryScanSPVRegistry.json",
+    "spvCount": 2,
+    "spvs": [
+      {
+        "name": "Millionaire Resilience LLC",
+        "status": "PROTECTED"
+      },
+      {
+        "name": "Slaps Streaming LLC",
+        "status": "AT_RISK"
+      }
+    ]
+  }
+}

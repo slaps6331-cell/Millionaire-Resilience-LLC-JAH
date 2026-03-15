@@ -1,0 +1,316 @@
+{
+  "$schema": "https://docs.alchemy.com/gas-optimization-schema.json",
+  "configuration": {
+    "name": "Gladiator Holdings Story Protocol Deployment",
+    "version": "1.0.0",
+    "provider": "Alchemy",
+    "optimizationLevel": "maximum"
+  },
+  "networks": {
+    "storyProtocol": {
+      "chainId": 1514,
+      "chainName": "Story Protocol Mainnet",
+      "rpcEndpoint": "https://story-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}",
+      "nativeToken": "$IP",
+      "gasSettings": {
+        "maxFeePerGas": "auto",
+        "maxPriorityFeePerGas": "auto",
+        "gasLimit": "auto",
+        "gasPriceMultiplier": 1.1,
+        "retryOnFailure": true,
+        "maxRetries": 3,
+        "retryDelayMs": 2000
+      }
+    },
+    "baseL2": {
+      "chainId": 8453,
+      "chainName": "Base Mainnet",
+      "rpcEndpoint": "https://base-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}",
+      "nativeToken": "ETH",
+      "gasSettings": {
+        "maxFeePerGas": "auto",
+        "maxPriorityFeePerGas": "auto",
+        "gasLimit": "auto",
+        "gasPriceMultiplier": 1.05,
+        "retryOnFailure": true,
+        "maxRetries": 3,
+        "retryDelayMs": 1000
+      }
+    }
+  },
+  "gasOracle": {
+    "enabled": true,
+    "updateIntervalMs": 10000,
+    "strategy": "percentile",
+    "percentile": 50,
+    "fallbackGwei": {
+      "storyProtocol": 1,
+      "baseL2": 0.001
+    }
+  },
+  "transactionOptimization": {
+    "batchingEnabled": true,
+    "maxBatchSize": 10,
+    "priorityOrdering": [
+      "contractDeployment",
+      "ipRegistration",
+      "licenseAttachment",
+      "attestationCreation",
+      "documentRecording"
+    ],
+    "parallelExecution": true,
+    "maxParallelTransactions": 3
+  },
+  "costEstimates": {
+    "storyProtocol": {
+      "contractDeployment": {
+        "gasUnits": 2000000,
+        "estimatedCostUSD": {
+          "low": 25,
+          "mid": 45,
+          "high": 75
+        },
+        "alchemyOptimizedUSD": {
+          "low": 18,
+          "mid": 32,
+          "high": 55
+        },
+        "savings": "27-40%"
+      },
+      "ipAssetRegistration": {
+        "gasUnits": 500000,
+        "estimatedCostUSD": {
+          "low": 10,
+          "mid": 20,
+          "high": 30
+        },
+        "alchemyOptimizedUSD": {
+          "low": 7,
+          "mid": 14,
+          "high": 22
+        },
+        "savings": "27-30%"
+      },
+      "pilLicenseAttachment": {
+        "gasUnits": 300000,
+        "estimatedCostUSD": {
+          "low": 8,
+          "mid": 15,
+          "high": 20
+        },
+        "alchemyOptimizedUSD": {
+          "low": 5,
+          "mid": 11,
+          "high": 15
+        },
+        "savings": "25-38%"
+      },
+      "attestationCreation": {
+        "gasUnits": 200000,
+        "estimatedCostUSD": {
+          "low": 5,
+          "mid": 12,
+          "high": 15
+        },
+        "alchemyOptimizedUSD": {
+          "low": 4,
+          "mid": 8,
+          "high": 11
+        },
+        "savings": "20-33%"
+      },
+      "ucc1HashRecording": {
+        "gasUnits": 100000,
+        "estimatedCostUSD": {
+          "low": 3,
+          "mid": 8,
+          "high": 15
+        },
+        "alchemyOptimizedUSD": {
+          "low": 2,
+          "mid": 6,
+          "high": 11
+        },
+        "savings": "27-33%"
+      },
+      "royaltyConfiguration": {
+        "gasUnits": 150000,
+        "estimatedCostUSD": {
+          "low": 5,
+          "mid": 10,
+          "high": 15
+        },
+        "alchemyOptimizedUSD": {
+          "low": 3,
+          "mid": 7,
+          "high": 11
+        },
+        "savings": "27-40%"
+      },
+      "hermeticSealTransaction": {
+        "gasUnits": 80000,
+        "estimatedCostUSD": {
+          "low": 3,
+          "mid": 6,
+          "high": 10
+        },
+        "alchemyOptimizedUSD": {
+          "low": 2,
+          "mid": 4,
+          "high": 7
+        },
+        "savings": "30-33%"
+      }
+    },
+    "baseL2": {
+      "contractDeployment": {
+        "gasUnits": 2000000,
+        "estimatedCostUSD": {
+          "low": 1,
+          "mid": 2,
+          "high": 5
+        },
+        "alchemyOptimizedUSD": {
+          "low": 0.7,
+          "mid": 1.4,
+          "high": 3.5
+        },
+        "savings": "30%"
+      }
+    }
+  },
+  "totalDeploymentCost": {
+    "withoutAlchemy": {
+      "storyProtocol": {
+        "low": 59,
+        "mid": 116,
+        "high": 180
+      },
+      "baseL2": {
+        "low": 1,
+        "mid": 2,
+        "high": 5
+      },
+      "totalUSD": {
+        "low": 60,
+        "mid": 118,
+        "high": 185
+      }
+    },
+    "withAlchemyOptimization": {
+      "storyProtocol": {
+        "low": 41,
+        "mid": 82,
+        "high": 132
+      },
+      "baseL2": {
+        "low": 0.7,
+        "mid": 1.4,
+        "high": 3.5
+      },
+      "totalUSD": {
+        "low": 42,
+        "mid": 83,
+        "high": 136
+      },
+      "savings": {
+        "low": 18,
+        "mid": 35,
+        "high": 49,
+        "percentage": "27-30%"
+      }
+    }
+  },
+  "deploymentScript": {
+    "preDeploymentChecks": [
+      "verifyAlchemyAPIKey",
+      "checkIPTokenBalance",
+      "validateContractBytecode",
+      "estimateGasCosts"
+    ],
+    "deploymentSteps": [
+      {
+        "step": 1,
+        "name": "Deploy GladiatorHoldingsSpvLoan to Story",
+        "network": "storyProtocol",
+        "estimatedGas": 2000000,
+        "priority": "high"
+      },
+      {
+        "step": 2,
+        "name": "Deploy GladiatorHoldingsSpvLoan to Base",
+        "network": "baseL2",
+        "estimatedGas": 2000000,
+        "priority": "high"
+      },
+      {
+        "step": 3,
+        "name": "Register MR IP Asset",
+        "network": "storyProtocol",
+        "estimatedGas": 500000,
+        "priority": "high"
+      },
+      {
+        "step": 4,
+        "name": "Register SLAPS IP Asset",
+        "network": "storyProtocol",
+        "estimatedGas": 500000,
+        "priority": "high"
+      },
+      {
+        "step": 5,
+        "name": "Attach PIL Licenses (batch)",
+        "network": "storyProtocol",
+        "estimatedGas": 900000,
+        "priority": "medium"
+      },
+      {
+        "step": 6,
+        "name": "Create Attestations (batch)",
+        "network": "storyProtocol",
+        "estimatedGas": 800000,
+        "priority": "medium"
+      },
+      {
+        "step": 7,
+        "name": "Record UCC-1 Hash",
+        "network": "storyProtocol",
+        "estimatedGas": 100000,
+        "priority": "medium"
+      },
+      {
+        "step": 8,
+        "name": "Configure Royalty Routing",
+        "network": "storyProtocol",
+        "estimatedGas": 150000,
+        "priority": "medium"
+      },
+      {
+        "step": 9,
+        "name": "Seal Hermetic Loop",
+        "network": "storyProtocol",
+        "estimatedGas": 80000,
+        "priority": "low"
+      }
+    ],
+    "postDeploymentVerification": [
+      "verifyContractDeployment",
+      "verifyIPRegistration",
+      "verifyLicenseAttachment",
+      "verifyAttestations",
+      "verifyRoyaltyRouting",
+      "verifyHermeticSeal"
+    ]
+  },
+  "environment": {
+    "requiredSecrets": [
+      "ALCHEMY_API_KEY",
+      "PRIVATE_KEY",
+      "ETHERSCAN_API_KEY"
+    ],
+    "optionalSecrets": [
+      "CDP_API_KEY_NAME",
+      "CDP_PRIVATE_KEY"
+    ]
+  }
+}

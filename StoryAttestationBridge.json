@@ -1,0 +1,153 @@
+{
+  "contractName": "StoryAttestationBridge",
+  "abi": [
+    {
+      "inputs": [],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "filingHash",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "debtor",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "securedParty",
+          "type": "address"
+        }
+      ],
+      "name": "UCC1Filed",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "ipId",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "CollateralPledged",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "_filingHash",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "_debtor",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_securedParty",
+          "type": "address"
+        }
+      ],
+      "name": "recordUCC1Filing",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "_ipId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_valuationUsd",
+          "type": "uint256"
+        }
+      ],
+      "name": "pledgeCollateral",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "_filingHash",
+          "type": "bytes32"
+        }
+      ],
+      "name": "getFilingAttestation",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "bytes32",
+              "name": "filingHash",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "debtor",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "securedParty",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "timestamp",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct StoryAttestationBridge.FilingRecord",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "chainId": 1514,
+  "network": "Story Protocol Mainnet",
+  "compiler": {
+    "name": "solc",
+    "version": "0.8.20"
+  },
+  "metadata": {
+    "language": "Solidity",
+    "output": {
+      "devdoc": {
+        "author": "Gladiator Holdings LLC",
+        "details": "UCC-1 to On-Chain Attestation Bridge for Story Protocol"
+      }
+    }
+  }
+}
