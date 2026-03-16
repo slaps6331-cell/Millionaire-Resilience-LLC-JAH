@@ -27,6 +27,8 @@ module.exports = {
   },
   networks: {
     story: {
+      // Set STORY_RPC_URL env var to a dedicated node (e.g. Alchemy/QuickNode)
+      // to avoid rate-limiting on the public endpoint during deployment.
       url: process.env.STORY_RPC_URL || "https://mainnet.storyrpc.io",
       accounts: process.env.DEPLOYER_PRIVATE_KEY
         ? [process.env.DEPLOYER_PRIVATE_KEY]
@@ -34,6 +36,8 @@ module.exports = {
       chainId: 1514,
     },
     base: {
+      // Set BASE_RPC_URL env var to a dedicated node (e.g. Alchemy/QuickNode)
+      // to avoid rate-limiting on the public endpoint during deployment.
       url: process.env.BASE_RPC_URL || "https://mainnet.base.org",
       accounts: process.env.DEPLOYER_PRIVATE_KEY
         ? [process.env.DEPLOYER_PRIVATE_KEY]

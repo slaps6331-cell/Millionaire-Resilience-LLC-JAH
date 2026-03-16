@@ -14,7 +14,7 @@ typechain-types/
 node_modules/
 
 # Deployment outputs (contain addresses — review before committing)
-deployment-config.json
+deployment-config*.json
 multisig-transaction.json
 signature-morpho-config.json
 

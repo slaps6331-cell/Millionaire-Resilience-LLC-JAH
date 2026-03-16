@@ -46,8 +46,11 @@ async function createMultiSigTransaction() {
     console.log(`Using deployed StoryOrchestrationService: ${targetContract}`);
   }
 
-  // Build the transaction parameters
-  const nonce = Date.now(); // use timestamp as nonce placeholder
+  // Build the transaction parameters.
+  // NOTE: `nonce` here is a unique identifier for this signing request, not
+  // an on-chain nonce.  Before broadcasting, replace this with the actual
+  // account nonce retrieved via `provider.getTransactionCount(address)`.
+  const nonce = Date.now();
   const txData = {
     to: targetContract,
     value: "0",

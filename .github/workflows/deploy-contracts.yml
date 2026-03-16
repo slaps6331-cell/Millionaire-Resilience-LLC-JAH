@@ -1,0 +1,222 @@
+name: Deploy Smart Contracts
+
+on:
+  workflow_dispatch:
+    inputs:
+      network:
+        description: "Target network for deployment"
+        required: true
+        default: "story"
+        type: choice
+        options:
+          - story
+          - base
+          - both
+      verify:
+        description: "Verify contracts after deployment"
+        required: true
+        default: true
+        type: boolean
+      dry_run:
+        description: "Dry run (compile only, do not deploy)"
+        required: true
+        default: false
+        type: boolean
+
+# Only allow one deployment workflow to run at a time
+concurrency:
+  group: deploy-${{ github.event.inputs.network }}
+  cancel-in-progress: false
+
+jobs:
+  compile:
+    name: Compile Contracts
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      artifacts-key: ${{ steps.artifacts.outputs.key }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Compile contracts
+        run: npm run contracts:compile
+
+      - name: Set artifacts key
+        id: artifacts
+        run: echo "key=artifacts-${{ github.sha }}" >> "$GITHUB_OUTPUT"
+
+      - name: Upload compiled artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifacts-${{ github.sha }}
+          path: artifacts/
+          retention-days: 30
+
+  deploy-story:
+    name: Deploy to Story Protocol (Chain 1514)
+    runs-on: ubuntu-latest
+    needs: compile
+    permissions:
+      contents: read
+    if: |
+      !inputs.dry_run &&
+      (inputs.network == 'story' || inputs.network == 'both')
+    environment: story-mainnet
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Download compiled artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: artifacts-${{ github.sha }}
+          path: artifacts/
+
+      - name: Deploy contracts to Story Protocol
+        env:
+          DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+          # Add STORY_RPC_URL secret for a dedicated RPC node to avoid public endpoint rate limits.
+          STORY_RPC_URL: ${{ secrets.STORY_RPC_URL || 'https://mainnet.storyrpc.io' }}
+          STORYSCAN_API_KEY: ${{ secrets.STORYSCAN_API_KEY }}
+        run: npm run contracts:deploy:story
+
+      - name: Verify contracts on StoryScan
+        if: inputs.verify
+        env:
+          DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+          # Add STORY_RPC_URL secret for a dedicated RPC node to avoid public endpoint rate limits.
+          STORY_RPC_URL: ${{ secrets.STORY_RPC_URL || 'https://mainnet.storyrpc.io' }}
+          STORYSCAN_API_KEY: ${{ secrets.STORYSCAN_API_KEY }}
+        run: npm run contracts:verify:story
+
+      - name: Generate multi-sig transaction config
+        env:
+          THIRDWEB_WALLET_ADDRESS: ${{ vars.THIRDWEB_WALLET_ADDRESS || '0xe45572Dc828eF0E46D852125f0743938aABe1e12' }}
+          COINBASE_WALLET_ADDRESS: ${{ vars.COINBASE_WALLET_ADDRESS || '0xdc2afcd0a97c1e878fdd64497806e52cc530f02a' }}
+          UCC1_FILING_HASH: "bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a"
+          GAS_PRICE_GWEI: "50"
+        run: npm run contracts:multisig
+
+      - name: Upload deployment artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployment-story-${{ github.run_number }}
+          path: |
+            deployment-config.story.json
+            multisig-transaction.json
+          retention-days: 90
+
+      - name: Show deployed contract addresses
+        run: |
+          echo "## Story Protocol Deployment" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Contract | Address |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|----------|---------|" >> "$GITHUB_STEP_SUMMARY"
+          node -e "
+            const fs = require('fs');
+            const cfg = JSON.parse(fs.readFileSync('deployment-config.story.json'));
+            Object.entries(cfg.contracts).forEach(([name, addr]) => {
+              console.log('| ' + name + ' | [\`' + addr + '\`](https://storyscan.xyz/address/' + addr + ') |');
+            });
+          " >> "$GITHUB_STEP_SUMMARY"
+
+  deploy-base:
+    name: Deploy to Base L2 (Chain 8453)
+    runs-on: ubuntu-latest
+    needs: compile
+    permissions:
+      contents: read
+    if: |
+      !inputs.dry_run &&
+      (inputs.network == 'base' || inputs.network == 'both')
+    environment: base-mainnet
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Download compiled artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: artifacts-${{ github.sha }}
+          path: artifacts/
+
+      - name: Deploy contracts to Base L2
+        env:
+          DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+          # Add BASE_RPC_URL secret for a dedicated RPC node to avoid public endpoint rate limits.
+          BASE_RPC_URL: ${{ secrets.BASE_RPC_URL || 'https://mainnet.base.org' }}
+          ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+        run: npm run contracts:deploy:base
+
+      - name: Verify contracts on Basescan
+        if: inputs.verify
+        env:
+          DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+          # Add BASE_RPC_URL secret for a dedicated RPC node to avoid public endpoint rate limits.
+          BASE_RPC_URL: ${{ secrets.BASE_RPC_URL || 'https://mainnet.base.org' }}
+          ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+        run: npm run contracts:verify:base
+
+      - name: Upload deployment artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployment-base-${{ github.run_number }}
+          path: deployment-config.base.json
+          retention-days: 90
+
+      - name: Show deployed contract addresses
+        run: |
+          echo "## Base L2 Deployment" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Contract | Address |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|----------|---------|" >> "$GITHUB_STEP_SUMMARY"
+          node -e "
+            const fs = require('fs');
+            const cfg = JSON.parse(fs.readFileSync('deployment-config.base.json'));
+            Object.entries(cfg.contracts).forEach(([name, addr]) => {
+              console.log('| ' + name + ' | [\`' + addr + '\`](https://basescan.org/address/' + addr + ') |');
+            });
+          " >> "$GITHUB_STEP_SUMMARY"
+
+  dry-run:
+    name: "Dry Run — Compile Only"
+    runs-on: ubuntu-latest
+    needs: compile
+    permissions: {}
+    if: inputs.dry_run
+    steps:
+      - name: Confirm dry-run success
+        run: |
+          echo "## ✓ Dry Run Complete" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "All 11 contracts compiled successfully." >> "$GITHUB_STEP_SUMMARY"
+          echo "Set **Dry run** to _false_ and re-run to deploy." >> "$GITHUB_STEP_SUMMARY"
