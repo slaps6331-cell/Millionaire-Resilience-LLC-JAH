@@ -13,7 +13,7 @@ require("dotenv").config();
  *   - Timestamp
  *
  * Usage:
- *   node scripts/anchor-signature.js
+ *   node scripts/anchor-signature.cjs
  */
 
 const SIGNER_NAME = "Clifton Kelly Bell";

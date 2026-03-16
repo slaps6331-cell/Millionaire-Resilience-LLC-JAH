@@ -13,7 +13,7 @@ require("dotenv").config();
  * both signers must sign before the transaction can be executed.
  *
  * Usage:
- *   node scripts/multisig-sign.js
+ *   node scripts/multisig-sign.cjs
  */
 
 const MULTISIG_SIGNERS = {

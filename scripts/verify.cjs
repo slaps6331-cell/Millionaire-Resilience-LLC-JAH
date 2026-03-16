@@ -5,8 +5,8 @@ const fs = require("fs");
  * Verifies deployed contracts on StoryScan (Story Protocol) or Etherscan.
  *
  * Usage:
- *   npx hardhat run scripts/verify.js --network story
- *   npx hardhat run scripts/verify.js --network base
+ *   npx hardhat run scripts/verify.cjs --network story
+ *   npx hardhat run scripts/verify.cjs --network base
  *
  * Requires deployment-config.<network>.json produced by deploy.js.
  */

@@ -14,8 +14,8 @@ const ethers = hre.ethers;
  *   - Coinbase wallet:  0xdc2afcd0a97c1e878fdd64497806e52cc530f02a
  *
  * Usage:
- *   npx hardhat run scripts/deploy.js --network story
- *   npx hardhat run scripts/deploy.js --network base
+ *   npx hardhat run scripts/deploy.cjs --network story
+ *   npx hardhat run scripts/deploy.cjs --network base
  */
 
 const MULTISIG_SIGNERS = {
@@ -178,9 +178,9 @@ async function main() {
   console.log("=".repeat(60));
   console.log("\nNext steps:");
   console.log(
-    "  1. Run: npx hardhat run scripts/verify.js --network " + hre.network.name
+    "  1. Run: npx hardhat run scripts/verify.cjs --network " + hre.network.name
   );
-  console.log("  2. Run: node scripts/multisig-sign.js");
+  console.log("  2. Run: node scripts/multisig-sign.cjs");
   console.log(
     "  3. Review multisig-transaction.json and collect both signatures"
   );
