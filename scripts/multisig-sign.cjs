@@ -1,0 +1,128 @@
+const { ethers } = require("ethers");
+const fs = require("fs");
+require("dotenv").config();
+
+/**
+ * Prepares a multi-signature transaction configuration for Morpho Protocol.
+ *
+ * Morpho Protocol requires 2/2 signatures from:
+ *   - ThirdWeb wallet:  0xe45572Dc828eF0E46D852125f0743938aABe1e12
+ *   - Coinbase wallet:  0xdc2afcd0a97c1e878fdd64497806e52cc530f02a
+ *
+ * This script generates a transaction hash and outputs a JSON file that
+ * both signers must sign before the transaction can be executed.
+ *
+ * Usage:
+ *   node scripts/multisig-sign.js
+ */
+
+const MULTISIG_SIGNERS = {
+  thirdweb: process.env.THIRDWEB_WALLET_ADDRESS ||
+    "0xe45572Dc828eF0E46D852125f0743938aABe1e12",
+  coinbase: process.env.COINBASE_WALLET_ADDRESS ||
+    "0xdc2afcd0a97c1e878fdd64497806e52cc530f02a",
+};
+
+const MORPHO_BLUE = "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb";
+const STORY_CHAIN_ID = 1514;
+
+async function createMultiSigTransaction() {
+  console.log("=".repeat(60));
+  console.log("Morpho Protocol — Multi-Signature Transaction Setup");
+  console.log("=".repeat(60));
+  console.log("\nRequired signers (2/2):");
+  console.log(`  1. ThirdWeb: ${MULTISIG_SIGNERS.thirdweb}`);
+  console.log(`  2. Coinbase: ${MULTISIG_SIGNERS.coinbase}`);
+  console.log();
+
+  // Determine target contract from deployment config if available
+  let targetContract = MORPHO_BLUE;
+  const networkName = "story";
+  const configFile = `deployment-config.${networkName}.json`;
+  if (fs.existsSync(configFile)) {
+    const deploymentConfig = JSON.parse(fs.readFileSync(configFile, "utf8"));
+    targetContract =
+      deploymentConfig.contracts.StoryOrchestrationService || MORPHO_BLUE;
+    console.log(`Using deployed StoryOrchestrationService: ${targetContract}`);
+  }
+
+  // Build the transaction parameters
+  const nonce = Date.now(); // use timestamp as nonce placeholder
+  const txData = {
+    to: targetContract,
+    value: "0",
+    data: "0x",
+    nonce,
+    chainId: STORY_CHAIN_ID,
+    gasLimit: "8000000",
+    gasPrice: ethers.parseUnits(
+      process.env.GAS_PRICE_GWEI || "50",
+      "gwei"
+    ).toString(),
+  };
+
+  // Compute a deterministic transaction hash
+  const txHash = ethers.keccak256(
+    ethers.AbiCoder.defaultAbiCoder().encode(
+      ["address", "uint256", "bytes", "uint256", "uint256", "uint256"],
+      [
+        txData.to,
+        txData.value,
+        txData.data,
+        txData.nonce,
+        txData.chainId,
+        txData.gasLimit,
+      ]
+    )
+  );
+
+  console.log(`Transaction hash: ${txHash}`);
+  console.log();
+
+  const multiSigConfig = {
+    transactionHash: txHash,
+    targetContract,
+    chainId: STORY_CHAIN_ID,
+    requiredSignatures: 2,
+    signers: Object.values(MULTISIG_SIGNERS),
+    signatures: [
+      {
+        signer: MULTISIG_SIGNERS.thirdweb,
+        label: "ThirdWeb",
+        signature: null,
+        verified: false,
+      },
+      {
+        signer: MULTISIG_SIGNERS.coinbase,
+        label: "Coinbase",
+        signature: null,
+        verified: false,
+      },
+    ],
+    txData,
+    ucc1Reference: process.env.UCC1_FILING_HASH ||
+      "bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a",
+    timestamp: new Date().toISOString(),
+  };
+
+  const outputFile = "multisig-transaction.json";
+  fs.writeFileSync(outputFile, JSON.stringify(multiSigConfig, null, 2));
+
+  console.log("=".repeat(60));
+  console.log(`✓ Multi-sig config written to: ${outputFile}`);
+  console.log("\nNext steps:");
+  console.log("  1. Share multisig-transaction.json with both signers");
+  console.log(
+    "  2. Each signer signs txData.transactionHash with their private key"
+  );
+  console.log("  3. Populate the 'signature' fields and set 'verified: true'");
+  console.log("  4. Submit the signed transaction to the network");
+  console.log("=".repeat(60));
+}
+
+createMultiSigTransaction()
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
