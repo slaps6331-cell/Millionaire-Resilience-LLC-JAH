@@ -116,7 +116,7 @@ contract StoryOrchestrationService is Ownable, ReentrancyGuard {
         uint256 createdAt;
         uint256 completedAt;
         string storyScanRegistryUrl;
-        bool sealed;
+        bool isSealed;
     }
 
     struct PILRevenueRoute {
@@ -288,7 +288,7 @@ contract StoryOrchestrationService is Ownable, ReentrancyGuard {
         pipeline.stage = PipelineStage.UCC1_FILED;
         pipeline.ucc1FilingHash = ucc1FilingHash;
         pipeline.createdAt = block.timestamp;
-        pipeline.sealed = false;
+        pipeline.isSealed = false;
 
         activePipeline = pipeline;
 
@@ -418,7 +418,7 @@ contract StoryOrchestrationService is Ownable, ReentrancyGuard {
         PipelineStage oldStage = pipeline.stage;
         pipeline.stage = PipelineStage.HERMETIC_SEAL_COMPLETE;
         pipeline.completedAt = block.timestamp;
-        pipeline.sealed = true;
+        pipeline.isSealed = true;
         activePipeline = pipeline;
 
         emit PipelineAdvanced(pipelineId, oldStage, PipelineStage.HERMETIC_SEAL_COMPLETE);
@@ -521,7 +521,7 @@ contract StoryOrchestrationService is Ownable, ReentrancyGuard {
         bytes32[] calldata attestationIds
     ) external onlyAuthorized {
         HermeticSealPipeline storage pipeline = pipelines[pipelineId];
-        require(pipeline.sealed, "Pipeline not sealed");
+        require(pipeline.isSealed, "Pipeline not sealed");
 
         StoryScanEntry storage entry = storyScanRegistry[entityName];
         entry.pipelineId = pipelineId;
@@ -546,13 +546,13 @@ contract StoryOrchestrationService is Ownable, ReentrancyGuard {
 
     function getPipelineStatus(bytes32 pipelineId) external view returns (
         PipelineStage stage,
-        bool sealed,
+        bool isSealed,
         uint256 createdAt,
         uint256 completedAt,
         bytes32 ucc1FilingHash
     ) {
         HermeticSealPipeline storage p = pipelines[pipelineId];
-        return (p.stage, p.sealed, p.createdAt, p.completedAt, p.ucc1FilingHash);
+        return (p.stage, p.isSealed, p.createdAt, p.completedAt, p.ucc1FilingHash);
     }
 
     function getActivePipelineStage() external view returns (PipelineStage) {
