@@ -7,6 +7,7 @@
  * pre-images from the repository's static data, then writes:
  *
  *   valuation-attestation.json  — complete attestation hash record
+ *   yield-summary.json          — loan yield metrics after smart contract deployment
  *
  * Hashes computed:
  *   • Attestation type identifiers  (7 × keccak256(string))
@@ -16,6 +17,12 @@
  *   • UCC-1 data hash               (keccak256(abi.encodePacked(filingHash32, debtor, securedParty, jurisdiction, filingNumber)))
  *   • Orchestration contract hashes (keccak256(abi.encode(address))) — marked PENDING_DEPLOYMENT
  *   • Hermetic seal pipeline hash   (keccak256 of the combined payload)
+ *
+ * Yield metrics derived from on-chain constants in StoryOrchestrationService.sol:
+ *   BTC_LOAN_APR_BPS = 400  (4.00% APR)
+ *   ETH_LOAN_APR_BPS = 600  (6.00% APR)
+ *   MORPHO_LLTV       = 86%
+ *   TOTAL_ANNUAL_PIL_REVENUE = $12,300,000
  *
  * Usage:
  *   node scripts/generate-valuation-attestation.cjs
@@ -183,6 +190,61 @@ const hermeticSealHash = ethers.keccak256(
   )
 );
 
+// ── Yield / Loan Economics (from StoryOrchestrationService.sol constants) ──
+//
+// BTC_LOAN_APR_BPS = 400  → 4.00% APR
+// ETH_LOAN_APR_BPS = 600  → 6.00% APR
+// MORPHO_LLTV       = 86%
+// Monthly payments hard-coded in getProjectedPayoffMonths():
+//   btcMonthlyPayment = 217_000 USDC
+//   ethMonthlyPayment =  58_000 USDC
+// TOTAL_ANNUAL_PIL_REVENUE = 12_300_000 USDC
+
+const BTC_PRINCIPAL   = 5_000_000;
+const ETH_PRINCIPAL   = 1_000_000;
+const TOTAL_PRINCIPAL = 6_000_000;
+const BTC_APR_BPS     = 400;   // 4.00%
+const ETH_APR_BPS     = 600;   // 6.00%
+const LLTV_PCT        = 86;
+const BTC_APR         = BTC_APR_BPS / 10_000;
+const ETH_APR         = ETH_APR_BPS / 10_000;
+
+// Annual interest income to lender
+const btcAnnualInterest   = BTC_PRINCIPAL * BTC_APR;           // 200_000
+const ethAnnualInterest   = ETH_PRINCIPAL * ETH_APR;           //  60_000
+const totalAnnualInterest = btcAnnualInterest + ethAnnualInterest; // 260_000
+
+// Weighted APR across both positions
+const weightedAPR = (totalAnnualInterest / TOTAL_PRINCIPAL) * 100; // 4.33...%
+
+// Monthly amortization payments (from getProjectedPayoffMonths() in contract)
+const BTC_MONTHLY = 217_000;
+const ETH_MONTHLY  =  58_000;
+const COMBINED_MONTHLY = BTC_MONTHLY + ETH_MONTHLY;  // 275_000
+
+// PIL revenue repayment engine
+const PIL_PER_ANNUAL = 800_000;
+const PIL_COM_ANNUAL = 3_500_000;
+const PIL_ENT_ANNUAL = 8_000_000;
+const TOTAL_PIL_ANNUAL = PIL_PER_ANNUAL + PIL_COM_ANNUAL + PIL_ENT_ANNUAL; // 12_300_000
+const MONTHLY_PIL = TOTAL_PIL_ANNUAL / 12;   // 1_025_000
+
+// Monthly surplus after loan payments
+const MONTHLY_SURPLUS = MONTHLY_PIL - COMBINED_MONTHLY; // 750_000
+
+// Projected payoff — mirrors getProjectedPayoffMonths() Solidity logic
+const btcPayoffMonths     = Math.floor(BTC_PRINCIPAL / (MONTHLY_PIL * 5 / 6)) + 1;
+const ethPayoffMonths     = Math.floor(ETH_PRINCIPAL / (MONTHLY_PIL / 6)) + 1;
+const combinedPayoffMonths = Math.floor(TOTAL_PRINCIPAL / MONTHLY_PIL) + 1;
+
+// Approximate payoff date from deployment (2026-02-05 origin)
+const DEPLOYMENT_DATE = new Date("2026-02-05T00:00:00Z");
+function addMonths(date, n) {
+  const d = new Date(date);
+  d.setUTCMonth(d.getUTCMonth() + n);
+  return d.toISOString().slice(0, 10);
+}
+
 // ── Assemble attestation record ────────────────────────────────────────────
 
 const attestation = {
@@ -286,12 +348,96 @@ const attestation = {
     mrOwner:           "0x597856e93f19877a399f686D2F43b298e2268618",
     coinbaseWallet:    COINBASE_WALLET,
   },
+
+  // ── Yield Summary (inline reference) ────────────────────────────────
+  // Full details in yield-summary.json
+  yieldSummaryRef: {
+    weightedAPR_pct: `${weightedAPR.toFixed(4)}%`,
+    totalPrincipal_USD: TOTAL_PRINCIPAL,
+    totalAnnualInterest_USD: totalAnnualInterest,
+    combinedMonthlyPayment_USD: COMBINED_MONTHLY,
+    projectedPayoffMonths: combinedPayoffMonths,
+    details: "yield-summary.json",
+  },
+};
+
+const yieldSummary = {
+  generatedAt: new Date().toISOString(),
+  source: "StoryOrchestrationService.sol — on-chain constants (BTC_LOAN_APR_BPS, ETH_LOAN_APR_BPS, getProjectedPayoffMonths)",
+  protocol: "Morpho Blue",
+  morphoBlue: MORPHO_BLUE,
+  blockchain: ["Base L2 (chainId 8453)", "Story Protocol (chainId 1514)"],
+
+  loans: {
+    loan1_BTC: {
+      description:      "USDC loan collateralised by Bitcoin",
+      principal_USD:    BTC_PRINCIPAL,
+      collateral:       "BTC (Bitcoin)",
+      aprBps:           BTC_APR_BPS,
+      apr_pct:          `${(BTC_APR * 100).toFixed(2)}%`,
+      lltv_pct:         `${LLTV_PCT}%`,
+      annualInterest_USD: btcAnnualInterest,
+      monthlyPayment_USD: BTC_MONTHLY,
+      projectedPayoffMonths: btcPayoffMonths,
+      projectedPayoffDate: addMonths(DEPLOYMENT_DATE, btcPayoffMonths),
+    },
+    loan2_ETH: {
+      description:      "USDC loan collateralised by Ethereum",
+      principal_USD:    ETH_PRINCIPAL,
+      collateral:       "ETH (Ethereum)",
+      aprBps:           ETH_APR_BPS,
+      apr_pct:          `${(ETH_APR * 100).toFixed(2)}%`,
+      lltv_pct:         `${LLTV_PCT}%`,
+      annualInterest_USD: ethAnnualInterest,
+      monthlyPayment_USD: ETH_MONTHLY,
+      projectedPayoffMonths: ethPayoffMonths,
+      projectedPayoffDate: addMonths(DEPLOYMENT_DATE, ethPayoffMonths),
+    },
+  },
+
+  combined: {
+    totalPrincipal_USD:       TOTAL_PRINCIPAL,
+    totalAnnualInterest_USD:  totalAnnualInterest,
+    weightedAPR_pct:          `${weightedAPR.toFixed(4)}%`,
+    combinedMonthlyPayment_USD: COMBINED_MONTHLY,
+    projectedPayoffMonths:    combinedPayoffMonths,
+    projectedPayoffDate:      addMonths(DEPLOYMENT_DATE, combinedPayoffMonths),
+    lltv_pct:                 `${LLTV_PCT}%`,
+  },
+
+  pilRevenueRepaymentEngine: {
+    description: "100% of PIL licensing revenue routed to loan repayment via Story Protocol Royalty Module",
+    royaltyModule: "0xcc8b9f0c9dC370ED1F41D95f74C9F72E08f24C90",
+    paymentDestination: COINBASE_WALLET,
+    licenseRevenue: {
+      "PIL-PER (1% royalty)":   { annualRevenue_USD: PIL_PER_ANNUAL },
+      "PIL-COM (5% royalty)":   { annualRevenue_USD: PIL_COM_ANNUAL },
+      "PIL-ENT (12% royalty)":  { annualRevenue_USD: PIL_ENT_ANNUAL },
+    },
+    totalAnnualRevenue_USD:     TOTAL_PIL_ANNUAL,
+    monthlyRevenue_USD:         MONTHLY_PIL,
+    monthlySurplusAfterPayments_USD: MONTHLY_SURPLUS,
+    allocationPct:              "100% to loan repayment until fully paid off",
+    postPayoff:                 "After full payoff, PIL revenue flows directly to owner wallet",
+  },
+
+  netYieldToLender: {
+    summary: `${weightedAPR.toFixed(2)}% weighted APR on $${TOTAL_PRINCIPAL.toLocaleString()} USDC`,
+    annualInterestIncome_USD: totalAnnualInterest,
+    collateralProtection: `${LLTV_PCT}% LLTV via Morpho Blue — liquidation triggered at ${LLTV_PCT}% LTV`,
+    primaryRepaymentSource: "PIL licensing revenue ($12.3M/yr projected)",
+    secondaryCollateral: "SLAPS Streaming IP Portfolio ($75M AT_RISK)",
+    excludedCollateral: "Millionaire Resilience IP Portfolio ($225M PROTECTED — excluded from default)",
+  },
 };
 
 // ── Write output ──────────────────────────────────────────────────────────
 
 const OUTPUT_FILE = "valuation-attestation.json";
 fs.writeFileSync(OUTPUT_FILE, JSON.stringify(attestation, null, 2));
+
+const YIELD_FILE = "yield-summary.json";
+fs.writeFileSync(YIELD_FILE, JSON.stringify(yieldSummary, null, 2));
 
 console.log("=".repeat(60));
 console.log("Gladiator Holdings — Valuation Attestation Hash Record");
@@ -320,5 +466,36 @@ console.log(`  revenueEscrowDataHash      ${revenueEscrowDataHash}`);
 console.log();
 console.log(`Hermetic seal pipeline hash: ${hermeticSealHash}`);
 console.log();
+console.log("=".repeat(60));
+console.log("Yield After Deployment — Morpho Blue Dual Stablecoin Loans");
+console.log("=".repeat(60));
+console.log();
+console.log("  Loan 1  BTC collateral    $5,000,000 USDC @ 4.00% APR (400 bps)");
+console.log(`    Annual interest:        $${btcAnnualInterest.toLocaleString()}`);
+console.log(`    Monthly payment:        $${BTC_MONTHLY.toLocaleString()}`);
+console.log(`    Projected payoff:       ${btcPayoffMonths} months (${addMonths(DEPLOYMENT_DATE, btcPayoffMonths)})`);
+console.log(`    LLTV:                   ${LLTV_PCT}%`);
+console.log();
+console.log("  Loan 2  ETH collateral    $1,000,000 USDC @ 6.00% APR (600 bps)");
+console.log(`    Annual interest:        $${ethAnnualInterest.toLocaleString()}`);
+console.log(`    Monthly payment:        $${ETH_MONTHLY.toLocaleString()}`);
+console.log(`    Projected payoff:       ${ethPayoffMonths} months (${addMonths(DEPLOYMENT_DATE, ethPayoffMonths)})`);
+console.log(`    LLTV:                   ${LLTV_PCT}%`);
+console.log();
+console.log(`  Combined position         $${TOTAL_PRINCIPAL.toLocaleString()} USDC`);
+console.log(`    Weighted APR:           ${weightedAPR.toFixed(4)}%`);
+console.log(`    Total annual interest:  $${totalAnnualInterest.toLocaleString()}`);
+console.log(`    Combined monthly pymt:  $${COMBINED_MONTHLY.toLocaleString()}`);
+console.log(`    Payoff (combined):      ${combinedPayoffMonths} months (${addMonths(DEPLOYMENT_DATE, combinedPayoffMonths)})`);
+console.log();
+console.log("  PIL Revenue Repayment Engine");
+console.log(`    PIL-PER (1%  royalty):  $${PIL_PER_ANNUAL.toLocaleString()}/yr`);
+console.log(`    PIL-COM (5%  royalty):  $${PIL_COM_ANNUAL.toLocaleString()}/yr`);
+console.log(`    PIL-ENT (12% royalty):  $${PIL_ENT_ANNUAL.toLocaleString()}/yr`);
+console.log(`    Total annual revenue:   $${TOTAL_PIL_ANNUAL.toLocaleString()}/yr`);
+console.log(`    Monthly PIL revenue:    $${MONTHLY_PIL.toLocaleString()}`);
+console.log(`    Surplus after payments: $${MONTHLY_SURPLUS.toLocaleString()}/mo`);
+console.log();
 console.log(`Attestation record written to: ${OUTPUT_FILE}`);
+console.log(`Yield summary written to:      ${YIELD_FILE}`);
 console.log("=".repeat(60));

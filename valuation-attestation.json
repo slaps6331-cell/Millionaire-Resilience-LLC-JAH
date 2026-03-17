@@ -1,7 +1,7 @@
 {
   "$schema": "https://docs.story.foundation/attestation-schema.json",
   "version": "1.0.0",
-  "generatedAt": "2026-03-17T11:56:20.651Z",
+  "generatedAt": "2026-03-17T12:18:02.913Z",
   "note": "Pre-deployment attestation hash record. Contract hashes marked PENDING_DEPLOYMENT will be populated by post-deploy-orchestrate.cjs after live deployment.",
   "attestationTypeIdentifiers": {
     "CORPORATE_VERIFICATION": "0x908b874ceda681a131aff726b1b5c42ff40514be54505fd27602bc763adf38ad",
@@ -89,5 +89,13 @@
     "mrTokenId": 15192,
     "mrOwner": "0x597856e93f19877a399f686D2F43b298e2268618",
     "coinbaseWallet": "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a"
+  },
+  "yieldSummaryRef": {
+    "weightedAPR_pct": "4.3333%",
+    "totalPrincipal_USD": 6000000,
+    "totalAnnualInterest_USD": 260000,
+    "combinedMonthlyPayment_USD": 275000,
+    "projectedPayoffMonths": 6,
+    "details": "yield-summary.json"
   }
 }
