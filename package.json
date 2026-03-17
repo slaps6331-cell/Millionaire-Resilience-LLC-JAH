@@ -20,7 +20,8 @@
     "contracts:multisig": "node scripts/multisig-sign.cjs",
     "contracts:verify-multisig": "node scripts/verify-multisig.cjs",
     "contracts:anchor-signature": "node scripts/anchor-signature.cjs",
-    "contracts:node": "npx hardhat node"
+    "contracts:node": "npx hardhat node",
+    "contracts:attestation-hashes": "node scripts/generate-valuation-attestation.cjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
