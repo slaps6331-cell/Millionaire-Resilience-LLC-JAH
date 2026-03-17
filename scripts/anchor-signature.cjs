@@ -21,7 +21,23 @@ const DOCUMENT_TYPE = "UCC-1_FINANCING_STATEMENT";
 const UCC1_CID =
   process.env.UCC1_FILING_HASH ||
   "bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a";
-const PINATA_GATEWAY = "https://lavender-neat-urial-76.mypinata.cloud/ipfs/";
+
+// Build the Pinata gateway base URL from env vars so the token is never hardcoded.
+// Set PINATA_GATEWAY_NAME (gateway subdomain) and PINATA_GATEWAY_TOKEN in .env or
+// as GitHub Secrets. See .env.example for details.
+const PINATA_GATEWAY_NAME =
+  process.env.PINATA_GATEWAY_NAME || "lavender-neat-urial-76";
+const PINATA_GATEWAY_TOKEN = process.env.PINATA_GATEWAY_TOKEN || "";
+const PINATA_GATEWAY = `https://${PINATA_GATEWAY_NAME}.mypinata.cloud/ipfs/`;
+
+/**
+ * Append the Pinata gateway token as a query parameter when it is available,
+ * so private/restricted gateways can be accessed without hardcoding the token.
+ */
+function pinataUrl(cid) {
+  const base = `${PINATA_GATEWAY}${cid}`;
+  return PINATA_GATEWAY_TOKEN ? `${base}?pinataGatewayToken=${PINATA_GATEWAY_TOKEN}` : base;
+}
 
 async function anchorSignatureHash() {
   console.log("=".repeat(60));
@@ -56,7 +72,7 @@ async function anchorSignatureHash() {
     signer: SIGNER_NAME,
     documentType: DOCUMENT_TYPE,
     ucc1Cid: UCC1_CID,
-    ucc1Url: `${PINATA_GATEWAY}${UCC1_CID}`,
+    ucc1Url: pinataUrl(UCC1_CID),
     timestamp,
     signatureHash,
     eip191Hash: prefixedHash,

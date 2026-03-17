@@ -199,6 +199,7 @@
       "entityId": "0008034162",
       "effectiveDate": "June 27, 2025",
       "sha256": "0x9d327eb7fdae91d33c186a9d3b770f5004f679a70a34aeb94716042978a8a4fa",
+      "ipfsCid": "bafybeiba2j4g34bizjjm26qznc2pf4upgotffrcwjtkw6lj3qa6squrzpu",
       "stateVariable": "gladiatorArticlesHash",
       "status": "VERIFIED"
     },
@@ -208,6 +209,7 @@
       "entityId": "0008034162",
       "entryNumber": "5095898",
       "sha256": "0x244a289d2c997f7f9d5d01ba8640ff7883b138d97ce7bdb0113e1d99b6f971a3",
+      "ipfsCid": "bafkreifbikc26xs2cu2mvsghzlrginwm6icqotdp4ntsvq3sn6h4flrhhm",
       "stateVariable": "gladiatorFilingNoticeHash",
       "status": "VERIFIED"
     },
@@ -222,6 +224,7 @@
       "entity": "Millionaire Resilience LLC",
       "ein": "41-3789881",
       "keccak256": "0x7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b",
+      "ipfsCid": "bafkreifxiesrze736sxhvsa5op64q6f3ddvv3rismnvd75wi3yfqilu4py",
       "stateVariable": "mrArticlesHash"
     },
     "mr_ein_letter": {
@@ -230,6 +233,7 @@
       "ein": "41-3789881",
       "filingDate": "January 22, 2026",
       "keccak256": "0x8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9",
+      "ipfsCid": "bafkreihz5zpp33pimzckaey64mht2vezlbzngoxe46urrfctzqvjvsdboe",
       "stateVariable": "mrEinLetterHash"
     },
     "slaps_articles": {
@@ -237,6 +241,7 @@
       "entity": "Slaps Streaming LLC",
       "ein": "41-4045773",
       "keccak256": "0x9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0",
+      "ipfsCid": "bafkreic3n6bdf25tobljqbjxzvzkbch6s7xkqq5yehmyt3zju4de7ey52u",
       "stateVariable": "slapsArticlesHash"
     },
     "slaps_ein_letter": {
@@ -245,6 +250,7 @@
       "ein": "41-4045773",
       "filingDate": "February 03, 2026",
       "keccak256": "0xa0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1",
+      "ipfsCid": "bafkreifnuwchbvbolmhbgionvsltdi3edzasfqytd4zzqlvu42m5m4jhei",
       "stateVariable": "slapsEinLetterHash"
     },
     "resilience_blockchain_ein_letter": {
@@ -255,12 +261,14 @@
       "nameControl": "RESI",
       "sha256": "0xf383541906ec2d1c335d06c53bd0f2b3dce7cbd568f8f37474e92e5769af8420",
       "sourceFile": "attached_assets/CP_575_B_(1)_1770434680874.pdf",
+      "ipfsCid": "bafkreid77fuxwqtwyku5syp3dswmy75rymvxh6v3tf7rfrzqbrizoutxtu",
       "stateVariable": "resilienceBlockchainEinLetterHash"
     },
     "nm_sos_receipt": {
       "description": "New Mexico Secretary of State Payment Receipts",
       "entities": ["Gladiator Holdings LLC", "Millionaire Resilience LLC", "Slaps Streaming LLC", "Resilience Blockchain Whetstone LLC"],
       "keccak256": "0xb1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2",
+      "ipfsCid": "bafkreigjsqx6d47sgqwkjxgtt3qrjnoz3hdth4hqk7qnxflqog2ikjs2kq",
       "stateVariable": "nmSosReceiptHash"
     },
     "beneficial_owner_id": {
@@ -268,6 +276,7 @@
       "idNumber": "WDL5NTZ8C53B",
       "expirationDate": "05/08/2033",
       "keccak256": "0xc2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3",
+      "ipfsCid": "bafkreie5spkgxxhmafdqylwyfplx37jqhcjrs3es3neasgcnynzgkg5mzi",
       "stateVariable": "beneficialOwnerIdHash",
       "note": "Hash computed from redacted ID image"
     }
@@ -277,6 +286,7 @@
       "description": "Combined PatentSight+ Portfolio Analysis",
       "paiScore": 92,
       "keccak256": "0xd3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4",
+      "ipfsCid": "bafkreibxqnmhir5iifpboxdv5ndltm5vnbplso4ndtcuzfnanykudrwdbu",
       "stateVariable": "patentSightPortfolioHash"
     },
     "millionaireResilience": {
@@ -285,6 +295,7 @@
       "sepCount": 30,
       "status": "PROTECTED",
       "keccak256": "0xe4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5",
+      "ipfsCid": "bafkreihls2yoi265uxzmcmh7wzk2ytyo5yvopmb4jib4blw4nptlchivqm",
       "stateVariable": "patentSightMRHash"
     },
     "slapsStreaming": {
@@ -293,6 +304,7 @@
       "sepCount": 12,
       "status": "AT_RISK",
       "keccak256": "0xf5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6",
+      "ipfsCid": "bafkreiflmhdsflvv53e24mo2woafdgecpkvfljcbm5heafnzdxzbj5ct4i",
       "stateVariable": "patentSightSLAPSHash"
     },
     "iplyticsDeclaration": {
@@ -300,6 +312,7 @@
       "totalSeps": 42,
       "avgEssentiality": 71.0,
       "keccak256": "0xa6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7",
+      "ipfsCid": "bafkreiej7wfskl53hxo4j47g55bxjkyyulihovjjtpjvtf264kfoddxc5i",
       "stateVariable": "iplyticsDeclarationHash"
     }
   },

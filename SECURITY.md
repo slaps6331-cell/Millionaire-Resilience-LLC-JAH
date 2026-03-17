@@ -51,6 +51,20 @@ compromised**. Immediately:
 4. Click **New Key** → grant the necessary permissions → generate.
 5. Copy the new JWT and add it to GitHub Secrets as `PINATA_JWT`.
 
+#### Pinata Gateway Token
+A gateway token is **separate from the Pinata API key/JWT** — it authenticates
+access to a specific dedicated gateway (e.g., `lavender-neat-urial-76`).
+
+1. Go to <https://app.pinata.cloud/gateway>.
+2. Click on the affected gateway (e.g., `lavender-neat-urial-76.mypinata.cloud`).
+3. Click **Manage Tokens** → find the exposed token → click **Delete / Revoke**.
+4. Click **Create Token** to generate a replacement.
+5. Copy the new token and add it to GitHub Secrets as `PINATA_GATEWAY_TOKEN`.
+
+> **Note**: Never append a gateway token as a query parameter in committed source
+> code (e.g., `?pinataGatewayToken=...`). The scripts in this repository read it
+> from `process.env.PINATA_GATEWAY_TOKEN` at runtime.
+
 #### Coinbase Developer Platform API Key
 1. Go to <https://portal.cdp.coinbase.com>.
 2. Navigate to **API Keys**.
@@ -90,6 +104,7 @@ After revoking exposed credentials, check for unauthorized activity:
 | Alchemy API Key | <https://dashboard.alchemy.com> → Usage → check for unexpected RPC calls |
 | Etherscan API Key | <https://etherscan.io/myapikey> → Usage stats |
 | Pinata JWT | <https://app.pinata.cloud> → Usage — check for unexpected uploads |
+| Pinata Gateway Token | <https://app.pinata.cloud/gateway> → your gateway → Access Logs |
 | Deployer wallet | <https://storyscan.xyz> or <https://basescan.org> — search the address for unexpected transactions |
 
 ---
@@ -102,6 +117,7 @@ DEPLOYER_PRIVATE_KEY=0x...64 hex chars...
 ALCHEMY_API_KEY=...
 ETHERSCAN_API_KEY=...
 PINATA_JWT=eyJ...
+PINATA_GATEWAY_TOKEN=...
 ```
 
 ### What goes in GitHub Secrets
