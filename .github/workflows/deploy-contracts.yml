@@ -95,8 +95,9 @@ jobs:
       - name: Deploy contracts to Story Protocol
         env:
           DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
-          # Add STORY_RPC_URL secret for a dedicated RPC node to avoid public endpoint rate limits.
-          STORY_RPC_URL: ${{ secrets.STORY_RPC_URL || 'https://mainnet.storyrpc.io' }}
+          # STORY_RPC_URL is built from ALCHEMY_API_KEY when available (recommended).
+          # Fall back to STORY_RPC_URL secret, then the public endpoint.
+          STORY_RPC_URL: ${{ secrets.ALCHEMY_API_KEY && format('https://story-mainnet.g.alchemy.com/v2/{0}', secrets.ALCHEMY_API_KEY) || secrets.STORY_RPC_URL || 'https://mainnet.storyrpc.io' }}
           STORYSCAN_API_KEY: ${{ secrets.STORYSCAN_API_KEY }}
         run: npm run contracts:deploy:story
 
@@ -104,8 +105,9 @@ jobs:
         if: inputs.verify
         env:
           DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
-          # Add STORY_RPC_URL secret for a dedicated RPC node to avoid public endpoint rate limits.
-          STORY_RPC_URL: ${{ secrets.STORY_RPC_URL || 'https://mainnet.storyrpc.io' }}
+          # STORY_RPC_URL is built from ALCHEMY_API_KEY when available (recommended).
+          # Fall back to STORY_RPC_URL secret, then the public endpoint.
+          STORY_RPC_URL: ${{ secrets.ALCHEMY_API_KEY && format('https://story-mainnet.g.alchemy.com/v2/{0}', secrets.ALCHEMY_API_KEY) || secrets.STORY_RPC_URL || 'https://mainnet.storyrpc.io' }}
           STORYSCAN_API_KEY: ${{ secrets.STORYSCAN_API_KEY }}
         run: npm run contracts:verify:story
 
@@ -172,7 +174,8 @@ jobs:
       - name: Deploy contracts to Base L2
         env:
           DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
-          # Add BASE_RPC_URL secret for a dedicated RPC node to avoid public endpoint rate limits.
+          # ALCHEMY_API_KEY is also used for Base L2 (separate Alchemy app recommended).
+          # Falls back to BASE_RPC_URL secret, then the public endpoint.
           BASE_RPC_URL: ${{ secrets.BASE_RPC_URL || 'https://mainnet.base.org' }}
           ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
         run: npm run contracts:deploy:base
@@ -181,7 +184,6 @@ jobs:
         if: inputs.verify
         env:
           DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
-          # Add BASE_RPC_URL secret for a dedicated RPC node to avoid public endpoint rate limits.
           BASE_RPC_URL: ${{ secrets.BASE_RPC_URL || 'https://mainnet.base.org' }}
           ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
         run: npm run contracts:verify:base

@@ -1,6 +1,18 @@
 # Smart Contract Deployment Guide
 ## Millionaire Resilience LLC — Gladiator Holdings Multi-SPV System
 
+> **⚠️ SECURITY FIRST — Read before sharing or storing any credentials**
+>
+> API keys, JWT tokens, and private keys must **never** be pasted into:
+> - GitHub issue or PR comments
+> - The problem statement of any AI coding assistant
+> - Chat messages, emails, or documents shared with third parties
+> - Source code files (including `.env` — use `.env.example` for templates only)
+>
+> If credentials have already been exposed in any of the above, **revoke and rotate
+> them immediately** before proceeding. See [SECURITY.md](SECURITY.md) for the
+> step-by-step incident response procedure.
+
 This guide covers:
 1. [Pre-Deployment Checklist](#1-pre-deployment-checklist)
 2. [GitHub Secrets Setup](#2-github-secrets-setup)
@@ -43,14 +55,59 @@ Gather the following before starting. All will be stored as GitHub Secrets — *
 
 | Key | Where to obtain |
 |-----|-----------------|
-| `DEPLOYER_PRIVATE_KEY` | Export from your deployer wallet (MetaMask, Coinbase Wallet, etc.) |
+| `DEPLOYER_PRIVATE_KEY` | See §1.4 — create a **dedicated Ethereum wallet** and export its private key |
+| `ALCHEMY_API_KEY` | <https://dashboard.alchemy.com> → Create App → Network: Story Protocol → copy API key |
 | `STORYSCAN_API_KEY` | <https://storyscan.xyz> → Register → API Keys |
-| `ETHERSCAN_API_KEY` | <https://etherscan.io/myapikey> (also works for Basescan) |
-| `STORY_RPC_URL` *(optional)* | Alchemy, QuickNode, or Ankr — Story Protocol endpoint |
+| `ETHERSCAN_API_KEY` | <https://etherscan.io/myapikey> (also valid for Basescan) |
+| `STORY_RPC_URL` *(optional)* | Alchemy Story Protocol endpoint — auto-constructed from `ALCHEMY_API_KEY` if set |
 | `BASE_RPC_URL` *(optional)* | Alchemy, QuickNode, or Ankr — Base L2 endpoint |
 | `THIRDWEB_CLIENT_ID` | <https://thirdweb.com/dashboard> → Settings → API Keys |
 | `THIRDWEB_SECRET_KEY` | Same dashboard as above |
 | `PINATA_JWT` | <https://app.pinata.cloud> → API Keys → New Key |
+
+### 1.4 Creating the Deployer Wallet (Ethereum Private Key)
+
+> **⚠️ Important distinction**: A Coinbase API key (a UUID like
+> `04c523e7-73f7-49ab-99af-0cacf80d4831`) is **not** an Ethereum private key and
+> **cannot** be used to deploy contracts. These are two completely different things.
+
+A **Coinbase API key** is a web-service credential for the Coinbase Developer Platform
+API. It authenticates REST API calls to Coinbase's backend services.
+
+A **deployer private key** is the 32-byte (64 hex character) secret that controls an
+Ethereum wallet address. It is used to cryptographically sign deployment transactions
+submitted directly to the blockchain.
+
+**How to create a dedicated deployer wallet and export its private key:**
+
+**Option A — MetaMask (recommended for most users):**
+1. Open MetaMask → click the account circle → **Add account or hardware wallet**.
+2. Choose **Add a new account** → name it "MR Deployer".
+3. Click the three-dot menu next to the new account → **Account details**.
+4. Click **Show private key** → enter your MetaMask password.
+5. Copy the 64-character hex string (starts with `0x`). This is your `DEPLOYER_PRIVATE_KEY`.
+
+**Option B — Cast (Foundry) command line:**
+```bash
+cast wallet new
+# Output:
+# Address:     0xYourNewAddress
+# Private key: 0xYour64CharHexPrivateKey
+```
+
+**Option C — Node.js one-liner (requires ethers installed):**
+```bash
+node -e "const { ethers } = require('ethers'); const w = ethers.Wallet.createRandom(); console.log('Address:', w.address); console.log('Key:', w.privateKey);"
+```
+
+In all cases, the private key will be exactly **66 characters long** ("`0x`" + 64 hex digits), for example:
+```
+0x4c0883a69102937d6231471b5dbb6e538eba2ef666039b34ca3b68e2e2ab9638
+```
+
+Fund this wallet with gas before running the deployment (see §1.1).
+
+> **After deployment**: rotate this key — see the post-deployment checklist in §5.5.
 
 ---
 
@@ -81,10 +138,11 @@ All sensitive credentials are stored as **encrypted GitHub repository secrets**.
 
 | Secret Name | Description | Required for |
 |-------------|-------------|-------------|
-| `DEPLOYER_PRIVATE_KEY` | Private key of the wallet paying deployment gas. **Must start with `0x`.** | Story + Base deployment |
+| `DEPLOYER_PRIVATE_KEY` | 64-hex-char private key of the wallet paying deployment gas. **Must start with `0x`. This is NOT a Coinbase API key UUID.** See §1.4. | Story + Base deployment |
+| `ALCHEMY_API_KEY` | Alchemy API key — the workflow uses this to build the Story Protocol RPC URL `https://story-mainnet.g.alchemy.com/v2/<key>` automatically. Obtain at <https://dashboard.alchemy.com>. | Story deployment (recommended) |
 | `STORYSCAN_API_KEY` | StoryScan API key for contract source verification | Story deployment |
 | `ETHERSCAN_API_KEY` | Etherscan/Basescan API key for contract source verification | Base deployment |
-| `STORY_RPC_URL` | Dedicated Story Protocol RPC endpoint *(defaults to public if omitted)* | Story deployment |
+| `STORY_RPC_URL` | Override Story Protocol RPC URL. Only needed if you want to use a non-Alchemy endpoint. Auto-constructed from `ALCHEMY_API_KEY` when set. | Story deployment |
 | `BASE_RPC_URL` | Dedicated Base L2 RPC endpoint *(defaults to public if omitted)* | Base deployment |
 | `THIRDWEB_CLIENT_ID` | ThirdWeb project client ID | ThirdWeb wallet integration |
 | `THIRDWEB_SECRET_KEY` | ThirdWeb project secret key | ThirdWeb wallet integration |
@@ -466,6 +524,15 @@ The deployer wallet does not hold enough gas. Fund it and re-run the workflow.
 ### "DEPLOYER_PRIVATE_KEY not set"
 
 The GitHub Secret was not found. Verify the secret name exactly matches `DEPLOYER_PRIVATE_KEY` (case-sensitive) in **Settings → Secrets and variables → Actions**.
+
+### "Invalid private key" / "could not detect network"
+
+The `DEPLOYER_PRIVATE_KEY` value is malformed. Common causes:
+- You used a **Coinbase API key UUID** (format: `xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`) instead of an Ethereum private key. These are two different things — see §1.4.
+- You copied the private key without the `0x` prefix. Add `0x` to the start.
+- You included extra whitespace or quotes in the secret value.
+
+The value stored in the `DEPLOYER_PRIVATE_KEY` secret must be exactly **66 characters** long: `0x` followed by 64 lowercase hex characters.
 
 ### "Nonce too low" / "replacement transaction underpriced"
 
