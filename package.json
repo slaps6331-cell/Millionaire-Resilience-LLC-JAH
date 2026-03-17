@@ -15,6 +15,8 @@
     "contracts:deploy:base": "npx hardhat run scripts/deploy.cjs --network base",
     "contracts:verify:story": "npx hardhat run scripts/verify.cjs --network story",
     "contracts:verify:base": "npx hardhat run scripts/verify.cjs --network base",
+    "contracts:orchestrate:story": "npx hardhat run scripts/post-deploy-orchestrate.cjs --network story",
+    "contracts:orchestrate:base": "npx hardhat run scripts/post-deploy-orchestrate.cjs --network base",
     "contracts:multisig": "node scripts/multisig-sign.cjs",
     "contracts:verify-multisig": "node scripts/verify-multisig.cjs",
     "contracts:anchor-signature": "node scripts/anchor-signature.cjs",

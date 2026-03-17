@@ -56,14 +56,24 @@ Gather the following before starting. All will be stored as GitHub Secrets — *
 | Key | Where to obtain |
 |-----|-----------------|
 | `DEPLOYER_PRIVATE_KEY` | See §1.4 — create a **dedicated Ethereum wallet** and export its private key |
-| `ALCHEMY_API_KEY` | <https://dashboard.alchemy.com> → Create App → Network: Story Protocol → copy API key |
+| `ALCHEMY_API_KEY` | <https://dashboard.alchemy.com> → Create App → Network: Story Protocol **and** Base → copy API key |
 | `STORYSCAN_API_KEY` | <https://storyscan.xyz> → Register → API Keys |
 | `ETHERSCAN_API_KEY` | <https://etherscan.io/myapikey> (also valid for Basescan) |
+| `COINBASE_API_KEY_NAME` | <https://portal.cdp.coinbase.com/access/api> → Create API key → copy **Key Name** (UUID) |
+| `COINBASE_API_KEY_PRIVATE_KEY` | Same page → copy **Private Key** (EC key in PEM format) |
 | `STORY_RPC_URL` *(optional)* | Alchemy Story Protocol endpoint — auto-constructed from `ALCHEMY_API_KEY` if set |
-| `BASE_RPC_URL` *(optional)* | Alchemy, QuickNode, or Ankr — Base L2 endpoint |
+| `BASE_RPC_URL` *(optional)* | Alchemy Base endpoint — auto-constructed from `ALCHEMY_API_KEY` if set |
 | `THIRDWEB_CLIENT_ID` | <https://thirdweb.com/dashboard> → Settings → API Keys |
 | `THIRDWEB_SECRET_KEY` | Same dashboard as above |
 | `PINATA_JWT` | <https://app.pinata.cloud> → API Keys → New Key |
+
+> **Coinbase CDP API keys vs. Ethereum private key**
+>
+> `COINBASE_API_KEY_NAME` / `COINBASE_API_KEY_PRIVATE_KEY` are Coinbase Developer Platform
+> web-service credentials. They authenticate REST API calls to Coinbase's backend (e.g. CDP
+> wallet management, IPFS pinning) and are **not** used to sign on-chain transactions.
+> The `DEPLOYER_PRIVATE_KEY` (a 64-character hex Ethereum private key) is still required
+> to sign and broadcast contract deployments to the blockchain.
 
 ### 1.4 Creating the Deployer Wallet (Ethereum Private Key)
 
@@ -139,11 +149,13 @@ All sensitive credentials are stored as **encrypted GitHub repository secrets**.
 | Secret Name | Description | Required for |
 |-------------|-------------|-------------|
 | `DEPLOYER_PRIVATE_KEY` | 64-hex-char private key of the wallet paying deployment gas. **Must start with `0x`. This is NOT a Coinbase API key UUID.** See §1.4. | Story + Base deployment |
-| `ALCHEMY_API_KEY` | Alchemy API key — the workflow uses this to build the Story Protocol RPC URL `https://story-mainnet.g.alchemy.com/v2/<key>` automatically. Obtain at <https://dashboard.alchemy.com>. | Story deployment (recommended) |
+| `ALCHEMY_API_KEY` | Alchemy API key — the workflow uses this to auto-build both Story (`https://story-mainnet.g.alchemy.com/v2/<key>`) and Base (`https://base-mainnet.g.alchemy.com/v2/<key>`) RPC URLs. Obtain at <https://dashboard.alchemy.com>. | Story + Base deployment (recommended) |
+| `COINBASE_API_KEY_NAME` | Coinbase Developer Platform API key name (UUID). Used to authenticate CDP services (e.g. IPFS, wallet APIs). Obtain at <https://portal.cdp.coinbase.com/access/api>. | Base deployment / CDP services |
+| `COINBASE_API_KEY_PRIVATE_KEY` | Coinbase CDP API private key (EC key in PEM format). Paired with `COINBASE_API_KEY_NAME`. Same portal as above. | Base deployment / CDP services |
 | `STORYSCAN_API_KEY` | StoryScan API key for contract source verification | Story deployment |
 | `ETHERSCAN_API_KEY` | Etherscan/Basescan API key for contract source verification | Base deployment |
 | `STORY_RPC_URL` | Override Story Protocol RPC URL. Only needed if you want to use a non-Alchemy endpoint. Auto-constructed from `ALCHEMY_API_KEY` when set. | Story deployment |
-| `BASE_RPC_URL` | Dedicated Base L2 RPC endpoint *(defaults to public if omitted)* | Base deployment |
+| `BASE_RPC_URL` | Dedicated Base L2 RPC endpoint *(defaults to public if omitted, or Alchemy if `ALCHEMY_API_KEY` is set)* | Base deployment |
 | `THIRDWEB_CLIENT_ID` | ThirdWeb project client ID | ThirdWeb wallet integration |
 | `THIRDWEB_SECRET_KEY` | ThirdWeb project secret key | ThirdWeb wallet integration |
 | `PINATA_JWT` | Pinata IPFS JWT token | IPFS document pinning |
@@ -156,6 +168,7 @@ Navigate to **Settings → Secrets and variables → Actions → Variables tab**
 |---------------|-------|
 | `THIRDWEB_WALLET_ADDRESS` | `0xe45572Dc828eF0E46D852125f0743938aABe1e12` |
 | `COINBASE_WALLET_ADDRESS` | `0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a` |
+| `UCC1_FILING_NUMBER` | Official UCC-1 filing number assigned by the NM SOS (e.g. `2024-NM-UCC-0001`) |
 
 > These wallet addresses are already hardcoded as defaults in the workflow. Setting them as repository variables allows you to update them without a code change.
 
@@ -470,8 +483,40 @@ Each address links directly to StoryScan or Basescan.
 ### 5.2 Download Deployment Artifacts
 
 1. In the completed workflow run, scroll to **Artifacts**.
-2. Download `deployment-story-<run#>` (contains `deployment-config.story.json` and `multisig-transaction.json`).
+2. Download `deployment-story-<run#>` (contains `deployment-config.story.json`, `multisig-transaction.json`, and `registration-attestation.story.json`).
 3. Save these files securely — they are the authoritative record of deployed addresses.
+
+### 5.3 Registration Attestation & Orchestration
+
+The workflow automatically runs `scripts/post-deploy-orchestrate.cjs` after each deployment. This script:
+
+1. Connects to the deployed `StoryOrchestrationService` and calls `setAttestationServiceAddress(sasAddress)` — wires the SOS to the SAS.
+2. Calls `setSpvLoanContractAddress(slapsLoanAddress)` — wires the SPV loan contract into the SOS.
+3. Calls `StoryAttestationService.registerSAS(contractHash)` — marks the SAS as registered on the hermetic seal.
+4. Calls `StoryAttestationService.registerSOS(contractHash)` — marks the SOS as registered.
+5. Records the UCC-1 filing number and jurisdiction on-chain.
+6. Emits a `RegistryRequestSubmitted` event for StoryScan indexing.
+
+The output is saved to `registration-attestation.<network>.json` and uploaded as a workflow artifact. The job summary includes a table of all transaction hashes and a final registry status row.
+
+**To run orchestration manually (after a deployment that skipped it):**
+
+```bash
+# Story Protocol
+npx hardhat run scripts/post-deploy-orchestrate.cjs --network story
+
+# Base L2
+npx hardhat run scripts/post-deploy-orchestrate.cjs --network base
+```
+
+Or via npm:
+
+```bash
+npm run contracts:orchestrate:story
+npm run contracts:orchestrate:base
+```
+
+The script is idempotent — steps that are already complete (e.g. `SAS already registered`) are skipped gracefully.
 
 ### 5.3 Complete the Morpho Multi-Sig
 
@@ -497,17 +542,18 @@ npx hardhat verify --network story <CONTRACT_ADDRESS>
 npx hardhat verify --network base <CONTRACT_ADDRESS>
 ```
 
-### 5.5 Post-Deployment Security Checklist
+### 5.6 Post-Deployment Security Checklist
 
 | Check | Action |
 |-------|--------|
 | ☐ Rotate deployer key | After deployment, the deployer private key should no longer be needed. Remove it from GitHub Secrets and consider revoking the wallet. |
 | ☐ Transfer ownership | Call `transferOwnership(<multisig_address>)` on each deployed contract to hand control to the multi-sig wallets. |
 | ☐ Verify `onlyOwner` functions | Test that each `onlyOwner` function reverts from non-owner addresses. |
-| ☐ Set contract addresses | Call `setAttestationService` and `setSPVLoanContract` on `StoryOrchestrationService` with the deployed addresses. |
+| ✅ Set contract addresses | Automated by `post-deploy-orchestrate.cjs` — `setAttestationServiceAddress` and `setSpvLoanContractAddress` are called in the workflow. |
+| ✅ Register SAS/SOS | Automated by `post-deploy-orchestrate.cjs` — `registerSAS` and `registerSOS` are called in the workflow. |
 | ☐ Record auxiliary docs | Call `recordArticlesOfIncorporation` on `SLAPSIPSpvLoan` with the articles hash. |
 | ☐ Confirm StoryScan | Each contract should show "Verified" source code badge on StoryScan. |
-| ☐ Archive deployment config | Store `deployment-config.*.json` in a secure, backed-up location. |
+| ☐ Archive deployment config | Store `deployment-config.*.json` and `registration-attestation.*.json` in a secure, backed-up location. |
 
 ---
 

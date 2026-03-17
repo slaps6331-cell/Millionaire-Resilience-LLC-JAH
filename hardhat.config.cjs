@@ -38,7 +38,11 @@ module.exports = {
     base: {
       // Set BASE_RPC_URL env var to a dedicated node (e.g. Alchemy/QuickNode)
       // to avoid rate-limiting on the public endpoint during deployment.
-      url: process.env.BASE_RPC_URL || "https://mainnet.base.org",
+      // If ALCHEMY_API_KEY is set the Alchemy Base endpoint is used automatically;
+      // otherwise falls back to BASE_RPC_URL secret, then the public endpoint.
+      url: process.env.ALCHEMY_API_KEY
+        ? `https://base-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
+        : process.env.BASE_RPC_URL || "https://mainnet.base.org",
       accounts: process.env.DEPLOYER_PRIVATE_KEY
         ? [process.env.DEPLOYER_PRIVATE_KEY]
         : [],

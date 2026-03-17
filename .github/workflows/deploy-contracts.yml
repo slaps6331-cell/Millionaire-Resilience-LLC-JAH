@@ -99,6 +99,9 @@ jobs:
           # Fall back to STORY_RPC_URL secret, then the public endpoint.
           STORY_RPC_URL: ${{ secrets.ALCHEMY_API_KEY && format('https://story-mainnet.g.alchemy.com/v2/{0}', secrets.ALCHEMY_API_KEY) || secrets.STORY_RPC_URL || 'https://mainnet.storyrpc.io' }}
           STORYSCAN_API_KEY: ${{ secrets.STORYSCAN_API_KEY }}
+          # Coinbase CDP credentials — used to authenticate with Coinbase Developer Platform APIs.
+          COINBASE_API_KEY_NAME: ${{ secrets.COINBASE_API_KEY_NAME }}
+          COINBASE_API_KEY_PRIVATE_KEY: ${{ secrets.COINBASE_API_KEY_PRIVATE_KEY }}
         run: npm run contracts:deploy:story
 
       - name: Verify contracts on StoryScan
@@ -110,6 +113,19 @@ jobs:
           STORY_RPC_URL: ${{ secrets.ALCHEMY_API_KEY && format('https://story-mainnet.g.alchemy.com/v2/{0}', secrets.ALCHEMY_API_KEY) || secrets.STORY_RPC_URL || 'https://mainnet.storyrpc.io' }}
           STORYSCAN_API_KEY: ${{ secrets.STORYSCAN_API_KEY }}
         run: npm run contracts:verify:story
+
+      - name: Post-deployment orchestration (Story Protocol)
+        env:
+          DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+          STORY_RPC_URL: ${{ secrets.ALCHEMY_API_KEY && format('https://story-mainnet.g.alchemy.com/v2/{0}', secrets.ALCHEMY_API_KEY) || secrets.STORY_RPC_URL || 'https://mainnet.storyrpc.io' }}
+          UCC1_FILING_HASH: "bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a"
+          UCC1_FILING_NUMBER: ${{ vars.UCC1_FILING_NUMBER || '2024-NM-UCC-0001' }}
+          UCC1_JURISDICTION: "New Mexico Secretary of State"
+          THIRDWEB_WALLET_ADDRESS: ${{ vars.THIRDWEB_WALLET_ADDRESS || '0xe45572Dc828eF0E46D852125f0743938aABe1e12' }}
+          COINBASE_WALLET_ADDRESS: ${{ vars.COINBASE_WALLET_ADDRESS || '0xdc2afcd0a97c1e878fdd64497806e52cc530f02a' }}
+          COINBASE_API_KEY_NAME: ${{ secrets.COINBASE_API_KEY_NAME }}
+          COINBASE_API_KEY_PRIVATE_KEY: ${{ secrets.COINBASE_API_KEY_PRIVATE_KEY }}
+        run: npm run contracts:orchestrate:story
 
       - name: Generate multi-sig transaction config
         env:
@@ -126,6 +142,7 @@ jobs:
           path: |
             deployment-config.story.json
             multisig-transaction.json
+            registration-attestation.story.json
           retention-days: 90
 
       - name: Show deployed contract addresses
@@ -140,6 +157,28 @@ jobs:
             Object.entries(cfg.contracts).forEach(([name, addr]) => {
               console.log('| ' + name + ' | [\`' + addr + '\`](https://storyscan.xyz/address/' + addr + ') |');
             });
+          " >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "## Registration Attestation & Orchestration" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          node -e "
+            const fs = require('fs');
+            if (!fs.existsSync('registration-attestation.story.json')) {
+              console.log('_Attestation file not generated (orchestration may have been skipped)._');
+              process.exit(0);
+            }
+            const att = JSON.parse(fs.readFileSync('registration-attestation.story.json'));
+            console.log('**Status:** ' + att.status);
+            console.log('');
+            console.log('| Step | Tx Hash |');
+            console.log('|------|---------|');
+            for (const [key, val] of Object.entries(att.transactions || {})) {
+              const hash = val.txHash ? '[\`' + val.txHash.slice(0,12) + '…\`](https://storyscan.xyz/tx/' + val.txHash + ')' : (val.skipped ? '_skipped_' : '_failed_');
+              console.log('| ' + key + ' | ' + hash + ' |');
+            }
+            const rs = att.registryStatus || {};
+            console.log('');
+            console.log('**SAS registered:** ' + rs.sasRegistered + ' | **SOS registered:** ' + rs.sosRegistered);
           " >> "$GITHUB_STEP_SUMMARY"
 
   deploy-base:
@@ -174,25 +213,47 @@ jobs:
       - name: Deploy contracts to Base L2
         env:
           DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
-          # ALCHEMY_API_KEY is also used for Base L2 (separate Alchemy app recommended).
+          # ALCHEMY_API_KEY is also used for Base L2 — the Alchemy Base endpoint is
+          # constructed automatically in hardhat.config.cjs when ALCHEMY_API_KEY is set.
           # Falls back to BASE_RPC_URL secret, then the public endpoint.
+          ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
           BASE_RPC_URL: ${{ secrets.BASE_RPC_URL || 'https://mainnet.base.org' }}
           ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+          # Coinbase CDP credentials — used to authenticate with Coinbase Developer Platform APIs.
+          COINBASE_API_KEY_NAME: ${{ secrets.COINBASE_API_KEY_NAME }}
+          COINBASE_API_KEY_PRIVATE_KEY: ${{ secrets.COINBASE_API_KEY_PRIVATE_KEY }}
         run: npm run contracts:deploy:base
 
       - name: Verify contracts on Basescan
         if: inputs.verify
         env:
           DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+          ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
           BASE_RPC_URL: ${{ secrets.BASE_RPC_URL || 'https://mainnet.base.org' }}
           ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
         run: npm run contracts:verify:base
+
+      - name: Post-deployment orchestration (Base L2)
+        env:
+          DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+          ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
+          BASE_RPC_URL: ${{ secrets.BASE_RPC_URL || 'https://mainnet.base.org' }}
+          UCC1_FILING_HASH: "bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a"
+          UCC1_FILING_NUMBER: ${{ vars.UCC1_FILING_NUMBER || '2024-NM-UCC-0001' }}
+          UCC1_JURISDICTION: "New Mexico Secretary of State"
+          THIRDWEB_WALLET_ADDRESS: ${{ vars.THIRDWEB_WALLET_ADDRESS || '0xe45572Dc828eF0E46D852125f0743938aABe1e12' }}
+          COINBASE_WALLET_ADDRESS: ${{ vars.COINBASE_WALLET_ADDRESS || '0xdc2afcd0a97c1e878fdd64497806e52cc530f02a' }}
+          COINBASE_API_KEY_NAME: ${{ secrets.COINBASE_API_KEY_NAME }}
+          COINBASE_API_KEY_PRIVATE_KEY: ${{ secrets.COINBASE_API_KEY_PRIVATE_KEY }}
+        run: npm run contracts:orchestrate:base
 
       - name: Upload deployment artifacts
         uses: actions/upload-artifact@v4
         with:
           name: deployment-base-${{ github.run_number }}
-          path: deployment-config.base.json
+          path: |
+            deployment-config.base.json
+            registration-attestation.base.json
           retention-days: 90
 
       - name: Show deployed contract addresses
@@ -207,6 +268,28 @@ jobs:
             Object.entries(cfg.contracts).forEach(([name, addr]) => {
               console.log('| ' + name + ' | [\`' + addr + '\`](https://basescan.org/address/' + addr + ') |');
             });
+          " >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "## Registration Attestation & Orchestration" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          node -e "
+            const fs = require('fs');
+            if (!fs.existsSync('registration-attestation.base.json')) {
+              console.log('_Attestation file not generated (orchestration may have been skipped)._');
+              process.exit(0);
+            }
+            const att = JSON.parse(fs.readFileSync('registration-attestation.base.json'));
+            console.log('**Status:** ' + att.status);
+            console.log('');
+            console.log('| Step | Tx Hash |');
+            console.log('|------|---------|');
+            for (const [key, val] of Object.entries(att.transactions || {})) {
+              const hash = val.txHash ? '[\`' + val.txHash.slice(0,12) + '…\`](https://basescan.org/tx/' + val.txHash + ')' : (val.skipped ? '_skipped_' : '_failed_');
+              console.log('| ' + key + ' | ' + hash + ' |');
+            }
+            const rs = att.registryStatus || {};
+            console.log('');
+            console.log('**SAS registered:** ' + rs.sasRegistered + ' | **SOS registered:** ' + rs.sosRegistered);
           " >> "$GITHUB_STEP_SUMMARY"
 
   dry-run:
