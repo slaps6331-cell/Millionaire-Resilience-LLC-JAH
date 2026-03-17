@@ -1,0 +1,101 @@
+{
+  "$schema": "https://docs.story.foundation/attestation-schema.json",
+  "version": "1.0.0",
+  "generatedAt": "2026-03-17T12:18:02.913Z",
+  "note": "Pre-deployment attestation hash record. Contract hashes marked PENDING_DEPLOYMENT will be populated by post-deploy-orchestrate.cjs after live deployment.",
+  "attestationTypeIdentifiers": {
+    "CORPORATE_VERIFICATION": "0x908b874ceda681a131aff726b1b5c42ff40514be54505fd27602bc763adf38ad",
+    "IP_VALUATION_ATTESTATION": "0x537b145ce6e67185955db6e27e4f2692ae3c538f0fef75eaffed7d2e6ad6a258",
+    "UCC1_BRIDGE_ATTESTATION": "0x0cf7f46400094294ea1e3d3741656bc826f486d6ad593c41525e9a8d22672db3",
+    "LOAN_COLLATERAL_ATTESTATION": "0xd2a93ed375b28631f806632b55b922ddb4bf2e5a6fe51e92581e8906d47d57ae",
+    "REVENUE_ESCROW_ATTESTATION": "0xa009d1f0783160ccbe5ad218fa5104d73b48b2703298ffc2494c20a1d32d82dd",
+    "MORPHO_MARKET_ATTESTATION": "0x01b118b286562fc6cfdce780c5d9e22ad2fd8ee3941d3aba1e4de05ba7021d54",
+    "SPV_SEGREGATION_ATTESTATION": "0xa27e025efd455bf7687dd74e2e8adb215791b761d5f3565f61d22c2798b2dffd"
+  },
+  "corporateDocumentHashes": {
+    "certificateOfOrganization": "0x9d327eb7fdae91d33c186a9d3b770f5004f679a70a34aeb94716042978a8a4fa",
+    "noticeOfFilingApproval": "0x244a289d2c997f7f9d5d01ba8640ff7883b138d97ce7bdb0113e1d99b6f971a3",
+    "combinedCorpDataHash": "0x1474ecafa99df65c546c85be19982e58436b8034a7e939ebfafa23d39da0d404",
+    "entity": "Gladiator Holdings LLC",
+    "entityId": "0008034162",
+    "entryNumber": "5095898",
+    "jurisdiction": "New Mexico",
+    "effectiveDate": "2025-06-27"
+  },
+  "ipValuationHashes": {
+    "millionaireResilience": {
+      "ipAsset": "0x98971c660ac20880b60F86Cc3113eBd979eb3aAE",
+      "portfolioName": "Millionaire Resilience IP Portfolio",
+      "presentValue_USD": 95000000,
+      "projectedValue5Y_USD": 500000000,
+      "projectedValue10Y_USD": 1700000000,
+      "patentSightScore": 92,
+      "sepCount": 42,
+      "methodology": "DCF + PatentSight+ PAI",
+      "status": "PROTECTED",
+      "valuationDataHash": "0x748cc0dbf1a1a51ff1edfbfab0a79f600b5904a3c5476acaca9adac6c2f5beb3",
+      "note": "dataHash computed without block.timestamp — final on-chain hash will differ by timestamp only"
+    },
+    "slapsStreaming": {
+      "ipAsset": "0x0000000000000000000000000000000000000000",
+      "portfolioName": "SLAPS Streaming IP Portfolio",
+      "presentValue_USD": 75000000,
+      "projectedValue5Y_USD": 300000000,
+      "projectedValue10Y_USD": 900000000,
+      "patentSightScore": 78,
+      "sepCount": 18,
+      "methodology": "DCF + PatentSight+ PAI",
+      "status": "AT_RISK (secondary collateral only)",
+      "valuationDataHash": "0x49988b157b3375869c3ef3dbe8c3dbbcffb4acf3644495c7c0b27bfe1e122b53",
+      "note": "ipAsset uses ZeroAddress placeholder — update to actual Story Protocol IPID once assigned. dataHash also omits block.timestamp."
+    },
+    "combinedPortfolioValue_USD": 300000000,
+    "whetstone_USD": 45000000,
+    "infrastructure_USD": 50000000,
+    "lexisNexisPatentSight_USD": 35000000,
+    "totalProtected_USD": 225000000
+  },
+  "ucc1FilingHashes": {
+    "filingNumber": "2024-NM-UCC-0001",
+    "jurisdiction": "New Mexico Secretary of State",
+    "debtor": "0x597856e93f19877a399f686D2F43b298e2268618",
+    "securedParty": "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a",
+    "ipfsCid": "bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a",
+    "ucc1FilingHash32": "0x0fec875f0c70b4c91173ba67d182fd89d2bf614d00fda5bebd018bc6ca0568fe",
+    "ucc1DataHash": "0x1c411cef914c5657b20ab367a917b0661cfe48dbf5a309359f06795f26c7a6ea",
+    "loanAmount_USD": 5000000,
+    "primaryCollateral": "Bitcoin (BTC)",
+    "secondaryCollateral": "SLAPS IP Portfolio"
+  },
+  "revenueEscrowHash": {
+    "annualRevenue_USD": 3525000,
+    "allocationPct": 100,
+    "paymentDestination": "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a",
+    "revenueEscrowDataHash": "0x8ad9fe4a3fde8c58adf2fd0c3975b0b16f8deae9707060b3a5b90471c9679d03"
+  },
+  "orchestrationContractHashes": {
+    "StoryAttestationService": "PENDING_DEPLOYMENT",
+    "StoryOrchestrationService": "PENDING_DEPLOYMENT",
+    "SLAPSIPSpvLoan": "PENDING_DEPLOYMENT",
+    "note": "Run 'npm run contracts:orchestrate:story' or 'npm run contracts:orchestrate:base' after deployment to populate these hashes."
+  },
+  "hermeticSealHash": "0xed4bd3b5123971b5bd15fb55b0b57d543518c78b22906b45199bfeec1db7f413",
+  "storyProtocolAddresses": {
+    "chainId": 1514,
+    "registryAddress": "0x1a9d0d28a0422F26D31Be72Edc6f13ea4371E11B",
+    "licensingModule": "0xd81fd78f557b457b4350cB95D20b547bFEb4D857",
+    "royaltyModule": "0xcc8b9f0c9dC370ED1F41D95f74C9F72E08f24C90",
+    "mrIpId": "0x98971c660ac20880b60F86Cc3113eBd979eb3aAE",
+    "mrTokenId": 15192,
+    "mrOwner": "0x597856e93f19877a399f686D2F43b298e2268618",
+    "coinbaseWallet": "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a"
+  },
+  "yieldSummaryRef": {
+    "weightedAPR_pct": "4.3333%",
+    "totalPrincipal_USD": 6000000,
+    "totalAnnualInterest_USD": 260000,
+    "combinedMonthlyPayment_USD": 275000,
+    "projectedPayoffMonths": 6,
+    "details": "yield-summary.json"
+  }
+}

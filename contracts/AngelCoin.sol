@@ -1,0 +1,264 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.23;
+
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+
+// FLATTENED CONTRACT - For verification and e-signing package
+// Original file: contracts/AngelCoin.sol
+// OpenZeppelin Contracts v5.x - Dependencies listed but not inlined for verification clarity
+// To compile: Install @openzeppelin/contracts and restore import statements
+//
+// OpenZeppelin Dependencies: ERC20, ERC20Burnable, Ownable, ReentrancyGuard
+
+/**
+ * @title AngelCoin (ANGEL)
+ * @author Gladiator Holdings LLC
+ * @notice Internal incentive token for Gladiator Holdings LLC connected businesses
+ * @dev ERC-20 token used for transactions WITHIN the Gladiator Holdings ecosystem
+ *
+ * CORPORATE STRUCTURE:
+ * - Issuer: Gladiator Holdings LLC (NM Entity ID: 0008034162)
+ * - Connected Entities:
+ *   - Millionaire Resilience LLC (EIN: 41-3789881) - PROTECTED
+ *   - Resilience Blockchain Whetstone LLC (EIN: 41-4131924) - PROTECTED
+ *   - Slaps Streaming LLC (EIN: 41-4045773) - AT RISK
+ *
+ * TOKEN ECONOMICS:
+ * - Symbol: ANGEL
+ * - Total Supply: 500,000,000 (500M)
+ * - Decimals: 18
+ * - Purpose: Internal incentive, rewards, and business settlement token
+ * - Chain: Story Protocol (Chain 1514) / Base L2 (Chain 8453)
+ *
+ * USE CASES (INTERNAL ONLY):
+ * - Employee/contributor incentive rewards
+ * - Inter-entity settlement (MR <-> SLAPS <-> Whetstone)
+ * - Internal bounty programs for bug fixes and feature development
+ * - Content creator rewards on SLAPS platform
+ * - Developer rewards for Whetstone IP extraction contributions
+ * - Internal governance voting weight
+ * - Milestone bonus distributions
+ * - Partnership incentive allocations
+ *
+ * IP VALUATION (DCF Analysis):
+ * - Present Value: $5,000,000
+ * - 5-Year Projection: $35,000,000
+ * - 10-Year Projection: $120,000,000
+ *
+ * DISTRIBUTION:
+ * - 40% Operations Treasury (200M ANGEL)
+ * - 25% Contributor Incentives (125M ANGEL)
+ * - 15% Developer Rewards (75M ANGEL)
+ * - 10% Partnership Allocations (50M ANGEL)
+ * - 10% Strategic Reserve (50M ANGEL)
+ *
+ * COLLATERAL STATUS: PROTECTED (under Gladiator Holdings LLC)
+ */
+contract AngelCoin is ERC20, ERC20Burnable, Ownable, ReentrancyGuard {
+
+    string public constant ISSUER = "Gladiator Holdings LLC";
+    string public constant ISSUER_ENTITY_ID = "0008034162";
+    string public constant ISSUER_EIN = "39-2684612";
+
+    string public constant ENTITY_MR = "Millionaire Resilience LLC";
+    string public constant ENTITY_MR_EIN = "41-3789881";
+    string public constant ENTITY_WHETSTONE = "Resilience Blockchain Whetstone LLC";
+    string public constant ENTITY_WHETSTONE_EIN = "41-4131924";
+    string public constant ENTITY_SLAPS = "Slaps Streaming LLC";
+    string public constant ENTITY_SLAPS_EIN = "41-4045773";
+
+    bytes32 public constant WHETSTONE_EIN_HASH = 0xf383541906ec2d1c335d06c53bd0f2b3dce7cbd568f8f37474e92e5769af8420;
+
+    uint256 public constant MAX_SUPPLY = 500_000_000 * 10**18;
+
+    uint256 public constant OPERATIONS_ALLOCATION = 200_000_000 * 10**18;
+    uint256 public constant CONTRIBUTOR_ALLOCATION = 125_000_000 * 10**18;
+    uint256 public constant DEVELOPER_ALLOCATION = 75_000_000 * 10**18;
+    uint256 public constant PARTNERSHIP_ALLOCATION = 50_000_000 * 10**18;
+    uint256 public constant RESERVE_ALLOCATION = 50_000_000 * 10**18;
+
+    uint256 public constant IP_VALUATION_PRESENT = 5_000_000;
+    uint256 public constant IP_VALUATION_5YR = 35_000_000;
+    uint256 public constant IP_VALUATION_10YR = 120_000_000;
+
+    bool public constant COLLATERAL_STATUS_PROTECTED = true;
+
+    enum IncentiveType {
+        CONTRIBUTOR_REWARD,
+        DEVELOPER_BOUNTY,
+        CONTENT_CREATOR,
+        MILESTONE_BONUS,
+        PARTNERSHIP_INCENTIVE,
+        INTER_ENTITY_SETTLEMENT
+    }
+
+    struct IncentivePayment {
+        address recipient;
+        uint256 amount;
+        IncentiveType incentiveType;
+        string entitySource;
+        uint256 timestamp;
+    }
+
+    mapping(address => bool) public connectedEntities;
+    mapping(address => string) public entityNames;
+    IncentivePayment[] public incentiveHistory;
+    uint256 public totalIncentivesDistributed;
+
+    address public operationsTreasury;
+    address public contributorPool;
+    address public developerPool;
+    address public partnershipPool;
+    address public strategicReserve;
+
+    event EntityConnected(address indexed entity, string name);
+    event EntityDisconnected(address indexed entity);
+    event IncentiveDistributed(
+        address indexed recipient,
+        uint256 amount,
+        IncentiveType incentiveType,
+        string entitySource
+    );
+    event InterEntitySettlement(
+        address indexed fromEntity,
+        address indexed toEntity,
+        uint256 amount,
+        string purpose
+    );
+    event TreasuryAllocated(
+        address operations,
+        address contributor,
+        address developer,
+        address partnership,
+        address reserve
+    );
+
+    modifier onlyConnectedEntity() {
+        require(connectedEntities[msg.sender] || msg.sender == owner(), "Not a connected entity");
+        _;
+    }
+
+    address public constant COINBASE_WALLET = 0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a;
+
+    constructor() ERC20("Angel Coin", "ANGEL") Ownable(msg.sender) {
+        operationsTreasury = COINBASE_WALLET;
+        contributorPool = COINBASE_WALLET;
+        developerPool = COINBASE_WALLET;
+        partnershipPool = COINBASE_WALLET;
+        strategicReserve = COINBASE_WALLET;
+
+        _mint(COINBASE_WALLET, OPERATIONS_ALLOCATION);
+        _mint(COINBASE_WALLET, CONTRIBUTOR_ALLOCATION);
+        _mint(COINBASE_WALLET, DEVELOPER_ALLOCATION);
+        _mint(COINBASE_WALLET, PARTNERSHIP_ALLOCATION);
+        _mint(COINBASE_WALLET, RESERVE_ALLOCATION);
+
+        emit TreasuryAllocated(
+            COINBASE_WALLET,
+            COINBASE_WALLET,
+            COINBASE_WALLET,
+            COINBASE_WALLET,
+            COINBASE_WALLET
+        );
+    }
+
+    function connectEntity(address entity, string calldata name) external onlyOwner {
+        connectedEntities[entity] = true;
+        entityNames[entity] = name;
+        emit EntityConnected(entity, name);
+    }
+
+    function disconnectEntity(address entity) external onlyOwner {
+        connectedEntities[entity] = false;
+        emit EntityDisconnected(entity);
+    }
+
+    function distributeIncentive(
+        address recipient,
+        uint256 amount,
+        IncentiveType incentiveType,
+        string calldata entitySource
+    ) external onlyConnectedEntity nonReentrant {
+        require(balanceOf(msg.sender) >= amount, "Insufficient ANGEL balance");
+
+        _transfer(msg.sender, recipient, amount);
+
+        incentiveHistory.push(IncentivePayment({
+            recipient: recipient,
+            amount: amount,
+            incentiveType: incentiveType,
+            entitySource: entitySource,
+            timestamp: block.timestamp
+        }));
+
+        totalIncentivesDistributed += amount;
+
+        emit IncentiveDistributed(recipient, amount, incentiveType, entitySource);
+    }
+
+    function settleInterEntity(
+        address toEntity,
+        uint256 amount,
+        string calldata purpose
+    ) external onlyConnectedEntity nonReentrant {
+        require(connectedEntities[toEntity], "Target is not a connected entity");
+        require(balanceOf(msg.sender) >= amount, "Insufficient ANGEL balance");
+
+        _transfer(msg.sender, toEntity, amount);
+
+        incentiveHistory.push(IncentivePayment({
+            recipient: toEntity,
+            amount: amount,
+            incentiveType: IncentiveType.INTER_ENTITY_SETTLEMENT,
+            entitySource: entityNames[msg.sender],
+            timestamp: block.timestamp
+        }));
+
+        emit InterEntitySettlement(msg.sender, toEntity, amount, purpose);
+    }
+
+    function getIncentiveCount() external view returns (uint256) {
+        return incentiveHistory.length;
+    }
+
+    function getIPValuation() external pure returns (
+        uint256 present,
+        uint256 fiveYear,
+        uint256 tenYear
+    ) {
+        return (IP_VALUATION_PRESENT, IP_VALUATION_5YR, IP_VALUATION_10YR);
+    }
+
+    function getAllocationBreakdown() external view returns (
+        address ops,
+        uint256 opsBalance,
+        address contrib,
+        uint256 contribBalance,
+        address dev,
+        uint256 devBalance,
+        address partner,
+        uint256 partnerBalance,
+        address reserve,
+        uint256 reserveBalance
+    ) {
+        return (
+            operationsTreasury, balanceOf(operationsTreasury),
+            contributorPool, balanceOf(contributorPool),
+            developerPool, balanceOf(developerPool),
+            partnershipPool, balanceOf(partnershipPool),
+            strategicReserve, balanceOf(strategicReserve)
+        );
+    }
+
+    function getCorporateStructure() external pure returns (
+        string memory issuer,
+        string memory mrEntity,
+        string memory whetstoneEntity,
+        string memory slapsEntity
+    ) {
+        return (ISSUER, ENTITY_MR, ENTITY_WHETSTONE, ENTITY_SLAPS);
+    }
+}

@@ -1,0 +1,74 @@
+{
+  "generatedAt": "2026-03-17T12:18:02.914Z",
+  "source": "StoryOrchestrationService.sol — on-chain constants (BTC_LOAN_APR_BPS, ETH_LOAN_APR_BPS, getProjectedPayoffMonths)",
+  "protocol": "Morpho Blue",
+  "morphoBlue": "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
+  "blockchain": [
+    "Base L2 (chainId 8453)",
+    "Story Protocol (chainId 1514)"
+  ],
+  "loans": {
+    "loan1_BTC": {
+      "description": "USDC loan collateralised by Bitcoin",
+      "principal_USD": 5000000,
+      "collateral": "BTC (Bitcoin)",
+      "aprBps": 400,
+      "apr_pct": "4.00%",
+      "lltv_pct": "86%",
+      "annualInterest_USD": 200000,
+      "monthlyPayment_USD": 217000,
+      "projectedPayoffMonths": 6,
+      "projectedPayoffDate": "2026-08-05"
+    },
+    "loan2_ETH": {
+      "description": "USDC loan collateralised by Ethereum",
+      "principal_USD": 1000000,
+      "collateral": "ETH (Ethereum)",
+      "aprBps": 600,
+      "apr_pct": "6.00%",
+      "lltv_pct": "86%",
+      "annualInterest_USD": 60000,
+      "monthlyPayment_USD": 58000,
+      "projectedPayoffMonths": 6,
+      "projectedPayoffDate": "2026-08-05"
+    }
+  },
+  "combined": {
+    "totalPrincipal_USD": 6000000,
+    "totalAnnualInterest_USD": 260000,
+    "weightedAPR_pct": "4.3333%",
+    "combinedMonthlyPayment_USD": 275000,
+    "projectedPayoffMonths": 6,
+    "projectedPayoffDate": "2026-08-05",
+    "lltv_pct": "86%"
+  },
+  "pilRevenueRepaymentEngine": {
+    "description": "100% of PIL licensing revenue routed to loan repayment via Story Protocol Royalty Module",
+    "royaltyModule": "0xcc8b9f0c9dC370ED1F41D95f74C9F72E08f24C90",
+    "paymentDestination": "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a",
+    "licenseRevenue": {
+      "PIL-PER (1% royalty)": {
+        "annualRevenue_USD": 800000
+      },
+      "PIL-COM (5% royalty)": {
+        "annualRevenue_USD": 3500000
+      },
+      "PIL-ENT (12% royalty)": {
+        "annualRevenue_USD": 8000000
+      }
+    },
+    "totalAnnualRevenue_USD": 12300000,
+    "monthlyRevenue_USD": 1025000,
+    "monthlySurplusAfterPayments_USD": 750000,
+    "allocationPct": "100% to loan repayment until fully paid off",
+    "postPayoff": "After full payoff, PIL revenue flows directly to owner wallet"
+  },
+  "netYieldToLender": {
+    "summary": "4.33% weighted APR on $6,000,000 USDC",
+    "annualInterestIncome_USD": 260000,
+    "collateralProtection": "86% LLTV via Morpho Blue — liquidation triggered at 86% LTV",
+    "primaryRepaymentSource": "PIL licensing revenue ($12.3M/yr projected)",
+    "secondaryCollateral": "SLAPS Streaming IP Portfolio ($75M AT_RISK)",
+    "excludedCollateral": "Millionaire Resilience IP Portfolio ($225M PROTECTED — excluded from default)"
+  }
+}

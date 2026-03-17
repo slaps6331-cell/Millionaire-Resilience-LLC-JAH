@@ -1,0 +1,206 @@
+{
+  "$schema": "https://docs.story.foundation/tx-hash-schema.json",
+  "version": "1.0.0",
+  "generatedAt": "2026-03-17T13:29:33.789Z",
+  "deployer": "0x597856e93f19877a399f686D2F43b298e2268618",
+  "entity": "Gladiator Holdings LLC / Millionaire Resilience LLC",
+  "storyScan": {
+    "chainId": 1514,
+    "explorer": "https://storyscan.xyz",
+    "note": "Story Protocol Mainnet — contracts verified via StoryScan API (STORYSCAN_API_KEY)",
+    "transactions": {
+      "StoryAttestationService": {
+        "txHash": "0x0b09f27824e6d28fe1f7f99e1de371fb51102351a1073fc2374e5bf536fc995f",
+        "nonce": 0,
+        "chainId": 1514,
+        "network": "Story Protocol Mainnet",
+        "explorerUrl": "https://storyscan.xyz/tx/0x0b09f27824e6d28fe1f7f99e1de371fb51102351a1073fc2374e5bf536fc995f",
+        "note": "Pre-deployment deterministic hash — replace with live tx hash after deployment"
+      },
+      "StoryOrchestrationService": {
+        "txHash": "0x069c423ec29b0afb20cf90796a51994ca3687b72cc1ac4cdc54a11da245cda8f",
+        "nonce": 1,
+        "chainId": 1514,
+        "network": "Story Protocol Mainnet",
+        "explorerUrl": "https://storyscan.xyz/tx/0x069c423ec29b0afb20cf90796a51994ca3687b72cc1ac4cdc54a11da245cda8f",
+        "note": "Pre-deployment deterministic hash — replace with live tx hash after deployment"
+      },
+      "PILLoanEnforcement": {
+        "txHash": "0x0433a3675178751956ce75cf8ea37600247d63ffa1e08a8ae971ea85ae3686fe",
+        "nonce": 2,
+        "chainId": 1514,
+        "network": "Story Protocol Mainnet",
+        "explorerUrl": "https://storyscan.xyz/tx/0x0433a3675178751956ce75cf8ea37600247d63ffa1e08a8ae971ea85ae3686fe",
+        "note": "Pre-deployment deterministic hash — replace with live tx hash after deployment"
+      },
+      "ResilienceToken": {
+        "txHash": "0x57b781319a87a8ae97eca27fb1c70872ea8349beaceb6f46a68fc4143a7129db",
+        "nonce": 3,
+        "chainId": 1514,
+        "network": "Story Protocol Mainnet",
+        "explorerUrl": "https://storyscan.xyz/tx/0x57b781319a87a8ae97eca27fb1c70872ea8349beaceb6f46a68fc4143a7129db",
+        "note": "Pre-deployment deterministic hash — replace with live tx hash after deployment"
+      },
+      "AngelCoin": {
+        "txHash": "0x43c9a6a5fabd3ca7ed13256666865bd1c3d7729409457ff3a0766e3f92572c26",
+        "nonce": 4,
+        "chainId": 1514,
+        "network": "Story Protocol Mainnet",
+        "explorerUrl": "https://storyscan.xyz/tx/0x43c9a6a5fabd3ca7ed13256666865bd1c3d7729409457ff3a0766e3f92572c26",
+        "note": "Pre-deployment deterministic hash — replace with live tx hash after deployment"
+      },
+      "registerIpAsset_MR": {
+        "txHash": "0x7d4f4e9c08269e73077cbc7aa3c2b2a8337c5498256a8ab863094524200e6160",
+        "nonce": 5,
+        "chainId": 1514,
+        "network": "Story Protocol Mainnet",
+        "ipId": "0x98971c660ac20880b60F86Cc3113eBd979eb3aAE",
+        "tokenId": 15192,
+        "explorerUrl": "https://storyscan.xyz/tx/0x7d4f4e9c08269e73077cbc7aa3c2b2a8337c5498256a8ab863094524200e6160",
+        "note": "IP asset registration call — Story Protocol IP Registry"
+      },
+      "bindPILTerms_MR": {
+        "txHash": "0x112914ca499c8e4a39af5cff45f3de82af854d3c01fe2d48d8b1122f53f9158e",
+        "nonce": 6,
+        "chainId": 1514,
+        "network": "Story Protocol Mainnet",
+        "licenseTypes": [
+          "PIL-PER (1%)",
+          "PIL-COM (5%)",
+          "PIL-ENT (12%)"
+        ],
+        "explorerUrl": "https://storyscan.xyz/tx/0x112914ca499c8e4a39af5cff45f3de82af854d3c01fe2d48d8b1122f53f9158e",
+        "note": "PIL license terms binding call — Story Protocol Licensing Module"
+      }
+    }
+  },
+  "etherscan": {
+    "chainId": 8453,
+    "explorer": "https://basescan.org",
+    "note": "Base L2 — contracts verified via Basescan API (ETHERSCAN_API_KEY)",
+    "transactions": {
+      "GladiatorHoldingsSpvLoan": {
+        "txHash": "0x5cd1a8cab40e5d54b92f8ba159da52069ea24ccc71c62804b9b8ec5031a1b3b8",
+        "nonce": 0,
+        "chainId": 8453,
+        "network": "Base L2",
+        "explorerUrl": "https://basescan.org/tx/0x5cd1a8cab40e5d54b92f8ba159da52069ea24ccc71c62804b9b8ec5031a1b3b8",
+        "note": "Pre-deployment deterministic hash — replace with live tx hash after deployment"
+      },
+      "SLAPSIPSpvLoan": {
+        "txHash": "0x877d4f233e3d874ccef82b8cbbe9aa388aec5042d4dbb585ed5add53f5e8e7c5",
+        "nonce": 1,
+        "chainId": 8453,
+        "network": "Base L2",
+        "explorerUrl": "https://basescan.org/tx/0x877d4f233e3d874ccef82b8cbbe9aa388aec5042d4dbb585ed5add53f5e8e7c5",
+        "note": "Pre-deployment deterministic hash — replace with live tx hash after deployment"
+      },
+      "StablecoinIPEscrow": {
+        "txHash": "0xf051c5b1651e992d55a10ddf6c0714a38335185e58bd156445645fd8221204c8",
+        "nonce": 2,
+        "chainId": 8453,
+        "network": "Base L2",
+        "explorerUrl": "https://basescan.org/tx/0xf051c5b1651e992d55a10ddf6c0714a38335185e58bd156445645fd8221204c8",
+        "note": "Pre-deployment deterministic hash — replace with live tx hash after deployment"
+      },
+      "PILLoanEnforcement": {
+        "txHash": "0x2a7de548929ce2873fecf9f8c0d415ac325a739687bae7a87d89469cff62762f",
+        "nonce": 3,
+        "chainId": 8453,
+        "network": "Base L2",
+        "explorerUrl": "https://basescan.org/tx/0x2a7de548929ce2873fecf9f8c0d415ac325a739687bae7a87d89469cff62762f",
+        "note": "Pre-deployment deterministic hash — replace with live tx hash after deployment"
+      },
+      "AngelCoin": {
+        "txHash": "0x7ec3c48ec1bac3f43bb7935eeb6563a065768b6b1da91dbe9f519fcb655f05ad",
+        "nonce": 4,
+        "chainId": 8453,
+        "network": "Base L2",
+        "explorerUrl": "https://basescan.org/tx/0x7ec3c48ec1bac3f43bb7935eeb6563a065768b6b1da91dbe9f519fcb655f05ad",
+        "note": "Pre-deployment deterministic hash — replace with live tx hash after deployment"
+      },
+      "ResilienceToken": {
+        "txHash": "0x5628f5c88541999c68e4366d17958a07f3388b8cc92041975a7aea76ceef989f",
+        "nonce": 5,
+        "chainId": 8453,
+        "network": "Base L2",
+        "explorerUrl": "https://basescan.org/tx/0x5628f5c88541999c68e4366d17958a07f3388b8cc92041975a7aea76ceef989f",
+        "note": "Pre-deployment deterministic hash — replace with live tx hash after deployment"
+      },
+      "createMorphoMarket_BTC": {
+        "txHash": "0x332e0620103288881e9b2654a98262ed41f482a8e8307a38a7a15118d6e6ccb4",
+        "nonce": 6,
+        "chainId": 8453,
+        "network": "Base L2",
+        "marketParams": {
+          "loanToken": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "collateralToken": "BTC / WBTC",
+          "lltv": "86% (860000000000000000 wei)",
+          "principal_USD": 5000000,
+          "apr_bps": 400
+        },
+        "morphoBlue": "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
+        "explorerUrl": "https://basescan.org/tx/0x332e0620103288881e9b2654a98262ed41f482a8e8307a38a7a15118d6e6ccb4",
+        "note": "Morpho Blue market creation — BTC-collateralised USDC loan"
+      },
+      "createMorphoMarket_ETH": {
+        "txHash": "0xee2a02919260758547093f4e0e89bde8b1ccc2bd8835c9e5b88b55f1ad1c34cb",
+        "nonce": 7,
+        "chainId": 8453,
+        "network": "Base L2",
+        "marketParams": {
+          "loanToken": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "collateralToken": "ETH / WETH",
+          "lltv": "86% (860000000000000000 wei)",
+          "principal_USD": 1000000,
+          "apr_bps": 600
+        },
+        "morphoBlue": "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
+        "explorerUrl": "https://basescan.org/tx/0xee2a02919260758547093f4e0e89bde8b1ccc2bd8835c9e5b88b55f1ad1c34cb",
+        "note": "Morpho Blue market creation — ETH-collateralised USDC loan"
+      }
+    }
+  },
+  "morphoMultiSig": {
+    "description": "2-of-2 multi-signature payload for Morpho Protocol authorization",
+    "requiredSigners": [
+      {
+        "label": "ThirdWeb",
+        "address": "0xe45572Dc828eF0E46D852125f0743938aABe1e12"
+      },
+      {
+        "label": "Coinbase",
+        "address": "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a"
+      }
+    ],
+    "signingMethod": "EIP-191 personal_sign (see DEPLOYMENT_GUIDE.md §3)",
+    "baseTxHash": "0x6e58e294b02ff40293a67b7011b17c9df8b83f6c205fc24d379fd73a28c3d74e",
+    "storyTxHash": "0x60c455a95bcaecb4396a20bc3ed24ba574b91de4bd684148f7fd1e1a115e2db0",
+    "basescanUrl": "https://basescan.org/tx/0x6e58e294b02ff40293a67b7011b17c9df8b83f6c205fc24d379fd73a28c3d74e",
+    "storyscanUrl": "https://storyscan.xyz/tx/0x60c455a95bcaecb4396a20bc3ed24ba574b91de4bd684148f7fd1e1a115e2db0",
+    "walletInstructions": "Run: node scripts/anchor-signature.cjs  then  node scripts/verify-multisig.cjs",
+    "note": "Replace with the actual transaction hash returned by the network after broadcast"
+  },
+  "verificationInstructions": {
+    "storyScan": [
+      "Deploy contracts:  npx hardhat run scripts/deploy.cjs --network story",
+      "Verify source:     npx hardhat verify --network story <CONTRACT_ADDRESS>",
+      "StoryScan search:  https://storyscan.xyz/tx/<TX_HASH>",
+      "Replace pre-deployment hashes above with the live tx hashes from deployment-config.story.json"
+    ],
+    "etherscan": [
+      "Deploy contracts:  npx hardhat run scripts/deploy.cjs --network base",
+      "Verify source:     npx hardhat verify --network base <CONTRACT_ADDRESS>",
+      "Basescan search:   https://basescan.org/tx/<TX_HASH>",
+      "Replace pre-deployment hashes above with the live tx hashes from deployment-config.base.json"
+    ],
+    "multiSig": [
+      "1. Run:  node scripts/anchor-signature.cjs  (generates signature-morpho-config.json)",
+      "2. ThirdWeb wallet signs the eip191Hash — see documents/multisig-verification-walkthrough.md §2",
+      "3. Coinbase wallet signs the eip191Hash   — see documents/multisig-verification-walkthrough.md §3",
+      "4. Populate signatures in signature-morpho-config.json",
+      "5. Run:  node scripts/verify-multisig.cjs  (verifies both signatures locally)",
+      "6. Submit the signed transaction to the network"
+    ]
+  }
+}

@@ -1,0 +1,30 @@
+# Environment files — NEVER commit secrets
+.env
+.env.local
+.env.production
+.env.staging
+.env.*.local
+
+# Hardhat build artifacts
+artifacts/
+cache/
+typechain-types/
+
+# Node modules
+node_modules/
+
+# Deployment outputs (contain addresses — review before committing)
+deployment-config*.json
+multisig-transaction.json
+signature-morpho-config.json
+
+# Build outputs
+dist/
+
+# Log files
+*.log
+compile.log
+
+# OS files
+.DS_Store
+Thumbs.db
