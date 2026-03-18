@@ -212,7 +212,7 @@ https://basescan.org/tx/0xee2a02919260758547093f4e0e89bde8b1ccc2bd8835c9e5b88b55
 ---
 
 ## Morpho Protocol Multi-Sig Transaction Hash
-*(2-of-2: ThirdWeb `0xe45572Dc828eF0E46D852125f0743938aABe1e12` + Coinbase `0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a`)*
+*(2-of-2: ThirdWeb `0xCD67f7e86A1397aBc33C473c58662BEB83b7a667` + Coinbase `0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a`)*
 
 ### Base L2 (chainId 8453)
 

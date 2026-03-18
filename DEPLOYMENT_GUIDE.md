@@ -44,7 +44,7 @@ Morpho Protocol requires **2-of-2 signatures** from both of these wallets before
 
 | Label | Address | Wallet App |
 |-------|---------|------------|
-| **ThirdWeb** | `0xe45572Dc828eF0E46D852125f0743938aABe1e12` | ThirdWeb Embedded Wallet |
+| **ThirdWeb** | `0xCD67f7e86A1397aBc33C473c58662BEB83b7a667` | ThirdWeb Embedded Wallet |
 | **Coinbase** | `0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a` | Coinbase Wallet (smart wallet or EOA) |
 
 Both wallet holders must be available and ready to sign when the deployment reaches the Morpho multi-sig step.
@@ -166,7 +166,7 @@ Navigate to **Settings → Secrets and variables → Actions → Variables tab**
 
 | Variable Name | Value |
 |---------------|-------|
-| `THIRDWEB_WALLET_ADDRESS` | `0xe45572Dc828eF0E46D852125f0743938aABe1e12` |
+| `THIRDWEB_WALLET_ADDRESS` | `0xCD67f7e86A1397aBc33C473c58662BEB83b7a667` |
 | `COINBASE_WALLET_ADDRESS` | `0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a` |
 | `UCC1_FILING_NUMBER` | Official UCC-1 filing number assigned by the NM SOS (e.g. `2024-NM-UCC-0001`) |
 
@@ -224,7 +224,7 @@ Both wallets must sign `eip191Hash`. The resulting signatures are stored in `sig
 
 **Using the ThirdWeb dashboard (recommended):**
 
-1. Open the [ThirdWeb Dashboard](https://thirdweb.com/dashboard) and connect the wallet at `0xe45572Dc828eF0E46D852125f0743938aABe1e12`.
+1. Open the [ThirdWeb Dashboard](https://thirdweb.com/dashboard) and connect the wallet at `0xCD67f7e86A1397aBc33C473c58662BEB83b7a667`.
 2. Navigate to **Wallet SDK → Sign Message**.
 3. Paste the `eip191Hash` value from `signature-morpho-config.json`.
 4. Click **Sign**. The dashboard will return a 132-character hex string (`0x` + 130 hex chars).
@@ -292,7 +292,7 @@ After both signers produce their signatures, update `signature-morpho-config.jso
 ```json
 {
   "multisigSigners": {
-    "thirdweb": "0xe45572Dc828eF0E46D852125f0743938aABe1e12",
+    "thirdweb": "0xCD67f7e86A1397aBc33C473c58662BEB83b7a667",
     "coinbase":  "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a"
   },
   "signatures": {
@@ -308,7 +308,7 @@ And update `multisig-transaction.json`:
 {
   "signatures": [
     {
-      "signer":    "0xe45572Dc828eF0E46D852125f0743938aABe1e12",
+      "signer":    "0xCD67f7e86A1397aBc33C473c58662BEB83b7a667",
       "label":     "ThirdWeb",
       "signature": "0x<130 hex characters>",
       "verified":  true
@@ -347,8 +347,8 @@ Message details:
   Document:     UCC-1_FINANCING_STATEMENT
   EIP-191 hash: 0x...
 
-Verifying ThirdWeb (0xe45572...):
-  Recovered:    0xe45572Dc828eF0E46D852125f0743938aABe1e12
+Verifying ThirdWeb (0xCD67f7...):
+  Recovered:    0xCD67f7e86A1397aBc33C473c58662BEB83b7a667
   ✓  Signature valid — signer address matches
 
 Verifying Coinbase (0xDc2aFc...):
@@ -616,7 +616,7 @@ Run `node scripts/verify-multisig.cjs` and check:
 
 | Label | Address |
 |-------|---------|
-| ThirdWeb | `0xe45572Dc828eF0E46D852125f0743938aABe1e12` |
+| ThirdWeb | `0xCD67f7e86A1397aBc33C473c58662BEB83b7a667` |
 | Coinbase | `0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a` |
 
 ---

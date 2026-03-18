@@ -6,7 +6,7 @@ require("dotenv").config();
  * Prepares a multi-signature transaction configuration for Morpho Protocol.
  *
  * Morpho Protocol requires 2/2 signatures from:
- *   - ThirdWeb wallet:  0xe45572Dc828eF0E46D852125f0743938aABe1e12
+ *   - ThirdWeb wallet:  0xCD67f7e86A1397aBc33C473c58662BEB83b7a667
  *   - Coinbase wallet:  0xdc2afcd0a97c1e878fdd64497806e52cc530f02a
  *
  * This script generates a transaction hash and outputs a JSON file that
@@ -18,7 +18,7 @@ require("dotenv").config();
 
 const MULTISIG_SIGNERS = {
   thirdweb: process.env.THIRDWEB_WALLET_ADDRESS ||
-    "0xe45572Dc828eF0E46D852125f0743938aABe1e12",
+    "0xCD67f7e86A1397aBc33C473c58662BEB83b7a667",
   coinbase: process.env.COINBASE_WALLET_ADDRESS ||
     "0xdc2afcd0a97c1e878fdd64497806e52cc530f02a",
 };

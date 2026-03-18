@@ -10,7 +10,7 @@ const ethers = hre.ethers;
  *   - Base L2 (Chain 8453) — verified on Etherscan/Basescan
  *
  * Multi-signature requirement (Morpho Protocol):
- *   - ThirdWeb wallet:  0xe45572Dc828eF0E46D852125f0743938aABe1e12
+ *   - ThirdWeb wallet:  0xCD67f7e86A1397aBc33C473c58662BEB83b7a667
  *   - Coinbase wallet:  0xdc2afcd0a97c1e878fdd64497806e52cc530f02a
  *
  * Usage:
@@ -19,7 +19,7 @@ const ethers = hre.ethers;
  */
 
 const MULTISIG_SIGNERS = {
-  thirdweb: "0xe45572Dc828eF0E46D852125f0743938aABe1e12",
+  thirdweb: "0xCD67f7e86A1397aBc33C473c58662BEB83b7a667",
   coinbase: "0xdc2afcd0a97c1e878fdd64497806e52cc530f02a",
 };
 
