@@ -31,7 +31,7 @@ require("dotenv").config();
 
 // ── Expected signer addresses (hardcoded constants from the contracts) ──────
 const EXPECTED_SIGNERS = {
-  thirdweb: "0xe45572Dc828eF0E46D852125f0743938aABe1e12",
+  thirdweb: "0xCD67f7e86A1397aBc33C473c58662BEB83b7a667",
   coinbase: "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a",
 };
 

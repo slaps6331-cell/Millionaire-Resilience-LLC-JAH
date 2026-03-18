@@ -14,7 +14,7 @@ This document is the authoritative step-by-step guide for both signers.
 
 | Role | Wallet App | Address |
 |------|-----------|---------|
-| **Signer 1** | ThirdWeb Embedded Wallet | `0xe45572Dc828eF0E46D852125f0743938aABe1e12` |
+| **Signer 1** | ThirdWeb Embedded Wallet | `0xCD67f7e86A1397aBc33C473c58662BEB83b7a667` |
 | **Signer 2** | Coinbase Wallet (smart wallet / EOA) | `0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a` |
 
 Both wallets must sign before the deployment workflow can proceed.
@@ -106,7 +106,7 @@ by `node scripts/generate-tx-hashes.cjs` and stored in `tx-hashes.json`.
 
 ### Prerequisites
 
-- Access to the ThirdWeb wallet `0xe45572Dc828eF0E46D852125f0743938aABe1e12`
+- Access to the ThirdWeb wallet `0xCD67f7e86A1397aBc33C473c58662BEB83b7a667`
 - `signature-morpho-config.json` generated (run `node scripts/anchor-signature.cjs`)
 
 ### Step 1 — Generate the signature payload
@@ -134,7 +134,7 @@ Copy the value of `eip191Hash`.  This is what the ThirdWeb wallet must sign.
 1. Open [https://thirdweb.com/dashboard](https://thirdweb.com/dashboard).
 2. Click **Connect Wallet** in the top-right corner.
 3. Select **ThirdWeb Embedded Wallet** and connect the account
-   `0xe45572Dc828eF0E46D852125f0743938aABe1e12`.
+   `0xCD67f7e86A1397aBc33C473c58662BEB83b7a667`.
 4. Navigate to **Wallet SDK → Sign Message** in the left sidebar.
 5. In the message field, paste the `eip191Hash` value copied in Step 1.
 6. Click **Sign**.
@@ -204,7 +204,7 @@ Also update `multisig-transaction.json`:
 {
   "signatures": [
     {
-      "signer":    "0xe45572Dc828eF0E46D852125f0743938aABe1e12",
+      "signer":    "0xCD67f7e86A1397aBc33C473c58662BEB83b7a667",
       "label":     "ThirdWeb",
       "signature": "0x<the 132-char hex signature>",
       "verified":  true
@@ -307,7 +307,7 @@ Update `multisig-transaction.json`:
 {
   "signatures": [
     {
-      "signer":    "0xe45572Dc828eF0E46D852125f0743938aABe1e12",
+      "signer":    "0xCD67f7e86A1397aBc33C473c58662BEB83b7a667",
       "label":     "ThirdWeb",
       "signature": "0x<ThirdWeb signature>",
       "verified":  true
@@ -346,8 +346,8 @@ Message details:
   Raw hash:      0x<64-char hash>
   EIP-191 hash:  0x<64-char eip191Hash>
 
-Verifying ThirdWeb (0xe45572Dc...):
-  Recovered:    0xe45572Dc828eF0E46D852125f0743938aABe1e12
+Verifying ThirdWeb (0xCD67f7e8...):
+  Recovered:    0xCD67f7e86A1397aBc33C473c58662BEB83b7a667
   ✓  Signature valid — signer address matches
 
 Verifying Coinbase (0xDc2aFCd0...):
@@ -437,7 +437,7 @@ PRE-SIGNING
       → node scripts/anchor-signature.cjs
   ☐ eip191Hash value noted
 
-THIRDWEB WALLET  (0xe45572Dc828eF0E46D852125f0743938aABe1e12)
+THIRDWEB WALLET  (0xCD67f7e86A1397aBc33C473c58662BEB83b7a667)
   ☐ Wallet connected in ThirdWeb Dashboard or SDK
   ☐ eip191Hash signed  → 132-char hex signature
   ☐ Signature recorded in signature-morpho-config.json  (signatures.thirdweb)
