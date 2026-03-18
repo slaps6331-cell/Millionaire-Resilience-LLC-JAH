@@ -209,6 +209,7 @@ contract GladiatorHoldingsSpvLoan is ERC20, Ownable, ReentrancyGuard {
     
     // Gladiator Holdings LLC (Parent) - Certificate of Organization
     bytes32 public gladiatorArticlesHash;      // SHA256: 9d327eb7fdae91d33c186a9d3b770f5004f679a70a34aeb94716042978a8a4fa
+    bytes32 public gladiatorEinLetterHash;     // EIN assignment letter hash for Gladiator Holdings LLC (set via recordGladiatorAuxiliaryDocs)
     bytes32 public gladiatorFilingNoticeHash;  // SHA256: 244a289d2c997f7f9d5d01ba8640ff7883b138d97ce7bdb0113e1d99b6f971a3
     bytes32 public storyDocsMetadataHash;      // SHA256: de04cdf71218df1d466b53f7d730ed8e9c8599472abaea515fd62352d030c7c9
     
