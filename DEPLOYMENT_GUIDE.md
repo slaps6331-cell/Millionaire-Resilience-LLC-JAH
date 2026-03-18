@@ -125,7 +125,48 @@ Fund this wallet with gas before running the deployment (see §1.1).
 
 All sensitive credentials are stored as **encrypted GitHub repository secrets**. They are injected into the deployment workflow at runtime and are never logged or committed.
 
-### Step-by-step: Adding a GitHub Secret
+### Option A — GitHub CLI (recommended)
+
+If you have the [GitHub CLI](https://cli.github.com) installed and authenticated (`gh auth login`), you can set every secret from the command line without touching the browser.
+
+```bash
+# Set each secret — gh will prompt you for the value so it never appears in
+# your shell history.  Alternatively pipe the value via stdin (see below).
+gh secret set DEPLOYER_PRIVATE_KEY
+gh secret set ALCHEMY_API_KEY
+gh secret set COINBASE_API_KEY_NAME
+gh secret set COINBASE_API_KEY_PRIVATE_KEY
+gh secret set STORYSCAN_API_KEY
+gh secret set ETHERSCAN_API_KEY
+gh secret set STORY_RPC_URL        # optional — only if not using ALCHEMY_API_KEY
+gh secret set BASE_RPC_URL         # optional — only if not using ALCHEMY_API_KEY
+gh secret set THIRDWEB_CLIENT_ID
+gh secret set THIRDWEB_SECRET_KEY
+gh secret set PINATA_JWT
+```
+
+To pass a value non-interactively (e.g. in a setup script), pipe it via stdin:
+
+```bash
+echo "$MY_PRIVATE_KEY" | gh secret set DEPLOYER_PRIVATE_KEY
+```
+
+Set the optional repository **variables** (public wallet addresses — not secrets):
+
+```bash
+gh variable set THIRDWEB_WALLET_ADDRESS --body "0xCD67f7e86A1397aBc33C473c58662BEB83b7a667"
+gh variable set COINBASE_WALLET_ADDRESS --body "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a"
+gh variable set UCC1_FILING_NUMBER      --body "2024-NM-UCC-0001"
+```
+
+Confirm everything was saved:
+
+```bash
+gh secret list
+gh variable list
+```
+
+### Option B — GitHub web UI
 
 1. Navigate to the repository:  
    `https://github.com/slaps6331-cell/Millionaire-Resilience-LLC`
@@ -391,7 +432,24 @@ This is exactly what `scripts/verify-multisig.cjs` replicates in JavaScript usin
 
 ### 4.1 Pre-flight: Dry Run
 
-Before deploying to mainnet, always run a dry-run compile to catch any Solidity compilation errors:
+Before deploying to mainnet, always run a dry-run compile to catch any Solidity compilation errors.
+
+**GitHub CLI (recommended):**
+
+```bash
+gh workflow run deploy-contracts.yml \
+  --field network=story \
+  --field verify=true \
+  --field dry_run=true
+```
+
+Watch the run in real time:
+
+```bash
+gh run watch
+```
+
+**GitHub web UI:**
 
 1. Go to **Actions → Deploy Smart Contracts**.
 2. Click **Run workflow**.
@@ -410,6 +468,29 @@ npm run contracts:test
 ```
 
 ### 4.2 Deploy to Story Protocol (Chain 1514)
+
+**GitHub CLI:**
+
+```bash
+gh workflow run deploy-contracts.yml \
+  --field network=story \
+  --field verify=true \
+  --field dry_run=false
+```
+
+Then watch progress and approve the `story-mainnet` environment gate:
+
+```bash
+# Stream live logs
+gh run watch
+
+# Or view a compact summary of all steps
+gh run view --log
+```
+
+> The `story-mainnet` **environment protection gate** requires a human approval before deployment begins. Open the run URL printed by `gh run watch` (or `gh run list`) and click **Review deployments → Approve**, or run `gh run view` and follow the approval link.
+
+**GitHub web UI:**
 
 1. Go to **Actions → Deploy Smart Contracts**.
 2. Click **Run workflow**.
@@ -431,11 +512,33 @@ The workflow will:
 
 ### 4.3 Deploy to Base L2 (Chain 8453)
 
-Repeat §4.2 with **Network** set to `base`. The workflow targets the `base-mainnet` environment and verifies on Basescan.
+**GitHub CLI:**
+
+```bash
+gh workflow run deploy-contracts.yml \
+  --field network=base \
+  --field verify=true \
+  --field dry_run=false
+```
+
+Approve the `base-mainnet` environment gate the same way as §4.2. The workflow targets `base-mainnet` and verifies contracts on Basescan.
+
+**GitHub web UI:** Repeat §4.2 with **Network** set to `base`.
 
 ### 4.4 Deploy to Both Networks Simultaneously
 
-Set **Network** to `both`. The `deploy-story` and `deploy-base` jobs run in parallel.
+**GitHub CLI:**
+
+```bash
+gh workflow run deploy-contracts.yml \
+  --field network=both \
+  --field verify=true \
+  --field dry_run=false
+```
+
+**GitHub web UI:** Set **Network** to `both`.
+
+The `deploy-story` and `deploy-base` jobs run in parallel.
 
 ### 4.5 Deployment Order (All 11 Contracts)
 
@@ -481,6 +584,23 @@ The workflow job summary will display a table like:
 Each address links directly to StoryScan or Basescan.
 
 ### 5.2 Download Deployment Artifacts
+
+**GitHub CLI:**
+
+```bash
+# List recent runs to find the run number
+gh run list --workflow=deploy-contracts.yml
+
+# Download all artifacts from a specific run (replace <run-id> with the ID
+# printed by the command above)
+gh run download <run-id>
+
+# Or download a specific artifact by name
+gh run download <run-id> --name deployment-story-<run-number>
+gh run download <run-id> --name deployment-base-<run-number>
+```
+
+**GitHub web UI:**
 
 1. In the completed workflow run, scroll to **Artifacts**.
 2. Download `deployment-story-<run#>` (contains `deployment-config.story.json`, `multisig-transaction.json`, and `registration-attestation.story.json`).
@@ -623,6 +743,8 @@ Run `node scripts/verify-multisig.cjs` and check:
 
 ## Appendix B — Quick Command Reference
 
+### npm / Hardhat commands (local)
+
 ```bash
 # Compile all 11 contracts
 npm run contracts:compile
@@ -653,4 +775,79 @@ node scripts/verify-multisig.cjs
 
 # Start local Hardhat node (for manual testing)
 npm run contracts:node
+```
+
+### GitHub CLI commands
+
+> Requires the [GitHub CLI](https://cli.github.com) installed and authenticated:
+> `gh auth login`
+
+```bash
+# ── Secrets & variables ─────────────────────────────────────────────────────
+
+# Set all required secrets (gh prompts for each value interactively)
+gh secret set DEPLOYER_PRIVATE_KEY
+gh secret set ALCHEMY_API_KEY
+gh secret set COINBASE_API_KEY_NAME
+gh secret set COINBASE_API_KEY_PRIVATE_KEY
+gh secret set STORYSCAN_API_KEY
+gh secret set ETHERSCAN_API_KEY
+gh secret set STORY_RPC_URL          # optional
+gh secret set BASE_RPC_URL           # optional
+gh secret set THIRDWEB_CLIENT_ID
+gh secret set THIRDWEB_SECRET_KEY
+gh secret set PINATA_JWT
+
+# Set repository variables (public wallet addresses)
+gh variable set THIRDWEB_WALLET_ADDRESS --body "0xCD67f7e86A1397aBc33C473c58662BEB83b7a667"
+gh variable set COINBASE_WALLET_ADDRESS --body "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a"
+gh variable set UCC1_FILING_NUMBER      --body "2024-NM-UCC-0001"
+
+# Confirm secrets and variables are saved
+gh secret list
+gh variable list
+
+# ── Triggering deployments ───────────────────────────────────────────────────
+
+# Dry run — compile only, no deployment
+gh workflow run deploy-contracts.yml \
+  --field network=story \
+  --field verify=true \
+  --field dry_run=true
+
+# Deploy to Story Protocol mainnet
+gh workflow run deploy-contracts.yml \
+  --field network=story \
+  --field verify=true \
+  --field dry_run=false
+
+# Deploy to Base L2 mainnet
+gh workflow run deploy-contracts.yml \
+  --field network=base \
+  --field verify=true \
+  --field dry_run=false
+
+# Deploy to both networks simultaneously
+gh workflow run deploy-contracts.yml \
+  --field network=both \
+  --field verify=true \
+  --field dry_run=false
+
+# ── Monitoring & artifacts ───────────────────────────────────────────────────
+
+# List recent deployment runs
+gh run list --workflow=deploy-contracts.yml
+
+# Stream live logs for the most recent run
+gh run watch
+
+# View a completed run summary with step-by-step logs
+gh run view --log
+
+# Download all artifacts from a specific run
+gh run download <run-id>
+
+# Download a named artifact
+gh run download <run-id> --name deployment-story-<run-number>
+gh run download <run-id> --name deployment-base-<run-number>
 ```
