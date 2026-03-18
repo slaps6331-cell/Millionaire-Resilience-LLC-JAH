@@ -105,7 +105,7 @@ After revoking exposed credentials, check for unauthorized activity:
 | Etherscan API Key | <https://etherscan.io/myapikey> → Usage stats |
 | Pinata JWT | <https://app.pinata.cloud> → Usage — check for unexpected uploads |
 | Pinata Gateway Token | <https://app.pinata.cloud/gateway> → your gateway → Access Logs |
-| Deployer wallet | <https://storyscan.xyz> or <https://basescan.org> — search the address for unexpected transactions |
+| Deployer wallet | <https://www.storyscan.io> or <https://basescan.org> — search the address for unexpected transactions |
 
 ---
 

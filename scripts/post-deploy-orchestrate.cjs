@@ -260,8 +260,8 @@ async function main() {
     registryStatus,
     storyScanUrls: networkName === "story"
       ? {
-          sas: `https://storyscan.xyz/address/${sasAddress}`,
-          sos: `https://storyscan.xyz/address/${sosAddress}`,
+          sas: `https://www.storyscan.io/address/${sasAddress}`,
+          sos: `https://www.storyscan.io/address/${sosAddress}`,
         }
       : networkName === "base"
       ? {
@@ -286,8 +286,8 @@ async function main() {
   console.log(`  Registration attestation written to: ${outputFile}`);
   if (networkName === "story") {
     console.log(`\nStoryScan links:`);
-    console.log(`  SAS: https://storyscan.xyz/address/${sasAddress}`);
-    console.log(`  SOS: https://storyscan.xyz/address/${sosAddress}`);
+    console.log(`  SAS: https://www.storyscan.io/address/${sasAddress}`);
+    console.log(`  SOS: https://www.storyscan.io/address/${sosAddress}`);
   } else if (networkName === "base") {
     console.log(`\nBasescan links:`);
     console.log(`  SAS: https://basescan.org/address/${sasAddress}`);

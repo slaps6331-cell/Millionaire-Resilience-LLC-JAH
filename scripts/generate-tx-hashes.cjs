@@ -107,7 +107,7 @@ function explorerUrl(explorer, txHash) {
 
 // ── Story Protocol (chainId 1514) contracts — deployed in order ──────────
 
-const STORYSCAN_BASE = "https://storyscan.xyz";
+const STORYSCAN_BASE = "https://www.storyscan.io";
 const BASESCAN_BASE  = "https://basescan.org";
 
 // Contracts deployed on Story Protocol mainnet
@@ -300,7 +300,7 @@ const record = {
     storyScan: [
       "Deploy contracts:  npx hardhat run scripts/deploy.cjs --network story",
       "Verify source:     npx hardhat verify --network story <CONTRACT_ADDRESS>",
-      "StoryScan search:  https://storyscan.xyz/tx/<TX_HASH>",
+      "StoryScan search:  https://www.storyscan.io/tx/<TX_HASH>",
       "Replace pre-deployment hashes above with the live tx hashes from deployment-config.story.json",
     ],
     etherscan: [

@@ -181,7 +181,7 @@ npx hardhat run scripts/verify.cjs --network base
 
 To independently verify deployment status after contracts are broadcast, use:
 
-- **Story Protocol:** `https://storyscan.xyz/tx/<TX_HASH>` or `https://storyscan.xyz/address/<CONTRACT_ADDRESS>`
+- **Story Protocol:** `https://www.storyscan.io/tx/<TX_HASH>` or `https://www.storyscan.io/address/<CONTRACT_ADDRESS>`
 - **Base L2:** `https://basescan.org/tx/<TX_HASH>` or `https://basescan.org/address/<CONTRACT_ADDRESS>`
 
 Without RPC credentials or a funded deployer wallet, on-chain verification cannot be performed. The pre-computed hashes in `tx-hashes.json` are **not real on-chain transactions** and will not resolve on any block explorer until actual deployment occurs.

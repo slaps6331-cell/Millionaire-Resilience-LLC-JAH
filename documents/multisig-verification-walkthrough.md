@@ -407,7 +407,7 @@ function verifySignature(
 
 After live deployment:
 
-1. Open [https://storyscan.xyz](https://storyscan.xyz).
+1. Open [https://www.storyscan.io](https://www.storyscan.io).
 2. Search for the IP asset address:  
    `0x98971c660ac20880b60F86Cc3113eBd979eb3aAE`
 3. Confirm token ID **15192** under the Gladiator Holdings parent entity.
