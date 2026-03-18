@@ -36,7 +36,7 @@ contract PILLoanEnforcement is Ownable, ReentrancyGuard {
     // Story Protocol Mainnet (Chain ID: 1514)
     address public constant STORY_PROTOCOL_REGISTRY = 0x1a9d0d28a0422F26D31Be72Edc6f13ea4371E11B;
     address public constant STORY_LICENSING_MODULE = 0xd81fd78f557b457b4350cB95D20b547bFEb4D857;
-    address public constant STORY_ROYALTY_MODULE = 0xcc8b9f0c9dC370ED1F41D95f74C9F72E08f24C90;
+    address public constant STORY_ROYALTY_MODULE = 0xCC8b9f0c9Dc370Ed1F41d95F74C9f72E08f24C90;
     
     // Millionaire Resilience IP Asset
     address public constant MR_IPID = 0x98971c660ac20880b60F86Cc3113eBd979eb3aAE;
@@ -49,7 +49,7 @@ contract PILLoanEnforcement is Ownable, ReentrancyGuard {
     
     address public constant USDC = 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48;
     address public constant USDT = 0xdAC17F958D2ee523a2206206994597C13D831ec7;
-    address public constant DAI = 0x6B175474E89094C44Da98b954EeDeB2b9dBe9B3E2;
+    address public constant DAI = 0x6B175474E89094C44Da98b954EedeAC495271d0F;
     
     // ============ STRUCTS ============
     

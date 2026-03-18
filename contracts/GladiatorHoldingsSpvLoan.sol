@@ -42,7 +42,7 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
  * STORY PROTOCOL ADDRESSES (Chain 1514):
  * - Registry: 0x1a9d0d28a0422F26D31Be72Edc6f13ea4371E11B
  * - Licensing: 0xd81fd78f557b457b4350cB95D20b547bFEb4D857
- * - Royalty: 0xcc8b9f0c9dC370ED1F41D95f74C9F72E08f24C90
+ * - Royalty: 0xCC8b9f0c9Dc370Ed1F41d95F74C9f72E08f24C90
  */
 contract GladiatorHoldingsSpvLoan is ERC20, Ownable, ReentrancyGuard {
     using SafeERC20 for IERC20;
@@ -75,7 +75,7 @@ contract GladiatorHoldingsSpvLoan is ERC20, Ownable, ReentrancyGuard {
     // Story Protocol Mainnet (Chain ID: 1514)
     address public constant STORY_PROTOCOL_REGISTRY = 0x1a9d0d28a0422F26D31Be72Edc6f13ea4371E11B;
     address public constant STORY_LICENSING_MODULE = 0xd81fd78f557b457b4350cB95D20b547bFEb4D857;
-    address public constant STORY_ROYALTY_MODULE = 0xcc8b9f0c9dC370ED1F41D95f74C9F72E08f24C90;
+    address public constant STORY_ROYALTY_MODULE = 0xCC8b9f0c9Dc370Ed1F41d95F74C9f72E08f24C90;
     
     // Gladiator Holdings Parent IP Asset (to be registered)
     address public gladiatorParentIpId;
@@ -351,7 +351,7 @@ contract GladiatorHoldingsSpvLoan is ERC20, Ownable, ReentrancyGuard {
     constructor() ERC20("Gladiator Holdings SPV Token", "GLAD-SPV") Ownable(msg.sender) {
         USDC = 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48;
         USDT = 0xdAC17F958D2ee523a2206206994597C13D831ec7;
-        DAI = 0x6B175474E89094C44Da98b954EeDeB2b9dBe9B3E2;
+        DAI = 0x6B175474E89094C44Da98b954EedeAC495271d0F;
         baseL2Lender = GLADIATOR_COINBASE_WALLET;
         coinbaseBtcLender = GLADIATOR_COINBASE_WALLET;
         

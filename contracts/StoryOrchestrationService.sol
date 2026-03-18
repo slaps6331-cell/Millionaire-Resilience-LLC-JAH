@@ -40,7 +40,7 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
  * STORY PROTOCOL INTEGRATION:
  * - Registry: 0x1a9d0d28a0422F26D31Be72Edc6f13ea4371E11B
  * - Licensing: 0xd81fd78f557b457b4350cB95D20b547bFEb4D857
- * - Royalty: 0xcc8b9f0c9dC370ED1F41D95f74C9F72E08f24C90
+ * - Royalty: 0xCC8b9f0c9Dc370Ed1F41d95F74C9f72E08f24C90
  * - Parent IPID: 0x98971c660ac20880b60F86Cc3113eBd979eb3aAE (Token 15192)
  */
 contract StoryOrchestrationService is Ownable, ReentrancyGuard {
@@ -50,7 +50,7 @@ contract StoryOrchestrationService is Ownable, ReentrancyGuard {
     address public constant MORPHO_BLUE = 0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb;
     address public constant STORY_REGISTRY = 0x1a9d0d28a0422F26D31Be72Edc6f13ea4371E11B;
     address public constant STORY_LICENSING = 0xd81fd78f557b457b4350cB95D20b547bFEb4D857;
-    address public constant STORY_ROYALTY = 0xcc8b9f0c9dC370ED1F41D95f74C9F72E08f24C90;
+    address public constant STORY_ROYALTY = 0xCC8b9f0c9Dc370Ed1F41d95F74C9f72E08f24C90;
 
     address public constant MR_IPID = 0x98971c660ac20880b60F86Cc3113eBd979eb3aAE;
     uint256 public constant MR_TOKEN_ID = 15192;
