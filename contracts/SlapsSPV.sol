@@ -302,6 +302,7 @@ contract SlapsSPV is ERC20, ERC20Burnable, AccessControl, ReentrancyGuard, Pausa
             require(isAccredited[to] || hasRole(MANAGER_ROLE, to), "Recipient must be accredited");
         }
         super._update(from, to, value);
+    }
 
     // ============ ADMIN FUNCTIONS ============
 
