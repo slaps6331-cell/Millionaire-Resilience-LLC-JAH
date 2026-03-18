@@ -23,10 +23,14 @@ These hashes serve as placeholder records and **must be replaced** with the actu
 
 | Check | Status | Notes |
 |-------|--------|-------|
-| Contract Compilation (`main`) | ❌ **FAILING** | `GladiatorHoldingsSpvLoan.sol:589` — undeclared identifier `gladiatorEinLetterHash` |
-| Contract Compilation (fix applied) | ✅ **Fixed** | Missing `bytes32 public gladiatorEinLetterHash` state variable declaration added |
+| Contract Compilation (`main`) | ❌ **FAILING** | Multiple address literal errors (see below) |
+| Contract Compilation (fix applied) | ✅ **Fixed** | Address checksum and length errors corrected across 6 contracts |
 
-**Root cause:** The state variable `gladiatorEinLetterHash` was used in `recordGladiatorAuxiliaryDocs()` at line 589 but was never declared in the contract storage layout. Fixed by adding the declaration at line 219 alongside the other Gladiator Holdings document hash variables.
+**Root causes fixed:**
+
+1. **Invalid EIP-55 checksum** — `STORY_ROYALTY` address `0xcc8b9f0c9dC370ED1F41D95f74C9F72E08f24C90` used in `StoryAttestationService.sol:61` and `StoryOrchestrationService.sol:53`. Corrected to `0xCC8b9f0c9Dc370Ed1F41d95F74C9f72E08f24C90`.
+
+2. **Invalid address length (41 hex chars)** — `DAI` address `0x6B175474E89094C44Da98b954EeDeB2b9dBe9B3E2` (43 chars) used in `StablecoinIPEscrow.sol:42`, `GladiatorHoldingsSpvLoan.sol:354`, `PILLoanEnforcement.sol:52`, and `SLAPSIPSpvLoan.sol:70`. Corrected to the valid Ethereum mainnet DAI address `0x6B175474E89094C44Da98b954EedeAC495271d0F` (42 chars).
 
 ---
 
@@ -166,5 +170,5 @@ Without RPC credentials or a funded deployer wallet, on-chain verification canno
 | Morpho Blue | `0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb` | Base L2 (8453) |
 | Story IP Registry | `0x1a9d0d28a0422F26D31Be72Edc6f13ea4371E11B` | Story Protocol (1514) |
 | Story Licensing Module | `0xd81fd78f557b457b4350cB95D20b547bFEb4D857` | Story Protocol (1514) |
-| Story Royalty Module | `0xcc8b9f0c9dC370ED1F41D95f74C9F72E08f24C90` | Story Protocol (1514) |
+| Story Royalty Module | `0xCC8b9f0c9Dc370Ed1F41d95F74C9f72E08f24C90` | Story Protocol (1514) |
 | Base USDC | `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` | Base L2 (8453) |
