@@ -59,7 +59,7 @@ async function main() {
   console.log(`Verification complete: ${verified} verified, ${failed} failed`);
 
   if (networkName === "story") {
-    console.log("\nView on StoryScan: https://storyscan.xyz");
+    console.log("\nView on StoryScan: https://www.storyscan.io");
   } else if (networkName === "base") {
     console.log("\nView on Basescan:  https://basescan.org");
   }

@@ -20,7 +20,7 @@
 
 Explorer:
 ```
-https://storyscan.xyz/tx/0x0b09f27824e6d28fe1f7f99e1de371fb51102351a1073fc2374e5bf536fc995f
+https://www.storyscan.io/tx/0x0b09f27824e6d28fe1f7f99e1de371fb51102351a1073fc2374e5bf536fc995f
 ```
 
 ---
@@ -33,7 +33,7 @@ https://storyscan.xyz/tx/0x0b09f27824e6d28fe1f7f99e1de371fb51102351a1073fc2374e5
 
 Explorer:
 ```
-https://storyscan.xyz/tx/0x069c423ec29b0afb20cf90796a51994ca3687b72cc1ac4cdc54a11da245cda8f
+https://www.storyscan.io/tx/0x069c423ec29b0afb20cf90796a51994ca3687b72cc1ac4cdc54a11da245cda8f
 ```
 
 ---
@@ -46,7 +46,7 @@ https://storyscan.xyz/tx/0x069c423ec29b0afb20cf90796a51994ca3687b72cc1ac4cdc54a1
 
 Explorer:
 ```
-https://storyscan.xyz/tx/0x0433a3675178751956ce75cf8ea37600247d63ffa1e08a8ae971ea85ae3686fe
+https://www.storyscan.io/tx/0x0433a3675178751956ce75cf8ea37600247d63ffa1e08a8ae971ea85ae3686fe
 ```
 
 ---
@@ -59,7 +59,7 @@ https://storyscan.xyz/tx/0x0433a3675178751956ce75cf8ea37600247d63ffa1e08a8ae971e
 
 Explorer:
 ```
-https://storyscan.xyz/tx/0x57b781319a87a8ae97eca27fb1c70872ea8349beaceb6f46a68fc4143a7129db
+https://www.storyscan.io/tx/0x57b781319a87a8ae97eca27fb1c70872ea8349beaceb6f46a68fc4143a7129db
 ```
 
 ---
@@ -72,7 +72,7 @@ https://storyscan.xyz/tx/0x57b781319a87a8ae97eca27fb1c70872ea8349beaceb6f46a68fc
 
 Explorer:
 ```
-https://storyscan.xyz/tx/0x43c9a6a5fabd3ca7ed13256666865bd1c3d7729409457ff3a0766e3f92572c26
+https://www.storyscan.io/tx/0x43c9a6a5fabd3ca7ed13256666865bd1c3d7729409457ff3a0766e3f92572c26
 ```
 
 ---
@@ -86,7 +86,7 @@ https://storyscan.xyz/tx/0x43c9a6a5fabd3ca7ed13256666865bd1c3d7729409457ff3a0766
 
 Explorer:
 ```
-https://storyscan.xyz/tx/0x7d4f4e9c08269e73077cbc7aa3c2b2a8337c5498256a8ab863094524200e6160
+https://www.storyscan.io/tx/0x7d4f4e9c08269e73077cbc7aa3c2b2a8337c5498256a8ab863094524200e6160
 ```
 
 ---
@@ -100,7 +100,7 @@ https://storyscan.xyz/tx/0x7d4f4e9c08269e73077cbc7aa3c2b2a8337c5498256a8ab863094
 
 Explorer:
 ```
-https://storyscan.xyz/tx/0x112914ca499c8e4a39af5cff45f3de82af854d3c01fe2d48d8b1122f53f9158e
+https://www.storyscan.io/tx/0x112914ca499c8e4a39af5cff45f3de82af854d3c01fe2d48d8b1122f53f9158e
 ```
 
 ---
@@ -235,7 +235,7 @@ https://basescan.org/tx/0x6e58e294b02ff40293a67b7011b17c9df8b83f6c205fc24d379fd7
 
 StoryScan:
 ```
-https://storyscan.xyz/tx/0x60c455a95bcaecb4396a20bc3ed24ba574b91de4bd684148f7fd1e1a115e2db0
+https://www.storyscan.io/tx/0x60c455a95bcaecb4396a20bc3ed24ba574b91de4bd684148f7fd1e1a115e2db0
 ```
 
 ---
