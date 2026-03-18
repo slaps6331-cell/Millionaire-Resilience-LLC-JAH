@@ -3,11 +3,11 @@
 **Entity:** Gladiator Holdings LLC / Millionaire Resilience LLC  
 **Deployer Address:** `0x597856e93f19877a399f686D2F43b298e2268618`  
 **Report Generated:** 2026-03-18  
-**Status as of:** Branch `main` — commit `d1efdd3d732fed987dea2c87e1c699126820a11a`
+**Status as of:** Branch `copilot/check-smart-contract-deployment-status`
 
 ---
 
-## ⚠️ Overall Status: PRE-DEPLOYMENT (Not Yet Live On-Chain)
+## ⚠️ Overall Status: READY TO DEPLOY (Compilation Fixed — Awaiting Secrets & Manual Trigger)
 
 The smart contracts **have not been deployed** to any live blockchain network. The transaction hashes recorded in `tx-hashes.json` are **deterministic pre-deployment hashes**, computed locally by `scripts/generate-tx-hashes.cjs` using:
 
@@ -23,14 +23,18 @@ These hashes serve as placeholder records and **must be replaced** with the actu
 
 | Check | Status | Notes |
 |-------|--------|-------|
-| Contract Compilation (`main`) | ❌ **FAILING** | Multiple address literal errors (see below) |
-| Contract Compilation (fix applied) | ✅ **Fixed** | Address checksum and length errors corrected across 6 contracts |
+| Contract Compilation | ✅ **Fixed** | All address checksum and length errors corrected |
+| Local test-deploy (CI) | 🔄 **Pending CI approval** | Check workflow requires owner approval for PR runs |
+| Live deployment (Story) | ❌ **Secrets required** | `DEPLOYER_PRIVATE_KEY` not yet set |
+| Live deployment (Base L2) | ❌ **Secrets required** | `DEPLOYER_PRIVATE_KEY`, `ALCHEMY_API_KEY` not yet set |
 
-**Root causes fixed:**
+**Compilation fixes applied (across 8 contracts):**
 
-1. **Invalid EIP-55 checksum** — `STORY_ROYALTY` address `0xcc8b9f0c9dC370ED1F41D95f74C9F72E08f24C90` used in `StoryAttestationService.sol:61` and `StoryOrchestrationService.sol:53`. Corrected to `0xCC8b9f0c9Dc370Ed1F41d95F74C9f72E08f24C90`.
+1. **Invalid EIP-55 checksum — `STORY_ROYALTY` address** (`0xcc8b9f0c9dC370ED1F41D95f74C9F72E08f24C90` → `0xCC8b9f0c9Dc370Ed1F41d95F74C9f72E08f24C90`):
+   - `StoryAttestationService.sol`, `StoryOrchestrationService.sol`, `GladiatorHoldingsSpvLoan.sol`, `PILLoanEnforcement.sol`, `SLAPSIPSpvLoan.sol`
 
-2. **Invalid address length (41 hex chars)** — `DAI` address `0x6B175474E89094C44Da98b954EeDeB2b9dBe9B3E2` (43 chars) used in `StablecoinIPEscrow.sol:42`, `GladiatorHoldingsSpvLoan.sol:354`, `PILLoanEnforcement.sol:52`, and `SLAPSIPSpvLoan.sol:70`. Corrected to the valid Ethereum mainnet DAI address `0x6B175474E89094C44Da98b954EedeAC495271d0F` (42 chars).
+2. **Invalid address length (41 hex chars) — `DAI` address** (`0x6B175474E89094C44Da98b954EeDeB2b9dBe9B3E2` → `0x6B175474E89094C44Da98b954EedeAC495271d0F`):
+   - `StablecoinIPEscrow.sol`, `GladiatorHoldingsSpvLoan.sol`, `PILLoanEnforcement.sol`, `SLAPSIPSpvLoan.sol`
 
 ---
 
@@ -92,14 +96,14 @@ To complete the multi-sig:
 
 | Item | Status | Notes |
 |------|--------|-------|
-| Solidity contracts (11 total) | ✅ Written | Compilation blocked by missing variable (now fixed) |
+| Solidity contracts (11 total) | ✅ Ready | All compilation errors fixed |
 | Hardhat configuration | ✅ Ready | `hardhat.config.cjs` — Story (1514) + Base (8453) configured |
 | Deployment script | ✅ Ready | `scripts/deploy.cjs` deploys all 11 contracts |
 | Post-deploy orchestration | ✅ Ready | `scripts/post-deploy-orchestrate.cjs` |
 | Source verification script | ✅ Ready | `scripts/verify.cjs` |
 | Multi-sig signing scripts | ✅ Ready | `scripts/multisig-sign.cjs`, `scripts/anchor-signature.cjs`, `scripts/verify-multisig.cjs` |
 | GitHub Actions CI (check) | ✅ Configured | `.github/workflows/check-contracts.yml` |
-| GitHub Actions CI (deploy) | ✅ Configured | `.github/workflows/deploy-contracts.yml` |
+| GitHub Actions CI (deploy) | ✅ Configured | `.github/workflows/deploy-contracts.yml` (workflow_dispatch) |
 | Pre-computed tx hashes | ✅ Recorded | `tx-hashes.json` (deterministic, not live) |
 | UCC-1 filing hash | ✅ Recorded | IPFS CID `bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a` |
 | **`DEPLOYER_PRIVATE_KEY`** | ❌ **Required** | Must be set in GitHub Actions secrets |
@@ -109,46 +113,67 @@ To complete the multi-sig:
 
 ---
 
-## Required Steps to Complete Deployment
+## How to Trigger Live Deployment
 
-1. **Fix compilation** ✅ — `gladiatorEinLetterHash` state variable added to `GladiatorHoldingsSpvLoan.sol`
+The deployment workflow (`deploy-contracts.yml`) is a **manual `workflow_dispatch`**. To deploy:
 
-2. **Configure GitHub Secrets** — Add the following to the repository's GitHub Actions secrets:
-   - `DEPLOYER_PRIVATE_KEY` — private key for the deployer wallet (see repository owner for credentials)
-   - `ALCHEMY_API_KEY` — Alchemy API key for Base L2 RPC
-   - `STORYSCAN_API_KEY` — StoryScan API key for Story Protocol contract verification
-   - `ETHERSCAN_API_KEY` — Etherscan/Basescan API key for Base L2 contract verification
-   - `CDP_API_KEY_NAME` and `CDP_API_KEY_PRIVATE_KEY` — Coinbase CDP keys (optional, for Coinbase signing)
+### Step 1 — Merge the compilation-fix PR
 
-3. **Deploy to Story Protocol Mainnet:**
-   ```bash
-   npx hardhat run scripts/deploy.cjs --network story
-   ```
+Merge branch `copilot/check-smart-contract-deployment-status` into `main`.
 
-4. **Deploy to Base L2:**
-   ```bash
-   npx hardhat run scripts/deploy.cjs --network base
-   ```
+### Step 2 — Configure GitHub Actions Secrets
 
-5. **Run post-deployment orchestration** (wires contracts together):
-   ```bash
-   npx hardhat run scripts/post-deploy-orchestrate.cjs --network story
-   npx hardhat run scripts/post-deploy-orchestrate.cjs --network base
-   ```
+Go to **Settings → Secrets and variables → Actions → New repository secret** and add:
 
-6. **Verify contract sources:**
-   ```bash
-   npx hardhat run scripts/verify.cjs --network story
-   npx hardhat run scripts/verify.cjs --network base
-   ```
+| Secret Name | Description |
+|-------------|-------------|
+| `DEPLOYER_PRIVATE_KEY` | Private key for `0x597856e93f19877a399f686D2F43b298e2268618` |
+| `ALCHEMY_API_KEY` | Alchemy API key (for Base L2 and Story Protocol RPC) |
+| `STORYSCAN_API_KEY` | StoryScan API key (for Story Protocol source verification) |
+| `ETHERSCAN_API_KEY` | Etherscan/Basescan API key (for Base L2 source verification) |
+| `COINBASE_API_KEY_NAME` | Coinbase CDP key name (optional — for Coinbase signing) |
+| `COINBASE_API_KEY_PRIVATE_KEY` | Coinbase CDP private key (optional — for Coinbase signing) |
 
-7. **Complete Morpho multi-sig** for both ThirdWeb (`0xCD67f7e86A1397aBc33C473c58662BEB83b7a667`) and Coinbase (`0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a`) wallets:
-   ```bash
-   node scripts/anchor-signature.cjs
-   node scripts/verify-multisig.cjs
-   ```
+### Step 3 — Trigger the Deploy Workflow
 
-8. **Update `tx-hashes.json`** — Replace all pre-deployment deterministic hashes with live transaction hashes from `deployment-config.story.json` and `deployment-config.base.json` after broadcast.
+1. Go to **Actions → Deploy Smart Contracts**
+2. Click **Run workflow**
+3. Select target network:
+   - `story` — deploys to Story Protocol Mainnet (Chain 1514)
+   - `base` — deploys to Base L2 (Chain 8453)
+   - `both` — deploys to both networks sequentially
+4. Set **Verify contracts** = `true` (recommended)
+5. Set **Dry run** = `false`
+6. Click **Run workflow**
+
+### Step 4 — Post-deployment
+
+After the deploy workflow completes:
+- Retrieve deployed addresses from the `deployment-config.<network>.json` artifact
+- Update `tx-hashes.json` with the live transaction hashes
+- Complete the Morpho 2-of-2 multi-sig (ThirdWeb + Coinbase wallets)
+
+### Manual CLI Alternative
+
+If deploying locally instead of via CI:
+```bash
+# Copy and fill in .env (see .env.example)
+cp .env.example .env
+
+# Deploy to Story Protocol Mainnet
+npx hardhat run scripts/deploy.cjs --network story
+
+# Deploy to Base L2
+npx hardhat run scripts/deploy.cjs --network base
+
+# Post-deployment orchestration
+npx hardhat run scripts/post-deploy-orchestrate.cjs --network story
+npx hardhat run scripts/post-deploy-orchestrate.cjs --network base
+
+# Verify source code
+npx hardhat run scripts/verify.cjs --network story
+npx hardhat run scripts/verify.cjs --network base
+```
 
 ---
 
