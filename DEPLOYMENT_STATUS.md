@@ -2,8 +2,8 @@
 
 **Entity:** Gladiator Holdings LLC / Millionaire Resilience LLC  
 **Deployer Address:** `0x597856e93f19877a399f686D2F43b298e2268618`  
-**Report Generated:** 2026-03-18  
-**Status as of:** Branch `copilot/check-smart-contract-deployment-status`
+**Report Generated:** 2026-03-19  
+**Status as of:** Branch `copilot/deploy-smart-contracts-to-etherscan-again`
 
 ---
 
@@ -24,9 +24,10 @@ These hashes serve as placeholder records and **must be replaced** with the actu
 | Check | Status | Notes |
 |-------|--------|-------|
 | Contract Compilation | ✅ **Fixed** | All address checksum and length errors corrected |
-| Local test-deploy (CI) | 🔄 **Pending CI approval** | Check workflow requires owner approval for PR runs |
-| Live deployment (Story) | ❌ **Secrets required** | `DEPLOYER_PRIVATE_KEY` not yet set |
-| Live deployment (Base L2) | ❌ **Secrets required** | `DEPLOYER_PRIVATE_KEY`, `ALCHEMY_API_KEY` not yet set |
+| Local test-deploy (CI) | ✅ **Fixed** | Artifact download step added to check-contracts workflow |
+| Live deployment (Story → StoryScan) | ❌ **Secrets required** | `DEPLOYER_PRIVATE_KEY`, `STORYSCAN_API_KEY` not yet set |
+| Live deployment (Base L2 → Basescan) | ❌ **Secrets required** | `DEPLOYER_PRIVATE_KEY`, `ALCHEMY_API_KEY`, `ETHERSCAN_API_KEY` not yet set |
+| Live deployment (Ethereum → Etherscan) | ❌ **Secrets required** | `DEPLOYER_PRIVATE_KEY`, `ALCHEMY_API_KEY`, `ETHERSCAN_API_KEY` not yet set |
 
 **Compilation fixes applied (across 8 contracts):**
 
@@ -97,19 +98,19 @@ To complete the multi-sig:
 | Item | Status | Notes |
 |------|--------|-------|
 | Solidity contracts (11 total) | ✅ Ready | All compilation errors fixed |
-| Hardhat configuration | ✅ Ready | `hardhat.config.cjs` — Story (1514) + Base (8453) configured |
+| Hardhat configuration | ✅ Ready | `hardhat.config.cjs` — Story (1514) + Base (8453) + Mainnet (1) configured |
 | Deployment script | ✅ Ready | `scripts/deploy.cjs` deploys all 11 contracts |
 | Post-deploy orchestration | ✅ Ready | `scripts/post-deploy-orchestrate.cjs` |
-| Source verification script | ✅ Ready | `scripts/verify.cjs` |
+| Source verification script | ✅ Ready | `scripts/verify.cjs` (StoryScan, Basescan, Etherscan) |
 | Multi-sig signing scripts | ✅ Ready | `scripts/multisig-sign.cjs`, `scripts/anchor-signature.cjs`, `scripts/verify-multisig.cjs` |
-| GitHub Actions CI (check) | ✅ Configured | `.github/workflows/check-contracts.yml` |
-| GitHub Actions CI (deploy) | ✅ Configured | `.github/workflows/deploy-contracts.yml` (workflow_dispatch) |
+| GitHub Actions CI (check) | ✅ Fixed | Artifact download added to test-deploy job |
+| GitHub Actions CI (deploy) | ✅ Configured | `deploy-contracts.yml` — story, base, mainnet, both, all |
 | Pre-computed tx hashes | ✅ Recorded | `tx-hashes.json` (deterministic, not live) |
 | UCC-1 filing hash | ✅ Recorded | IPFS CID `bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a` |
 | **`DEPLOYER_PRIVATE_KEY`** | ❌ **Required** | Must be set in GitHub Actions secrets |
-| **`ALCHEMY_API_KEY`** | ❌ **Required** | Required for Base L2 RPC |
-| **`STORYSCAN_API_KEY`** | ❌ **Required** | Required for Story Protocol verification |
-| **`ETHERSCAN_API_KEY`** | ❌ **Required** | Required for Base (Basescan) verification |
+| **`ALCHEMY_API_KEY`** | ❌ **Required** | Required for Base L2, Story Protocol, and Ethereum mainnet RPC |
+| **`STORYSCAN_API_KEY`** | ❌ **Required** | Required for Story Protocol source verification |
+| **`ETHERSCAN_API_KEY`** | ❌ **Required** | Required for Base (Basescan) and Ethereum mainnet (Etherscan) verification |
 
 ---
 
@@ -117,9 +118,9 @@ To complete the multi-sig:
 
 The deployment workflow (`deploy-contracts.yml`) is a **manual `workflow_dispatch`**. To deploy:
 
-### Step 1 — Merge the compilation-fix PR
+### Step 1 — Merge this PR
 
-Merge branch `copilot/check-smart-contract-deployment-status` into `main`.
+Merge branch `copilot/deploy-smart-contracts-to-etherscan-again` into `main`.
 
 ### Step 2 — Configure GitHub Actions Secrets
 
@@ -128,9 +129,10 @@ Go to **Settings → Secrets and variables → Actions → New repository secret
 | Secret Name | Description |
 |-------------|-------------|
 | `DEPLOYER_PRIVATE_KEY` | Private key for `0x597856e93f19877a399f686D2F43b298e2268618` |
-| `ALCHEMY_API_KEY` | Alchemy API key (for Base L2 and Story Protocol RPC) |
+| `ALCHEMY_API_KEY` | Alchemy API key (for Base L2, Ethereum mainnet, and Story Protocol RPC) |
 | `STORYSCAN_API_KEY` | StoryScan API key (for Story Protocol source verification) |
-| `ETHERSCAN_API_KEY` | Etherscan/Basescan API key (for Base L2 source verification) |
+| `ETHERSCAN_API_KEY` | Etherscan/Basescan API key (for Ethereum mainnet and Base L2 verification) |
+| `MAINNET_RPC_URL` | Ethereum mainnet RPC URL (optional — fallback to Cloudflare if ALCHEMY_API_KEY is set) |
 | `COINBASE_API_KEY_NAME` | Coinbase CDP key name (optional — for Coinbase signing) |
 | `COINBASE_API_KEY_PRIVATE_KEY` | Coinbase CDP private key (optional — for Coinbase signing) |
 
@@ -139,9 +141,11 @@ Go to **Settings → Secrets and variables → Actions → New repository secret
 1. Go to **Actions → Deploy Smart Contracts**
 2. Click **Run workflow**
 3. Select target network:
-   - `story` — deploys to Story Protocol Mainnet (Chain 1514)
-   - `base` — deploys to Base L2 (Chain 8453)
-   - `both` — deploys to both networks sequentially
+   - `story` — deploys to Story Protocol Mainnet (Chain 1514), verifies on **StoryScan**
+   - `base` — deploys to Base L2 (Chain 8453), verifies on **Basescan**
+   - `mainnet` — deploys to Ethereum Mainnet (Chain 1), verifies on **Etherscan**
+   - `both` — deploys to Story Protocol + Base L2
+   - `all` — deploys to all three networks (Story + Base + Ethereum Mainnet)
 4. Set **Verify contracts** = `true` (recommended)
 5. Set **Dry run** = `false`
 6. Click **Run workflow**
@@ -166,13 +170,21 @@ npx hardhat run scripts/deploy.cjs --network story
 # Deploy to Base L2
 npx hardhat run scripts/deploy.cjs --network base
 
+# Deploy to Ethereum Mainnet
+npx hardhat run scripts/deploy.cjs --network mainnet
+
 # Post-deployment orchestration
 npx hardhat run scripts/post-deploy-orchestrate.cjs --network story
 npx hardhat run scripts/post-deploy-orchestrate.cjs --network base
 
-# Verify source code
+# Verify source code on StoryScan
 npx hardhat run scripts/verify.cjs --network story
+
+# Verify source code on Basescan
 npx hardhat run scripts/verify.cjs --network base
+
+# Verify source code on Etherscan
+npx hardhat run scripts/verify.cjs --network mainnet
 ```
 
 ---
@@ -183,6 +195,7 @@ To independently verify deployment status after contracts are broadcast, use:
 
 - **Story Protocol:** `https://storyscan.xyz/tx/<TX_HASH>` or `https://storyscan.xyz/address/<CONTRACT_ADDRESS>`
 - **Base L2:** `https://basescan.org/tx/<TX_HASH>` or `https://basescan.org/address/<CONTRACT_ADDRESS>`
+- **Ethereum Mainnet:** `https://etherscan.io/tx/<TX_HASH>` or `https://etherscan.io/address/<CONTRACT_ADDRESS>`
 
 Without RPC credentials or a funded deployer wallet, on-chain verification cannot be performed. The pre-computed hashes in `tx-hashes.json` are **not real on-chain transactions** and will not resolve on any block explorer until actual deployment occurs.
 

@@ -52,6 +52,18 @@ module.exports = {
         : [],
       chainId: 8453,
     },
+    mainnet: {
+      // Ethereum mainnet — verified on Etherscan (etherscan.io).
+      // Set ALCHEMY_API_KEY for a dedicated Alchemy endpoint, or provide
+      // MAINNET_RPC_URL directly; falls back to the public Cloudflare endpoint.
+      url: process.env.ALCHEMY_API_KEY
+        ? `https://eth-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
+        : process.env.MAINNET_RPC_URL || "https://cloudflare-eth.com",
+      accounts: process.env.DEPLOYER_PRIVATE_KEY
+        ? [process.env.DEPLOYER_PRIVATE_KEY]
+        : [],
+      chainId: 1,
+    },
     hardhat: {
       chainId: 1514,
     },
