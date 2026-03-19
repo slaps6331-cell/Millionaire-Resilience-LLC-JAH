@@ -1128,7 +1128,13 @@ contract SLAPSIPSpvLoan is ERC20, Ownable, ReentrancyGuard {
     
     /**
      * @notice Get all auxiliary document hashes
-     * @return Tuple of all document hashes
+     * @return _articlesOfIncorpHash Articles of Incorporation hash
+     * @return _mrEinLetterHash MR EIN Letter hash
+     * @return _slapsSpvFormationHash SLAPS SPV Formation hash
+     * @return _slapsEinLetterHash SLAPS EIN Letter hash
+     * @return _nmSosReceiptHash NM SOS Receipt hash
+     * @return _beneficialOwnerIdHash Beneficial Owner ID hash
+     * @return _storyAttestationMetaHash Story Attestation Metadata hash
      */
     function getAuxiliaryDocumentHashes() external view returns (
         bytes32 _articlesOfIncorpHash,
