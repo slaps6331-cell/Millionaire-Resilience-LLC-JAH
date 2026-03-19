@@ -655,11 +655,13 @@ After deployment, the `multisig-transaction.json` artifact contains the transact
 |---------|----------|-------------|
 | Story Protocol | [storyscan.xyz](https://storyscan.xyz) | Automatic via `npm run contracts:verify:story` |
 | Base L2 | [basescan.org](https://basescan.org) | Automatic via `npm run contracts:verify:base` |
+| Ethereum Mainnet | [etherscan.io](https://etherscan.io) | Automatic via `npm run contracts:verify:mainnet` |
 
 If automatic verification fails, manually verify:
 ```bash
 npx hardhat verify --network story <CONTRACT_ADDRESS>
 npx hardhat verify --network base <CONTRACT_ADDRESS>
+npx hardhat verify --network mainnet <CONTRACT_ADDRESS>
 ```
 
 ### 5.6 Post-Deployment Security Checklist
@@ -758,11 +760,17 @@ npm run contracts:deploy:story
 # Deploy to Base L2 mainnet
 npm run contracts:deploy:base
 
+# Deploy to Ethereum mainnet
+npm run contracts:deploy:mainnet
+
 # Verify contracts on StoryScan
 npm run contracts:verify:story
 
 # Verify contracts on Basescan
 npm run contracts:verify:base
+
+# Verify contracts on Etherscan
+npm run contracts:verify:mainnet
 
 # Generate Morpho multi-sig transaction config
 npm run contracts:multisig

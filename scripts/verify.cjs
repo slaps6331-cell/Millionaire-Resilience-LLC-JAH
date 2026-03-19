@@ -62,6 +62,8 @@ async function main() {
     console.log("\nView on StoryScan: https://storyscan.xyz");
   } else if (networkName === "base") {
     console.log("\nView on Basescan:  https://basescan.org");
+  } else if (networkName === "mainnet") {
+    console.log("\nView on Etherscan: https://etherscan.io");
   }
   console.log("=".repeat(60));
 }
