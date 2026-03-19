@@ -99,7 +99,7 @@ From `valuation-attestation.json`:
 | StoryOrchestrationService | `PENDING_DEPLOYMENT` |
 | SLAPSIPSpvLoan | `PENDING_DEPLOYMENT` |
 
-These values are populated by `scripts/post-deploy-orchestrate.cjs` after live deployment.
+These values are placeholders. After live deployment, the on-chain hashes must be derived from the deployed contract addresses and `valuation-attestation.json` must be updated/regenerated separately; `scripts/post-deploy-orchestrate.cjs` currently writes `registration-attestation.<network>.json` and does not modify this file.
 
 ---
 
