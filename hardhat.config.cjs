@@ -55,6 +55,7 @@ module.exports = {
     },
     hardhat: {
       chainId: 1514,
+      allowUnlimitedContractSize: true,
     },
   },
   etherscan: {
