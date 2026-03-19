@@ -20,6 +20,7 @@ This guide covers:
 4. [Running the Deployment](#4-running-the-deployment)
 5. [Post-Deployment Verification](#5-post-deployment-verification)
 6. [Troubleshooting](#6-troubleshooting)
+7. [GitHub Pages Configuration](#7-github-pages-configuration)
 
 ---
 
@@ -851,3 +852,49 @@ gh run download <run-id>
 gh run download <run-id> --name deployment-story-<run-number>
 gh run download <run-id> --name deployment-base-<run-number>
 ```
+
+---
+
+## 7. GitHub Pages Configuration
+
+The repository includes a static frontend in the `docs/` folder on the `main` branch.
+This page serves as the **public documentation hub** for the deployed smart contracts,
+displaying deployment status, contract addresses, and on-chain multi-sig verification info.
+
+### Recommended Source
+
+| Setting | Value |
+|---------|-------|
+| **Branch** | `main` |
+| **Folder** | `/docs` |
+| **Build step required** | No — plain static HTML |
+| **Site URL** | `https://slaps6331-cell.github.io/Millionaire-Resilience-LLC-JAH/` |
+
+### Steps to Enable GitHub Pages
+
+1. Go to **Settings** (top navigation bar of the repository).
+2. In the left sidebar, click **Pages**.
+3. Under **Build and deployment → Source**, select **Deploy from a branch**.
+4. Under **Branch**, select **`main`**.
+5. Under **Folder**, select **`/docs`**.
+6. Click **Save**.
+7. Wait 1–2 minutes; GitHub will publish the site and show the URL.
+
+> **Alternative — GitHub Actions source:**
+> A workflow file (`.github/workflows/pages.yml`) is also included. If you prefer to let
+> Actions manage the deployment, set **Source** to **GitHub Actions** in the Pages settings
+> instead of *Deploy from a branch*. The workflow triggers automatically on every push to
+> `main` that modifies files under `docs/`.
+
+### Relationship to Smart Contract Deployment
+
+The `docs/index.html` page documents:
+- Overall deployment status (ready / pending / live)
+- All 11 contract pre-deployment and (eventually) live transaction hashes
+- Morpho 2-of-2 multi-sig signer addresses (`0xCD67f7e86A1397aBc33C473c58662BEB83b7a667` ThirdWeb
+  and `0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a` Coinbase) with links to on-chain verification
+- Step-by-step instructions for triggering the deployment and completing the multi-sig
+
+After a successful deployment, update `docs/index.html` (or add a
+`docs/deployment-status.json` loaded dynamically) to replace the pre-computed placeholder
+hashes with the live transaction hashes from `deployment-config.<network>.json`.
