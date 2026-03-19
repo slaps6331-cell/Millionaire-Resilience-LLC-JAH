@@ -12,6 +12,7 @@ module.exports = {
             enabled: true,
             runs: 200,
           },
+          evmVersion: "cancun",
         },
       },
       {
@@ -21,6 +22,7 @@ module.exports = {
             enabled: true,
             runs: 200,
           },
+          evmVersion: "cancun",
         },
       },
     ],
