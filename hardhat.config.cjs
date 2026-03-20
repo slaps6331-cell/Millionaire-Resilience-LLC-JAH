@@ -6,18 +6,7 @@ module.exports = {
   solidity: {
     compilers: [
       {
-        version: "0.8.23",
-        settings: {
-          optimizer: {
-            enabled: true,
-            runs: 200,
-          },
-          evmVersion: "cancun",
-          viaIR: true,
-        },
-      },
-      {
-        version: "0.8.24",
+        version: "0.8.26",
         settings: {
           optimizer: {
             enabled: true,
@@ -66,6 +55,7 @@ module.exports = {
     },
     hardhat: {
       chainId: 1514,
+      allowUnlimitedContractSize: true,
     },
   },
   etherscan: {
