@@ -20,7 +20,8 @@ This guide covers:
 4. [Running the Deployment](#4-running-the-deployment)
 5. [Post-Deployment Verification](#5-post-deployment-verification)
 6. [Troubleshooting](#6-troubleshooting)
-7. [Deploying with GitHub CLI (`gh`)](#7-deploying-with-github-cli-gh)
+7. [GitHub Pages Configuration](#7-github-pages-configuration)
+8. [Deploying with GitHub CLI (`gh`)](#8-deploying-with-github-cli-gh)
 
 ---
 
@@ -722,14 +723,49 @@ Run `node scripts/verify-multisig.cjs` and check:
 
 ---
 
-## 7. Deploying with GitHub CLI (`gh`)
+## 7. GitHub Pages Configuration
+
+The repository publishes a static informational site via GitHub Pages from the
+`docs/` folder on the `main` branch. Full configuration instructions are
+provided in [GITHUB_PAGES.md](GITHUB_PAGES.md). A summary is given below.
+
+### 7.1 Enabling GitHub Pages
+
+1. Go to **Settings → Pages** in the repository.
+2. Under **Build and deployment → Source**, select **Deploy from a branch**.
+3. Set the branch to **`main`** and the folder to **`/docs`**.
+4. Click **Save**.
+
+After ~1–2 minutes the site will be live at:
+```
+https://slaps6331-cell.github.io/Millionaire-Resilience-LLC-JAH/
+```
+
+### 7.2 Automated Deployment
+
+A GitHub Actions workflow (`.github/workflows/deploy-pages.yml`) automatically
+deploys the `docs/` folder to GitHub Pages on every push to `main`. No secrets
+or API keys are required—deployment uses the built-in `GITHUB_TOKEN`.
+
+To switch from branch-based deployment to the Actions workflow:
+
+1. Go to **Settings → Pages**.
+2. Change **Source** to **GitHub Actions**.
+3. The next push to `main` will trigger `deploy-pages.yml`.
+
+> **Note:** GitHub Pages hosts a **static informational website only**. It does
+> not deploy smart contracts. See §4 (Running the Deployment) for contract deployment.
+
+---
+
+## 8. Deploying with GitHub CLI (`gh`)
 
 All steps in this guide can be performed from the command line using the
 [GitHub CLI](https://cli.github.com) (`gh`) instead of the browser UI. This
 section mirrors §2 (Secrets Setup) and §4 (Running the Deployment) entirely
 from the terminal.
 
-### 7.1 Install and Authenticate
+### 8.1 Install and Authenticate
 
 **Install:**
 
@@ -770,7 +806,7 @@ gh repo view "$REPO"
 
 ---
 
-### 7.2 Set GitHub Secrets
+### 8.2 Set GitHub Secrets
 
 Use `gh secret set` for every credential listed in §2. Each command prompts
 you to paste the value, or you can pipe it in non-interactively.
@@ -820,7 +856,7 @@ gh secret list --repo "$REPO"
 
 ---
 
-### 7.3 Set Repository Variables
+### 8.3 Set Repository Variables
 
 Use `gh variable set` for the public wallet addresses and filing number (§2):
 
@@ -842,7 +878,7 @@ gh variable set UCC1_FILING_NUMBER \
 
 ---
 
-### 7.4 Create GitHub Environments
+### 8.4 Create GitHub Environments
 
 The deployment workflow requires `story-mainnet` and `base-mainnet` environments
 (§2 — *GitHub Environments*). Create them via the REST API:
@@ -870,7 +906,7 @@ gh api --method PUT "/repos/$REPO/environments/base-mainnet" \
 
 ---
 
-### 7.5 Pre-flight Dry Run
+### 8.5 Pre-flight Dry Run
 
 Before deploying to mainnet, compile all contracts without broadcasting any
 transactions:
@@ -899,7 +935,7 @@ gh run view --repo "$REPO" --log
 
 ---
 
-### 7.6 Deploy to Story Protocol (Chain 1514)
+### 8.6 Deploy to Story Protocol (Chain 1514)
 
 ```bash
 REPO="slaps6331-cell/Millionaire-Resilience-LLC"
@@ -935,7 +971,7 @@ gh run watch "$RUN_ID" --repo "$REPO"
 
 ---
 
-### 7.7 Deploy to Base L2 (Chain 8453)
+### 8.7 Deploy to Base L2 (Chain 8453)
 
 ```bash
 REPO="slaps6331-cell/Millionaire-Resilience-LLC"
@@ -947,11 +983,11 @@ gh workflow run deploy-contracts.yml \
   --field dry_run=false
 ```
 
-Approve the `base-mainnet` environment gate the same way as §7.6.
+Approve the `base-mainnet` environment gate the same way as §8.6.
 
 ---
 
-### 7.8 Deploy to Both Networks Simultaneously
+### 8.8 Deploy to Both Networks Simultaneously
 
 ```bash
 REPO="slaps6331-cell/Millionaire-Resilience-LLC"
@@ -964,12 +1000,12 @@ gh workflow run deploy-contracts.yml \
 ```
 
 The `deploy-story` and `deploy-base` jobs run in parallel. Each environment gate
-must be approved separately — run the approval command from §7.6 twice (once for
+must be approved separately — run the approval command from §8.6 twice (once for
 each pending deployment).
 
 ---
 
-### 7.9 Download Deployment Artifacts
+### 8.9 Download Deployment Artifacts
 
 After a successful run, download the deployment JSON files:
 
@@ -1003,7 +1039,7 @@ The downloaded folder will contain:
 
 ---
 
-### 7.10 One-Shot Setup Script
+### 8.10 One-Shot Setup Script
 
 Save the snippet below to a **temporary file** (never commit it — it reads live
 secret values from your environment):
