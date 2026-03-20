@@ -9,7 +9,7 @@
   "entity": "Gladiator Holdings LLC / Millionaire Resilience LLC",
   "storyScan": {
     "chainId": 1514,
-    "explorer": "https://storyscan.xyz",
+    "explorer": "https://www.storyscan.io",
     "note": "Story Protocol Mainnet \u2014 contracts verified via StoryScan API (STORYSCAN_API_KEY)",
     "transactions": {
       "StoryAttestationService": {
@@ -17,7 +17,7 @@
         "nonce": 0,
         "chainId": 1514,
         "network": "Story Protocol Mainnet",
-        "explorerUrl": "https://storyscan.xyz/tx/0x0b09f27824e6d28fe1f7f99e1de371fb51102351a1073fc2374e5bf536fc995f",
+        "explorerUrl": "https://www.storyscan.io/tx/0x0b09f27824e6d28fe1f7f99e1de371fb51102351a1073fc2374e5bf536fc995f",
         "note": "Pre-deployment deterministic hash \u2014 replace with live tx hash after deployment",
         "status": "pending"
       },
@@ -26,7 +26,7 @@
         "nonce": 1,
         "chainId": 1514,
         "network": "Story Protocol Mainnet",
-        "explorerUrl": "https://storyscan.xyz/tx/0x069c423ec29b0afb20cf90796a51994ca3687b72cc1ac4cdc54a11da245cda8f",
+        "explorerUrl": "https://www.storyscan.io/tx/0x069c423ec29b0afb20cf90796a51994ca3687b72cc1ac4cdc54a11da245cda8f",
         "note": "Pre-deployment deterministic hash \u2014 replace with live tx hash after deployment",
         "status": "pending"
       },
@@ -35,7 +35,7 @@
         "nonce": 2,
         "chainId": 1514,
         "network": "Story Protocol Mainnet",
-        "explorerUrl": "https://storyscan.xyz/tx/0x0433a3675178751956ce75cf8ea37600247d63ffa1e08a8ae971ea85ae3686fe",
+        "explorerUrl": "https://www.storyscan.io/tx/0x0433a3675178751956ce75cf8ea37600247d63ffa1e08a8ae971ea85ae3686fe",
         "note": "Pre-deployment deterministic hash \u2014 replace with live tx hash after deployment",
         "status": "pending"
       },
@@ -44,7 +44,7 @@
         "nonce": 3,
         "chainId": 1514,
         "network": "Story Protocol Mainnet",
-        "explorerUrl": "https://storyscan.xyz/tx/0x57b781319a87a8ae97eca27fb1c70872ea8349beaceb6f46a68fc4143a7129db",
+        "explorerUrl": "https://www.storyscan.io/tx/0x57b781319a87a8ae97eca27fb1c70872ea8349beaceb6f46a68fc4143a7129db",
         "note": "Pre-deployment deterministic hash \u2014 replace with live tx hash after deployment",
         "status": "pending"
       },
@@ -53,7 +53,7 @@
         "nonce": 4,
         "chainId": 1514,
         "network": "Story Protocol Mainnet",
-        "explorerUrl": "https://storyscan.xyz/tx/0x43c9a6a5fabd3ca7ed13256666865bd1c3d7729409457ff3a0766e3f92572c26",
+        "explorerUrl": "https://www.storyscan.io/tx/0x43c9a6a5fabd3ca7ed13256666865bd1c3d7729409457ff3a0766e3f92572c26",
         "note": "Pre-deployment deterministic hash \u2014 replace with live tx hash after deployment",
         "status": "pending"
       },
@@ -64,7 +64,7 @@
         "network": "Story Protocol Mainnet",
         "ipId": "0x98971c660ac20880b60F86Cc3113eBd979eb3aAE",
         "tokenId": 15192,
-        "explorerUrl": "https://storyscan.xyz/tx/0x7d4f4e9c08269e73077cbc7aa3c2b2a8337c5498256a8ab863094524200e6160",
+        "explorerUrl": "https://www.storyscan.io/tx/0x7d4f4e9c08269e73077cbc7aa3c2b2a8337c5498256a8ab863094524200e6160",
         "note": "IP asset registration call \u2014 Story Protocol IP Registry",
         "status": "pending"
       },
@@ -78,7 +78,7 @@
           "PIL-COM (5%)",
           "PIL-ENT (12%)"
         ],
-        "explorerUrl": "https://storyscan.xyz/tx/0x112914ca499c8e4a39af5cff45f3de82af854d3c01fe2d48d8b1122f53f9158e",
+        "explorerUrl": "https://www.storyscan.io/tx/0x112914ca499c8e4a39af5cff45f3de82af854d3c01fe2d48d8b1122f53f9158e",
         "note": "PIL license terms binding call \u2014 Story Protocol Licensing Module",
         "status": "pending"
       }
@@ -195,7 +195,7 @@
     "baseTxHash": "0x6e58e294b02ff40293a67b7011b17c9df8b83f6c205fc24d379fd73a28c3d74e",
     "storyTxHash": "0x60c455a95bcaecb4396a20bc3ed24ba574b91de4bd684148f7fd1e1a115e2db0",
     "basescanUrl": "https://basescan.org/tx/0x6e58e294b02ff40293a67b7011b17c9df8b83f6c205fc24d379fd73a28c3d74e",
-    "storyscanUrl": "https://storyscan.xyz/tx/0x60c455a95bcaecb4396a20bc3ed24ba574b91de4bd684148f7fd1e1a115e2db0",
+    "storyscanUrl": "https://www.storyscan.io/tx/0x60c455a95bcaecb4396a20bc3ed24ba574b91de4bd684148f7fd1e1a115e2db0",
     "walletInstructions": "Run: node scripts/anchor-signature.cjs  then  node scripts/verify-multisig.cjs",
     "note": "Replace with the actual transaction hash returned by the network after broadcast",
     "status": "pending",
@@ -206,7 +206,7 @@
     "storyScan": [
       "Deploy contracts:  npx hardhat run scripts/deploy.cjs --network story",
       "Verify source:     npx hardhat verify --network story <CONTRACT_ADDRESS>",
-      "StoryScan search:  https://storyscan.xyz/tx/<TX_HASH>",
+      "StoryScan search:  https://www.storyscan.io/tx/<TX_HASH>",
       "Replace pre-deployment hashes above with the live tx hashes from deployment-config.story.json"
     ],
     "etherscan": [

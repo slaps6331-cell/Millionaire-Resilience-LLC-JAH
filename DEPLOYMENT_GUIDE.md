@@ -58,7 +58,7 @@ Gather the following before starting. All will be stored as GitHub Secrets — *
 |-----|-----------------|
 | `DEPLOYER_PRIVATE_KEY` | See §1.4 — create a **dedicated Ethereum wallet** and export its private key |
 | `ALCHEMY_API_KEY` | <https://dashboard.alchemy.com> → Create App → Network: Story Protocol **and** Base → copy API key |
-| `STORYSCAN_API_KEY` | <https://storyscan.xyz> → Register → API Keys |
+| `STORYSCAN_API_KEY` | <https://www.storyscan.io> → Register → API Keys |
 | `ETHERSCAN_API_KEY` | <https://etherscan.io/myapikey> (also valid for Basescan) |
 | `COINBASE_API_KEY_NAME` | <https://portal.cdp.coinbase.com/access/api> → Create API key → copy **Key Name** (UUID) |
 | `COINBASE_API_KEY_PRIVATE_KEY` | Same page → copy **Private Key** (EC key in PEM format) |
@@ -654,7 +654,7 @@ After deployment, the `multisig-transaction.json` artifact contains the transact
 
 | Network | Explorer | Verification |
 |---------|----------|-------------|
-| Story Protocol | [storyscan.xyz](https://storyscan.xyz) | Automatic via `npm run contracts:verify:story` |
+| Story Protocol | [storyscan.io](https://www.storyscan.io) | Automatic via `npm run contracts:verify:story` |
 | Base L2 | [basescan.org](https://basescan.org) | Automatic via `npm run contracts:verify:base` |
 | Ethereum Mainnet | [etherscan.io](https://etherscan.io) | Automatic via `npm run contracts:verify:mainnet` |
 

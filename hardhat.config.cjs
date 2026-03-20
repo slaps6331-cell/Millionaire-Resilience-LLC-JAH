@@ -69,8 +69,8 @@ module.exports = {
         network: "story",
         chainId: 1514,
         urls: {
-          apiURL: "https://storyscan.xyz/api",
-          browserURL: "https://storyscan.xyz",
+          apiURL: "https://www.storyscan.io/api",
+          browserURL: "https://www.storyscan.io",
         },
       },
     ],

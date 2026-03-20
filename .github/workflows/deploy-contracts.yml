@@ -157,7 +157,7 @@ jobs:
             const fs = require('fs');
             const cfg = JSON.parse(fs.readFileSync('deployment-config.story.json'));
             Object.entries(cfg.contracts).forEach(([name, addr]) => {
-              console.log('| ' + name + ' | [\`' + addr + '\`](https://storyscan.xyz/address/' + addr + ') |');
+              console.log('| ' + name + ' | [\`' + addr + '\`](https://www.storyscan.io/address/' + addr + ') |');
             });
           " >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
@@ -175,7 +175,7 @@ jobs:
             console.log('| Step | Tx Hash |');
             console.log('|------|---------|');
             for (const [key, val] of Object.entries(att.transactions || {})) {
-              const hash = val.txHash ? '[\`' + val.txHash.slice(0,12) + '…\`](https://storyscan.xyz/tx/' + val.txHash + ')' : (val.skipped ? '_skipped_' : '_failed_');
+              const hash = val.txHash ? '[\`' + val.txHash.slice(0,12) + '…\`](https://www.storyscan.io/tx/' + val.txHash + ')' : (val.skipped ? '_skipped_' : '_failed_');
               console.log('| ' + key + ' | ' + hash + ' |');
             }
             const rs = att.registryStatus || {};
