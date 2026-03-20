@@ -874,17 +874,16 @@ displaying deployment status, contract addresses, and on-chain multi-sig verific
 
 1. Go to **Settings** (top navigation bar of the repository).
 2. In the left sidebar, click **Pages**.
-3. Under **Build and deployment → Source**, select **Deploy from a branch**.
-4. Under **Branch**, select **`main`**.
-5. Under **Folder**, select **`/docs`**.
-6. Click **Save**.
-7. Wait 1–2 minutes; GitHub will publish the site and show the URL.
+3. Under **Build and deployment → Source**, select **GitHub Actions**.
+4. Confirm that the workflow file `.github/workflows/pages.yml` is present (it is included in this repo). GitHub Pages will use this workflow to build and deploy the site.
+5. Click **Save**.
+6. Wait 1–2 minutes; GitHub will publish the site and show the URL. The workflow triggers automatically on every push to `main` that modifies files under `docs/`.
 
-> **Alternative — GitHub Actions source:**
-> A workflow file (`.github/workflows/pages.yml`) is also included. If you prefer to let
-> Actions manage the deployment, set **Source** to **GitHub Actions** in the Pages settings
-> instead of *Deploy from a branch*. The workflow triggers automatically on every push to
-> `main` that modifies files under `docs/`.
+> **Alternative — Deploy from a branch (only if Pages workflow is removed/disabled):**
+> GitHub Pages supports only one source at a time. If you do *not* want to use the
+> `.github/workflows/pages.yml` workflow, first remove or disable it, then in **Settings → Pages**
+> set **Source** to **Deploy from a branch**, choose **Branch** = **`main`** and **Folder** = **`/docs`**,
+> and click **Save**.
 
 ### Relationship to Smart Contract Deployment
 
