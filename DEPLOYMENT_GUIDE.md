@@ -20,6 +20,7 @@ This guide covers:
 4. [Running the Deployment](#4-running-the-deployment)
 5. [Post-Deployment Verification](#5-post-deployment-verification)
 6. [Troubleshooting](#6-troubleshooting)
+7. [Deploying with GitHub CLI (`gh`)](#7-deploying-with-github-cli-gh)
 
 ---
 
@@ -718,6 +719,338 @@ Run `node scripts/verify-multisig.cjs` and check:
 - The signature was produced from the correct wallet address.
 - The signature used `personal_sign` (EIP-191), not `eth_sign` (raw hash).
 - The `eip191Hash` in `signature-morpho-config.json` matches what was signed.
+
+---
+
+## 7. Deploying with GitHub CLI (`gh`)
+
+All steps in this guide can be performed from the command line using the
+[GitHub CLI](https://cli.github.com) (`gh`) instead of the browser UI. This
+section mirrors §2 (Secrets Setup) and §4 (Running the Deployment) entirely
+from the terminal.
+
+### 7.1 Install and Authenticate
+
+**Install:**
+
+```bash
+# macOS
+brew install gh
+
+# Windows (winget)
+winget install --id GitHub.cli
+
+# Linux (apt)
+sudo apt install gh
+
+# Linux (rpm)
+sudo dnf install gh
+```
+
+**Authenticate:**
+
+```bash
+gh auth login
+# Follow the prompts:
+#   → GitHub.com
+#   → HTTPS
+#   → Login with a web browser  (or paste a Personal Access Token)
+```
+
+Confirm you are targeting the correct repository:
+
+```bash
+REPO="slaps6331-cell/Millionaire-Resilience-LLC"
+gh repo view "$REPO"
+```
+
+> **Required token scopes**: `repo`, `workflow`, `write:secrets`, `read:org`.
+> If you use a Personal Access Token instead of browser login, ensure all four
+> scopes are enabled.
+
+---
+
+### 7.2 Set GitHub Secrets
+
+Use `gh secret set` for every credential listed in §2. Each command prompts
+you to paste the value, or you can pipe it in non-interactively.
+
+```bash
+REPO="slaps6331-cell/Millionaire-Resilience-LLC"
+
+# Deployer Ethereum private key (prompted — paste your 0x-prefixed key, 66 chars including prefix)
+gh secret set DEPLOYER_PRIVATE_KEY --repo "$REPO"
+
+# Alchemy API key
+gh secret set ALCHEMY_API_KEY --repo "$REPO"
+
+# Coinbase Developer Platform credentials
+gh secret set COINBASE_API_KEY_NAME --repo "$REPO"
+gh secret set COINBASE_API_KEY_PRIVATE_KEY --repo "$REPO"
+
+# Block-explorer API keys (for source verification)
+gh secret set STORYSCAN_API_KEY --repo "$REPO"
+gh secret set ETHERSCAN_API_KEY --repo "$REPO"
+
+# Optional RPC URL overrides (skip if using ALCHEMY_API_KEY)
+gh secret set STORY_RPC_URL --repo "$REPO"
+gh secret set BASE_RPC_URL --repo "$REPO"
+
+# ThirdWeb credentials
+gh secret set THIRDWEB_CLIENT_ID --repo "$REPO"
+gh secret set THIRDWEB_SECRET_KEY --repo "$REPO"
+
+# Pinata IPFS JWT
+gh secret set PINATA_JWT --repo "$REPO"
+```
+
+**Non-interactive (pipe from environment variable):**
+
+```bash
+echo "$DEPLOYER_PRIVATE_KEY" | gh secret set DEPLOYER_PRIVATE_KEY --repo "$REPO"
+echo "$ALCHEMY_API_KEY"      | gh secret set ALCHEMY_API_KEY      --repo "$REPO"
+# … repeat for each secret
+```
+
+Verify that all secrets are registered (names only — values are never shown):
+
+```bash
+gh secret list --repo "$REPO"
+```
+
+---
+
+### 7.3 Set Repository Variables
+
+Use `gh variable set` for the public wallet addresses and filing number (§2):
+
+```bash
+REPO="slaps6331-cell/Millionaire-Resilience-LLC"
+
+gh variable set THIRDWEB_WALLET_ADDRESS \
+  --body "0xCD67f7e86A1397aBc33C473c58662BEB83b7a667" \
+  --repo "$REPO"
+
+gh variable set COINBASE_WALLET_ADDRESS \
+  --body "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a" \
+  --repo "$REPO"
+
+gh variable set UCC1_FILING_NUMBER \
+  --body "2024-NM-UCC-0001" \
+  --repo "$REPO"
+```
+
+---
+
+### 7.4 Create GitHub Environments
+
+The deployment workflow requires `story-mainnet` and `base-mainnet` environments
+(§2 — *GitHub Environments*). Create them via the REST API:
+
+```bash
+REPO="slaps6331-cell/Millionaire-Resilience-LLC"
+
+gh api --method PUT "/repos/$REPO/environments/story-mainnet"
+gh api --method PUT "/repos/$REPO/environments/base-mainnet"
+```
+
+To add a required reviewer (replace `YOUR_GITHUB_USERNAME`):
+
+```bash
+REVIEWER_ID=$(gh api /users/YOUR_GITHUB_USERNAME --jq '.id')
+
+gh api --method PUT "/repos/$REPO/environments/story-mainnet" \
+  --field "reviewers[][type]=User" \
+  --field "reviewers[][id]=$REVIEWER_ID"
+
+gh api --method PUT "/repos/$REPO/environments/base-mainnet" \
+  --field "reviewers[][type]=User" \
+  --field "reviewers[][id]=$REVIEWER_ID"
+```
+
+---
+
+### 7.5 Pre-flight Dry Run
+
+Before deploying to mainnet, compile all contracts without broadcasting any
+transactions:
+
+```bash
+REPO="slaps6331-cell/Millionaire-Resilience-LLC"
+
+gh workflow run deploy-contracts.yml \
+  --repo "$REPO" \
+  --field network=story \
+  --field verify=true \
+  --field dry_run=true
+```
+
+Watch the run to completion:
+
+```bash
+gh run watch --repo "$REPO"
+```
+
+Or stream the full log:
+
+```bash
+gh run view --repo "$REPO" --log
+```
+
+---
+
+### 7.6 Deploy to Story Protocol (Chain 1514)
+
+```bash
+REPO="slaps6331-cell/Millionaire-Resilience-LLC"
+
+gh workflow run deploy-contracts.yml \
+  --repo "$REPO" \
+  --field network=story \
+  --field verify=true \
+  --field dry_run=false
+```
+
+The `story-mainnet` environment protection gate will pause the run. Approve it
+from the CLI (requires repo admin or write access):
+
+```bash
+# Find the run ID of the pending run
+RUN_ID=$(gh run list --repo "$REPO" \
+  --workflow deploy-contracts.yml --limit 1 --json databaseId --jq '.[0].databaseId')
+
+# Approve the pending deployment
+gh api --method POST \
+  "/repos/$REPO/actions/runs/$RUN_ID/pending_deployments" \
+  --field "environment_ids[]=$(gh api "/repos/$REPO/environments/story-mainnet" --jq '.id')" \
+  --field state=approved \
+  --field comment="Approved via gh CLI"
+```
+
+Then watch it finish:
+
+```bash
+gh run watch "$RUN_ID" --repo "$REPO"
+```
+
+---
+
+### 7.7 Deploy to Base L2 (Chain 8453)
+
+```bash
+REPO="slaps6331-cell/Millionaire-Resilience-LLC"
+
+gh workflow run deploy-contracts.yml \
+  --repo "$REPO" \
+  --field network=base \
+  --field verify=true \
+  --field dry_run=false
+```
+
+Approve the `base-mainnet` environment gate the same way as §7.6.
+
+---
+
+### 7.8 Deploy to Both Networks Simultaneously
+
+```bash
+REPO="slaps6331-cell/Millionaire-Resilience-LLC"
+
+gh workflow run deploy-contracts.yml \
+  --repo "$REPO" \
+  --field network=both \
+  --field verify=true \
+  --field dry_run=false
+```
+
+The `deploy-story` and `deploy-base` jobs run in parallel. Each environment gate
+must be approved separately — run the approval command from §7.6 twice (once for
+each pending deployment).
+
+---
+
+### 7.9 Download Deployment Artifacts
+
+After a successful run, download the deployment JSON files:
+
+```bash
+REPO="slaps6331-cell/Millionaire-Resilience-LLC"
+
+# Get the run ID of the most recent deploy run
+RUN_ID=$(gh run list --repo "$REPO" \
+  --workflow deploy-contracts.yml --limit 1 \
+  --json databaseId --jq '.[0].databaseId')
+
+# Download ALL artifacts from that run into ./deployment-artifacts/
+gh run download "$RUN_ID" --repo "$REPO" --dir ./deployment-artifacts
+
+# Or download a specific artifact by name
+RUN_NUMBER=$(gh run view "$RUN_ID" --repo "$REPO" --json number --jq '.number')
+gh run download "$RUN_ID" --repo "$REPO" \
+  --name "deployment-story-$RUN_NUMBER" \
+  --dir ./deployment-artifacts
+```
+
+The downloaded folder will contain:
+
+| File | Contents |
+|------|----------|
+| `deployment-config.story.json` | All 11 deployed contract addresses on Story Protocol |
+| `multisig-transaction.json` | Morpho multi-sig transaction config (see §5.3) |
+| `registration-attestation.story.json` | On-chain orchestration tx hashes |
+| `deployment-config.base.json` | All 11 deployed contract addresses on Base L2 |
+| `registration-attestation.base.json` | On-chain orchestration tx hashes (Base) |
+
+---
+
+### 7.10 One-Shot Setup Script
+
+Save the snippet below to a **temporary file** (never commit it — it reads live
+secret values from your environment):
+
+```bash
+#!/usr/bin/env bash
+# Usage: export each variable, then run:  bash /tmp/setup-gh-secrets.sh
+set -euo pipefail
+
+REPO="slaps6331-cell/Millionaire-Resilience-LLC"
+
+echo "── Setting secrets ──────────────────────────────────────"
+echo "$DEPLOYER_PRIVATE_KEY"          | gh secret set DEPLOYER_PRIVATE_KEY          --repo "$REPO"
+echo "$ALCHEMY_API_KEY"               | gh secret set ALCHEMY_API_KEY               --repo "$REPO"
+echo "$COINBASE_API_KEY_NAME"         | gh secret set COINBASE_API_KEY_NAME         --repo "$REPO"
+echo "$COINBASE_API_KEY_PRIVATE_KEY"  | gh secret set COINBASE_API_KEY_PRIVATE_KEY  --repo "$REPO"
+echo "$STORYSCAN_API_KEY"             | gh secret set STORYSCAN_API_KEY             --repo "$REPO"
+echo "$ETHERSCAN_API_KEY"             | gh secret set ETHERSCAN_API_KEY             --repo "$REPO"
+echo "$THIRDWEB_CLIENT_ID"            | gh secret set THIRDWEB_CLIENT_ID            --repo "$REPO"
+echo "$THIRDWEB_SECRET_KEY"           | gh secret set THIRDWEB_SECRET_KEY           --repo "$REPO"
+echo "$PINATA_JWT"                    | gh secret set PINATA_JWT                    --repo "$REPO"
+
+echo "── Setting variables ────────────────────────────────────"
+gh variable set THIRDWEB_WALLET_ADDRESS \
+  --body "0xCD67f7e86A1397aBc33C473c58662BEB83b7a667" --repo "$REPO"
+gh variable set COINBASE_WALLET_ADDRESS \
+  --body "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a" --repo "$REPO"
+gh variable set UCC1_FILING_NUMBER \
+  --body "${UCC1_FILING_NUMBER:-2024-NM-UCC-0001}" --repo "$REPO"
+
+echo "── Creating environments ────────────────────────────────"
+gh api --method PUT "/repos/$REPO/environments/story-mainnet" > /dev/null
+gh api --method PUT "/repos/$REPO/environments/base-mainnet"  > /dev/null
+
+echo "✓ All secrets, variables, and environments are configured."
+echo "  Run a dry run next:  gh workflow run deploy-contracts.yml --repo $REPO --field network=story --field verify=true --field dry_run=true"
+```
+
+Run it:
+
+```bash
+bash /tmp/setup-gh-secrets.sh
+```
+
+> **Security reminder**: Never save the script with real values embedded. Export
+> environment variables in your shell session, then run the script. Delete the
+> script file after use.
 
 ---
 
