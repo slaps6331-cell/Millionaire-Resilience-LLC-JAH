@@ -770,6 +770,16 @@ contract SLAPSIPSpvLoan is ERC20, Ownable, ReentrancyGuard {
             )
         );
         
+        // If direct transfer fails, record for off-chain execution
+        if (!success) {
+            emit IPTransferredToLender(
+                loanId,
+                loan.ipAssetId,
+                loan.ipTokenId,
+                loan.lender
+            );
+        }
+        
         // Update loan status
         loan.status = LoanStatus.Liquidated;
         
