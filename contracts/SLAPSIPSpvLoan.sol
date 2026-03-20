@@ -791,22 +791,24 @@ contract SLAPSIPSpvLoan is ERC20, Ownable, ReentrancyGuard {
         Loan storage loan = loans[loanId];
         
         // Call Story Protocol Licensing Module to transfer rights
-        STORY_LICENSING_MODULE.call(
+        (bool licensingSuccess,) = STORY_LICENSING_MODULE.call(
             abi.encodeWithSignature(
                 "transferLicenseOwnership(address,address)",
                 loan.ipAssetId,
                 loan.lender
             )
         );
+        require(licensingSuccess, "License transfer failed");
         
         // Call Royalty Module to redirect royalties
-        STORY_ROYALTY_MODULE.call(
+        (bool royaltySuccess,) = STORY_ROYALTY_MODULE.call(
             abi.encodeWithSignature(
                 "setRoyaltyReceiver(address,address)",
                 loan.ipAssetId,
                 loan.lender
             )
         );
+        require(royaltySuccess, "Royalty redirect failed");
     }
     
     // ============ VIEW FUNCTIONS ============
