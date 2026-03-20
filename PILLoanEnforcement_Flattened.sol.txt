@@ -574,13 +574,14 @@ contract PILLoanEnforcement is Ownable, ReentrancyGuard {
         
         // Call Royalty Module to redirect royalties
         if (success) {
-            STORY_ROYALTY_MODULE.call(
+            (bool royaltySuccess,) = STORY_ROYALTY_MODULE.call(
                 abi.encodeWithSignature(
                     "setRoyaltyReceiver(address,address)",
                     loan.ipAssetId,
                     loan.lender
                 )
             );
+            require(royaltySuccess, "Royalty redirect failed");
         }
     }
     
