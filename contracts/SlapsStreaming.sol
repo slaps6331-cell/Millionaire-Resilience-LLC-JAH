@@ -306,7 +306,8 @@ contract SlapsStreaming is ERC721, ERC721URIStorage, Ownable, ReentrancyGuard, P
         artist.totalEarnings += artistPayout;
         distributedRoyalties += artistPayout;
 
-        payable(msg.sender).transfer(artistPayout);
+        (bool successRoyalty, ) = payable(msg.sender).call{value: artistPayout}("");
+        require(successRoyalty, "ETH transfer failed");
 
         emit RoyaltyDistributed(msg.sender, artistPayout);
     }
@@ -415,7 +416,8 @@ contract SlapsStreaming is ERC721, ERC721URIStorage, Ownable, ReentrancyGuard, P
     function withdrawPlatformFees() external onlyOwner nonReentrant {
         uint256 balance = address(this).balance - totalRoyaltyPool;
         require(balance > 0, "No fees to withdraw");
-        payable(owner()).transfer(balance);
+        (bool successFees, ) = payable(owner()).call{value: balance}("");
+        require(successFees, "ETH transfer failed");
     }
 
     // ============ VIEW FUNCTIONS ============
@@ -447,10 +449,6 @@ contract SlapsStreaming is ERC721, ERC721URIStorage, Ownable, ReentrancyGuard, P
     }
 
     // ============ OVERRIDE FUNCTIONS ============
-
-    function _burn(uint256 tokenId) internal override {
-        super._burn(tokenId);
-    }
 
     function tokenURI(uint256 tokenId) public view override(ERC721, ERC721URIStorage) returns (string memory) {
         return super.tokenURI(tokenId);

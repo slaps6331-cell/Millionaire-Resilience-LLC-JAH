@@ -51,6 +51,41 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
  */
 contract StoryAttestationService is Ownable, ReentrancyGuard {
 
+    // ============ CUSTOM ERRORS ============
+
+    error NotAuthorizedAttestor();
+    error NotAuthorizedValuator();
+    error InvalidPresentValue();
+    error ProjectionBelowPresent();
+    error TenYearBelowFiveYear();
+    error PatentSightScoreTooLow();
+    error InvalidFilingHash();
+    error InvalidDebtor();
+    error MRIPProtected();
+    error AllocationMustBe100();
+    error InvalidPaymentDestination();
+    error InvalidMorphoMarketId();
+    error InvalidBorrowAmount();
+    error ProtectedSPVRequiresIPId();
+    error InvalidUCC1Attestation();
+    error InvalidMorphoAttestation();
+    error InvalidSPVAttestation();
+    error UCC1AttestationRevoked();
+    error MorphoAttestationRevoked();
+    error SPVAttestationRevoked();
+    error AttestationNotFound();
+    error NotAuthorized();
+    error AlreadyRevoked();
+    error InvalidAuditorAddress();
+    error AuditorAlreadyApproved();
+    error AuditorNotActive();
+    error FilingNumberRequired();
+    error UCC1AlreadyRecorded();
+    error SASAlreadyRegistered();
+    error SOSAlreadyRegistered();
+    error ServiceTypeRequired();
+    error InvalidContractHash();
+
     // ============ CONSTANTS ============
 
     uint256 public constant STORY_CHAIN_ID = 1514;
@@ -79,30 +114,31 @@ contract StoryAttestationService is Ownable, ReentrancyGuard {
     bytes32 public constant ATT_SPV_SEGREGATION = keccak256("SPV_SEGREGATION_ATTESTATION");
 
     // ============ CORPORATE IDENTITY CONSTANTS ============
+    // Internal constants exposed via getCorporateIdentity() to reduce bytecode size.
 
-    string public constant PARENT_NAME = "Gladiator Holdings LLC";
-    string public constant PARENT_ENTITY_ID = "0008034162";
-    string public constant PARENT_ENTRY_NUMBER = "5095898";
-    string public constant PARENT_EIN = "39-2684612";
+    string private constant PARENT_NAME = "Gladiator Holdings LLC";
+    string private constant PARENT_ENTITY_ID = "0008034162";
+    string private constant PARENT_ENTRY_NUMBER = "5095898";
+    string private constant PARENT_EIN = "39-2684612";
 
-    string public constant MR_NAME = "Millionaire Resilience LLC";
-    string public constant MR_EIN = "41-3789881";
+    string private constant MR_NAME = "Millionaire Resilience LLC";
+    string private constant MR_EIN = "41-3789881";
 
-    string public constant WHETSTONE_NAME = "Resilience Blockchain Whetstone LLC";
-    string public constant WHETSTONE_EIN = "41-4131924";
+    string private constant WHETSTONE_NAME = "Resilience Blockchain Whetstone LLC";
+    string private constant WHETSTONE_EIN = "41-4131924";
 
-    string public constant SLAPS_NAME = "Slaps Streaming LLC";
-    string public constant SLAPS_EIN = "41-4045773";
+    string private constant SLAPS_NAME = "Slaps Streaming LLC";
+    string private constant SLAPS_EIN = "41-4045773";
 
-    string public constant BENEFICIAL_OWNER = "Clifton Kelly Bell";
-    string public constant BENEFICIAL_OWNER_ID = "WDL5NTZ8C53B";
+    string private constant BENEFICIAL_OWNER = "Clifton Kelly Bell";
+    string private constant BENEFICIAL_OWNER_ID = "WDL5NTZ8C53B";
 
     // ============ APPROVED AUDITOR ============
 
-    string public constant AUDITOR_NAME = "Tecknos Associates LLC";
-    string public constant AUDITOR_CREDENTIAL_1 = "ASC 820 - Fair Value Measurement";
-    string public constant AUDITOR_CREDENTIAL_2 = "IRC 409A - Deferred Compensation Valuation";
-    string public constant AUDITOR_ROLE = "Approved Coinbase Auditor";
+    string private constant AUDITOR_NAME = "Tecknos Associates LLC";
+    string private constant AUDITOR_CREDENTIAL_1 = "ASC 820 - Fair Value Measurement";
+    string private constant AUDITOR_CREDENTIAL_2 = "IRC 409A - Deferred Compensation Valuation";
+    string private constant AUDITOR_ROLE = "Approved Coinbase Auditor";
 
     struct ApprovedAuditor {
         string name;
@@ -319,12 +355,12 @@ contract StoryAttestationService is Ownable, ReentrancyGuard {
     // ============ MODIFIERS ============
 
     modifier onlyAuthorizedAttestor() {
-        require(authorizedAttestors[msg.sender] || msg.sender == owner(), "Not authorized attestor");
+        if (!(authorizedAttestors[msg.sender] || msg.sender == owner())) revert NotAuthorizedAttestor();
         _;
     }
 
     modifier onlyAuthorizedValuator() {
-        require(authorizedValuators[msg.sender] || msg.sender == owner(), "Not authorized valuator");
+        if (!(authorizedValuators[msg.sender] || msg.sender == owner())) revert NotAuthorizedValuator();
         _;
     }
 
@@ -432,10 +468,10 @@ contract StoryAttestationService is Ownable, ReentrancyGuard {
         uint256 validityDays,
         string calldata metadataURI
     ) external onlyAuthorizedValuator returns (bytes32 attestationId) {
-        require(presentValue > 0, "Invalid present value");
-        require(projectedValue5Y >= presentValue, "5Y projection must exceed present");
-        require(projectedValue10Y >= projectedValue5Y, "10Y projection must exceed 5Y");
-        require(patentSightScore >= 70, "PatentSight score below minimum (70)");
+        if (presentValue == 0) revert InvalidPresentValue();
+        if (projectedValue5Y < presentValue) revert ProjectionBelowPresent();
+        if (projectedValue10Y < projectedValue5Y) revert TenYearBelowFiveYear();
+        if (patentSightScore < 70) revert PatentSightScoreTooLow();
 
         bytes32 dataHash = keccak256(abi.encodePacked(
             ipAssetId, presentValue, projectedValue5Y, projectedValue10Y,
@@ -484,11 +520,11 @@ contract StoryAttestationService is Ownable, ReentrancyGuard {
         string calldata jurisdiction,
         string calldata filingNumber,
         address ipAssetId,
-        uint256 collateralValue,
+        uint256, /* collateralValue */
         string calldata metadataURI
     ) external onlyAuthorizedAttestor returns (bytes32 attestationId) {
-        require(filingHash != bytes32(0), "Invalid filing hash");
-        require(debtor != address(0), "Invalid debtor");
+        if (filingHash == bytes32(0)) revert InvalidFilingHash();
+        if (debtor == address(0)) revert InvalidDebtor();
 
         bytes32 dataHash = keccak256(abi.encodePacked(
             filingHash, debtor, securedParty, jurisdiction, filingNumber
@@ -519,7 +555,7 @@ contract StoryAttestationService is Ownable, ReentrancyGuard {
         uint256 collateralValue,
         string calldata metadataURI
     ) external onlyAuthorizedAttestor returns (bytes32 attestationId) {
-        require(ipAssetId != MR_IPID, "MR IP is PROTECTED - cannot be collateral");
+        if (ipAssetId == MR_IPID) revert MRIPProtected();
 
         bytes32 dataHash = keccak256(abi.encodePacked(
             ipAssetId, lender, loanAmount, collateralType, collateralValue
@@ -549,8 +585,8 @@ contract StoryAttestationService is Ownable, ReentrancyGuard {
         address paymentDestination,
         string calldata metadataURI
     ) external onlyAuthorizedAttestor returns (bytes32 attestationId) {
-        require(allocationPercentage == 100, "Must allocate 100% to loan repayment");
-        require(paymentDestination != address(0), "Invalid payment destination");
+        if (allocationPercentage != 100) revert AllocationMustBe100();
+        if (paymentDestination == address(0)) revert InvalidPaymentDestination();
 
         uint256 totalAnnualRevenue = pilPerRevenue + pilComRevenue + pilEntRevenue;
 
@@ -597,8 +633,8 @@ contract StoryAttestationService is Ownable, ReentrancyGuard {
         uint256 interestRate,
         string calldata metadataURI
     ) external onlyAuthorizedAttestor returns (bytes32 attestationId) {
-        require(morphoMarketId != bytes32(0), "Invalid Morpho market ID");
-        require(borrowAmount > 0, "Invalid borrow amount");
+        if (morphoMarketId == bytes32(0)) revert InvalidMorphoMarketId();
+        if (borrowAmount == 0) revert InvalidBorrowAmount();
 
         bytes32 dataHash = keccak256(abi.encodePacked(
             morphoMarketId, loanToken, collateralToken, lltv, borrowAmount, collateralAmount
@@ -644,7 +680,7 @@ contract StoryAttestationService is Ownable, ReentrancyGuard {
         string calldata metadataURI
     ) external onlyAuthorizedAttestor returns (bytes32 attestationId) {
         if (!atRisk) {
-            require(ipAssetId != address(0), "Protected SPV must have IP ID");
+            if (ipAssetId == address(0)) revert ProtectedSPVRequiresIPId();
         }
 
         string memory riskStatus = atRisk ? "AT_RISK" : "PROTECTED";
@@ -687,12 +723,12 @@ contract StoryAttestationService is Ownable, ReentrancyGuard {
         bytes32 morphoAttestationId,
         bytes32 spvAttestationId
     ) external onlyAuthorizedAttestor {
-        require(attestations[ucc1AttestationId].attestationType == ATT_UCC1_BRIDGE, "Invalid UCC-1 attestation");
-        require(attestations[morphoAttestationId].attestationType == ATT_MORPHO_MARKET, "Invalid Morpho attestation");
-        require(attestations[spvAttestationId].attestationType == ATT_SPV_SEGREGATION, "Invalid SPV attestation");
-        require(!attestations[ucc1AttestationId].revoked, "UCC-1 attestation revoked");
-        require(!attestations[morphoAttestationId].revoked, "Morpho attestation revoked");
-        require(!attestations[spvAttestationId].revoked, "SPV attestation revoked");
+        if (attestations[ucc1AttestationId].attestationType != ATT_UCC1_BRIDGE) revert InvalidUCC1Attestation();
+        if (attestations[morphoAttestationId].attestationType != ATT_MORPHO_MARKET) revert InvalidMorphoAttestation();
+        if (attestations[spvAttestationId].attestationType != ATT_SPV_SEGREGATION) revert InvalidSPVAttestation();
+        if (attestations[ucc1AttestationId].revoked) revert UCC1AttestationRevoked();
+        if (attestations[morphoAttestationId].revoked) revert MorphoAttestationRevoked();
+        if (attestations[spvAttestationId].revoked) revert SPVAttestationRevoked();
 
         emit HermeticSealCompleted(
             ucc1AttestationId,
@@ -739,9 +775,9 @@ contract StoryAttestationService is Ownable, ReentrancyGuard {
         string calldata reason
     ) external {
         Attestation storage att = attestations[attestationId];
-        require(att.id != bytes32(0), "Attestation not found");
-        require(msg.sender == att.attestor || msg.sender == owner(), "Not authorized");
-        require(!att.revoked, "Already revoked");
+        if (att.id == bytes32(0)) revert AttestationNotFound();
+        if (msg.sender != att.attestor && msg.sender != owner()) revert NotAuthorized();
+        if (att.revoked) revert AlreadyRevoked();
 
         att.revoked = true;
 
@@ -834,7 +870,7 @@ contract StoryAttestationService is Ownable, ReentrancyGuard {
         return (true, maxLoanAmount, "Approved for Morpho Protocol lending");
     }
 
-    function getProtectedPortfolioValue() external view returns (
+    function getProtectedPortfolioValue() external pure returns (
         uint256 mrPlatformValue,
         uint256 whetstoneValue,
         uint256 lexisNexisValue,
@@ -879,8 +915,8 @@ contract StoryAttestationService is Ownable, ReentrancyGuard {
         string calldata role,
         uint256 validityDays
     ) external onlyOwner {
-        require(auditorAddress != address(0), "Invalid auditor address");
-        require(!approvedAuditors[auditorAddress].active, "Auditor already approved");
+        if (auditorAddress == address(0)) revert InvalidAuditorAddress();
+        if (approvedAuditors[auditorAddress].active) revert AuditorAlreadyApproved();
 
         ApprovedAuditor storage auditor = approvedAuditors[auditorAddress];
         auditor.name = name;
@@ -900,7 +936,7 @@ contract StoryAttestationService is Ownable, ReentrancyGuard {
     }
 
     function revokeAuditor(address auditorAddress, string calldata reason) external onlyOwner {
-        require(approvedAuditors[auditorAddress].active, "Auditor not active");
+        if (!approvedAuditors[auditorAddress].active) revert AuditorNotActive();
         approvedAuditors[auditorAddress].active = false;
         authorizedValuators[auditorAddress] = false;
         emit AuditorRevoked(auditorAddress, reason);
@@ -932,8 +968,8 @@ contract StoryAttestationService is Ownable, ReentrancyGuard {
         string calldata filingNumber,
         string calldata jurisdiction
     ) external onlyOwner {
-        require(bytes(filingNumber).length > 0, "Filing number required");
-        require(!ucc1FilingRecorded, "UCC-1 filing already recorded");
+        if (bytes(filingNumber).length == 0) revert FilingNumberRequired();
+        if (ucc1FilingRecorded) revert UCC1AlreadyRecorded();
 
         ucc1FilingNumber = filingNumber;
         ucc1FilingJurisdiction = jurisdiction;
@@ -947,7 +983,7 @@ contract StoryAttestationService is Ownable, ReentrancyGuard {
         string calldata newFilingNumber,
         string calldata jurisdiction
     ) external onlyOwner {
-        require(bytes(newFilingNumber).length > 0, "Filing number required");
+        if (bytes(newFilingNumber).length == 0) revert FilingNumberRequired();
         ucc1FilingNumber = newFilingNumber;
         ucc1FilingJurisdiction = jurisdiction;
         ucc1FilingTimestamp = block.timestamp;
@@ -966,8 +1002,8 @@ contract StoryAttestationService is Ownable, ReentrancyGuard {
     // ============ SAS/SOS REGISTRY FUNCTIONS ============
 
     function registerSAS(bytes32 contractHash) external onlyOwner {
-        require(contractHash != bytes32(0), "Invalid contract hash");
-        require(!sasRegistered, "SAS already registered");
+        if (contractHash == bytes32(0)) revert InvalidContractHash();
+        if (sasRegistered) revert SASAlreadyRegistered();
 
         sasContractHash = contractHash;
         sasRegistered = true;
@@ -977,8 +1013,8 @@ contract StoryAttestationService is Ownable, ReentrancyGuard {
     }
 
     function registerSOS(bytes32 contractHash) external onlyOwner {
-        require(contractHash != bytes32(0), "Invalid contract hash");
-        require(!sosRegistered, "SOS already registered");
+        if (contractHash == bytes32(0)) revert InvalidContractHash();
+        if (sosRegistered) revert SOSAlreadyRegistered();
 
         sosContractHash = contractHash;
         sosRegistered = true;
@@ -991,8 +1027,8 @@ contract StoryAttestationService is Ownable, ReentrancyGuard {
         string calldata serviceType,
         bytes32 contractHash
     ) external onlyOwner {
-        require(bytes(serviceType).length > 0, "Service type required");
-        require(contractHash != bytes32(0), "Invalid contract hash");
+        if (bytes(serviceType).length == 0) revert ServiceTypeRequired();
+        if (contractHash == bytes32(0)) revert InvalidContractHash();
 
         emit RegistryRequestSubmitted(serviceType, contractHash, msg.sender);
     }

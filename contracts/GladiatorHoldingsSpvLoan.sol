@@ -505,6 +505,7 @@ contract GladiatorHoldingsSpvLoan is ERC20, Ownable, ReentrancyGuard {
      */
     function declareSLAPSDefault(uint256 loanId) 
         external 
+        nonReentrant
         validLoan(loanId) 
         onlySLAPSCollateral(loanId) 
     {

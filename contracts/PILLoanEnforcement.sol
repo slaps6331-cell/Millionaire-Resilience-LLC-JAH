@@ -507,7 +507,7 @@ contract PILLoanEnforcement is Ownable, ReentrancyGuard {
     function declareDefault(
         uint256 loanId
     ) external nonReentrant validLoan(loanId) onlyLender(loanId) loanActive(loanId) {
-        (bool isDefault, uint256 daysOverdue) = checkDefault(loanId);
+        (bool isDefault, ) = checkDefault(loanId);
         require(isDefault, "Loan not in default");
         
         Loan storage loan = loans[loanId];
@@ -577,8 +577,9 @@ contract PILLoanEnforcement is Ownable, ReentrancyGuard {
             )
         );
         
-        // Call Royalty Module to redirect royalties
+        // Best-effort call to Royalty Module to redirect royalties (may not be deployed on this chain)
         if (success) {
+            // solhint-disable-next-line avoid-low-level-calls
             STORY_ROYALTY_MODULE.call(
                 abi.encodeWithSignature(
                     "setRoyaltyReceiver(address,address)",
@@ -593,11 +594,10 @@ contract PILLoanEnforcement is Ownable, ReentrancyGuard {
     
     /**
      * @notice Get PIL license terms for a loan's IP
-     * @param loanId The loan ID
      * @param licenseType Type of license (PIL-PER, PIL-COM, PIL-ENT)
      */
     function getPILTerms(
-        uint256 loanId,
+        uint256, /* loanId */
         string calldata licenseType
     ) external pure returns (PILTerms memory terms) {
         bytes32 typeHash = keccak256(bytes(licenseType));

@@ -760,8 +760,9 @@ contract SLAPSIPSpvLoan is ERC20, Ownable, ReentrancyGuard {
     function _executeIPTransfer(uint256 loanId) internal {
         Loan storage loan = loans[loanId];
         
-        // Transfer IP NFT to lender via Story Protocol
-        (bool success,) = STORY_PROTOCOL_REGISTRY.call(
+        // Transfer IP NFT to lender via Story Protocol (best-effort: may not be on this chain)
+        // solhint-disable-next-line avoid-low-level-calls
+        STORY_PROTOCOL_REGISTRY.call(
             abi.encodeWithSignature(
                 "transferIP(address,address,uint256)",
                 loan.borrower,
@@ -790,7 +791,8 @@ contract SLAPSIPSpvLoan is ERC20, Ownable, ReentrancyGuard {
     function _reassignLicensingRights(uint256 loanId) internal {
         Loan storage loan = loans[loanId];
         
-        // Call Story Protocol Licensing Module to transfer rights
+        // Best-effort calls to Story Protocol (may not be deployed on this chain)
+        // solhint-disable-next-line avoid-low-level-calls
         STORY_LICENSING_MODULE.call(
             abi.encodeWithSignature(
                 "transferLicenseOwnership(address,address)",
@@ -799,7 +801,7 @@ contract SLAPSIPSpvLoan is ERC20, Ownable, ReentrancyGuard {
             )
         );
         
-        // Call Royalty Module to redirect royalties
+        // solhint-disable-next-line avoid-low-level-calls
         STORY_ROYALTY_MODULE.call(
             abi.encodeWithSignature(
                 "setRoyaltyReceiver(address,address)",
@@ -1128,7 +1130,13 @@ contract SLAPSIPSpvLoan is ERC20, Ownable, ReentrancyGuard {
     
     /**
      * @notice Get all auxiliary document hashes
-     * @return Tuple of all document hashes
+     * @return _articlesOfIncorpHash Articles of Incorporation hash
+     * @return _mrEinLetterHash MR EIN Letter hash
+     * @return _slapsSpvFormationHash SLAPS SPV Formation hash
+     * @return _slapsEinLetterHash SLAPS EIN Letter hash
+     * @return _nmSosReceiptHash NM SOS Receipt hash
+     * @return _beneficialOwnerIdHash Beneficial Owner ID hash
+     * @return _storyAttestationMetaHash Story Attestation Metadata hash
      */
     function getAuxiliaryDocumentHashes() external view returns (
         bytes32 _articlesOfIncorpHash,

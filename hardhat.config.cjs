@@ -6,24 +6,33 @@ module.exports = {
   solidity: {
     compilers: [
       {
-        version: "0.8.23",
+        version: "0.8.26",
         settings: {
+          viaIR: true,
           optimizer: {
             enabled: true,
             runs: 200,
           },
-        },
-      },
-      {
-        version: "0.8.24",
-        settings: {
-          optimizer: {
-            enabled: true,
-            runs: 200,
-          },
+          evmVersion: "cancun",
         },
       },
     ],
+    overrides: {
+      // StoryAttestationService exceeds the 24KB EVM bytecode limit at runs=200.
+      // Using runs=1 optimises for minimum deployment size at the cost of higher
+      // per-call gas — acceptable for an attestation registry called infrequently.
+      "contracts/StoryAttestationService.sol": {
+        version: "0.8.26",
+        settings: {
+          viaIR: true,
+          optimizer: {
+            enabled: true,
+            runs: 1,
+          },
+          evmVersion: "cancun",
+        },
+      },
+    },
   },
   networks: {
     story: {
