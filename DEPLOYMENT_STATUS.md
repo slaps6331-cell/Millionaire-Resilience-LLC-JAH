@@ -8,12 +8,12 @@
 
 ## Executive Summary
 
-**Contracts have NOT yet been deployed to any live network.**
+**No deployment artifacts or live deployment addresses are tracked in this repository.**
 
 All transaction hashes in `tx-hashes.json` are *pre-deployment deterministic hashes*
 (computed offline by `scripts/generate-tx-hashes.cjs`). They are placeholders —
 not mined transaction hashes — and no `deployment-config.*.json` output files
-exist in the repository.
+are present in this repository.
 
 A CI compilation error (now fixed) was also blocking any deployment workflow from running.
 
