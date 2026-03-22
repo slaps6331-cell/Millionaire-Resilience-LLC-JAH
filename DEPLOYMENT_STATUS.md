@@ -2,12 +2,12 @@
 
 **Entity:** Gladiator Holdings LLC / Millionaire Resilience LLC  
 **Deployer Address:** `0x597856e93f19877a399f686D2F43b298e2268618`  
-**Report Generated:** 2026-03-19  
-**Status as of:** Branch `copilot/deploy-smart-contracts-to-etherscan-again`
+**Report Generated:** 2026-03-22  
+**Status as of:** Branch `copilot/deployment-smart-contracts-storyscan-basescan`
 
 ---
 
-## ⚠️ Overall Status: READY TO DEPLOY (Compilation Fixed — Awaiting Secrets & Manual Trigger)
+## 🚀 Overall Status: READY TO FIRE (All Secrets Configured — Auto-deploys on Merge to Main)
 
 The smart contracts **have not been deployed** to any live blockchain network. The transaction hashes recorded in `tx-hashes.json` are **deterministic pre-deployment hashes**, computed locally by `scripts/generate-tx-hashes.cjs` using:
 
@@ -25,9 +25,9 @@ These hashes serve as placeholder records and **must be replaced** with the actu
 |-------|--------|-------|
 | Contract Compilation | ✅ **Fixed** | All address checksum and length errors corrected |
 | Local test-deploy (CI) | ✅ **Fixed** | Artifact download step added to check-contracts workflow |
-| Live deployment (Story → StoryScan) | ❌ **Secrets required** | `DEPLOYER_PRIVATE_KEY`, `STORYSCAN_API_KEY` not yet set |
-| Live deployment (Base L2 → Basescan) | ❌ **Secrets required** | `DEPLOYER_PRIVATE_KEY`, `ALCHEMY_API_KEY`, `ETHERSCAN_API_KEY` not yet set |
-| Live deployment (Ethereum → Etherscan) | ❌ **Secrets required** | `DEPLOYER_PRIVATE_KEY`, `ALCHEMY_API_KEY`, `ETHERSCAN_API_KEY` not yet set |
+| Live deployment (Story → StoryScan) | ✅ **Secrets configured** | Fires automatically on merge to `main` |
+| Live deployment (Base L2 → Basescan) | ✅ **Secrets configured** | Fires automatically on merge to `main` |
+| Live deployment (Ethereum → Etherscan) | ⏸ **On-demand only** | Requires `workflow_dispatch` with `network=mainnet` |
 
 **Compilation fixes applied (across 8 contracts):**
 
@@ -116,27 +116,28 @@ To complete the multi-sig:
 
 ## How to Trigger Live Deployment
 
-The deployment workflow (`deploy-contracts.yml`) is a **manual `workflow_dispatch`**. To deploy:
+The deployment workflow (`deploy-contracts.yml`) now fires **automatically on every push to `main`**, deploying to both Story Protocol and Base L2 with source verification. All required secrets are configured.
 
 ### Step 1 — Merge this PR
 
-Merge branch `copilot/deploy-smart-contracts-to-etherscan-again` into `main`.
+Merge branch `copilot/deployment-smart-contracts-storyscan-basescan` into `main`.
 
-### Step 2 — Configure GitHub Actions Secrets
+The `deploy-story` and `deploy-base` jobs will start immediately after the merge commit lands on `main`. No manual trigger is needed.
 
-Go to **Settings → Secrets and variables → Actions → New repository secret** and add:
+### Step 2 — Secrets Already Configured ✅
 
-| Secret Name | Description |
-|-------------|-------------|
-| `DEPLOYER_PRIVATE_KEY` | Private key for `0x597856e93f19877a399f686D2F43b298e2268618` |
-| `ALCHEMY_API_KEY` | Alchemy API key (for Base L2, Ethereum mainnet, and Story Protocol RPC) |
-| `STORYSCAN_API_KEY` | StoryScan API key (for Story Protocol source verification) |
-| `ETHERSCAN_API_KEY` | Etherscan/Basescan API key (for Ethereum mainnet and Base L2 verification) |
-| `MAINNET_RPC_URL` | Ethereum mainnet RPC URL (optional — fallback to Cloudflare if ALCHEMY_API_KEY is set) |
-| `COINBASE_API_KEY_NAME` | Coinbase CDP key name (optional — for Coinbase signing) |
-| `COINBASE_API_KEY_PRIVATE_KEY` | Coinbase CDP private key (optional — for Coinbase signing) |
+All required GitHub Actions secrets are in place:
 
-### Step 3 — Trigger the Deploy Workflow
+| Secret Name | Status | Purpose |
+|-------------|--------|---------|
+| `DEPLOYER_PRIVATE_KEY` | ✅ Set | Deployer wallet `0x597856e93f19877a399f686D2F43b298e2268618` |
+| `ALCHEMY_API_KEY` | ✅ Set | RPC for Base L2 and Story Protocol |
+| `STORYSCAN_API_KEY` | ✅ Set | Source verification on StoryScan |
+| `ETHERSCAN_API_KEY` | ✅ Set | Source verification on Basescan |
+
+### Step 3 — (Optional) Manual Override via workflow_dispatch
+
+To deploy to a specific network, choose a dry-run, or deploy to Ethereum mainnet:
 
 1. Go to **Actions → Deploy Smart Contracts**
 2. Click **Run workflow**
@@ -144,7 +145,7 @@ Go to **Settings → Secrets and variables → Actions → New repository secret
    - `story` — deploys to Story Protocol Mainnet (Chain 1514), verifies on **StoryScan**
    - `base` — deploys to Base L2 (Chain 8453), verifies on **Basescan**
    - `mainnet` — deploys to Ethereum Mainnet (Chain 1), verifies on **Etherscan**
-   - `both` — deploys to Story Protocol + Base L2
+   - `both` — deploys to Story Protocol + Base L2 *(default)*
    - `all` — deploys to all three networks (Story + Base + Ethereum Mainnet)
 4. Set **Verify contracts** = `true` (recommended)
 5. Set **Dry run** = `false`
@@ -172,6 +173,7 @@ npx hardhat run scripts/deploy.cjs --network base
 
 # Deploy to Ethereum Mainnet
 npx hardhat run scripts/deploy.cjs --network mainnet
+
 
 # Post-deployment orchestration
 npx hardhat run scripts/post-deploy-orchestrate.cjs --network story
