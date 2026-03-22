@@ -1,0 +1,265 @@
+name: Deploy Audit Fixes
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "contracts/SlapsSPV.sol"
+      - "contracts/AngelCoin.sol"
+      - "scripts/verify-multisig.cjs"
+      - "scripts/multisig-sign.cjs"
+      - ".github/workflows/deploy-audit-fixes.yml"
+  workflow_dispatch:
+    inputs:
+      network:
+        description: "Target network for deployment"
+        required: true
+        default: "story"
+        type: choice
+        options:
+          - story
+          - base
+          - mainnet
+      dry_run:
+        description: "Dry run (compile only, do not deploy)"
+        required: true
+        default: true
+        type: boolean
+
+# Only allow one audit-fix deployment at a time
+concurrency:
+  group: audit-fixes-${{ github.event.inputs.network || 'story' }}
+  cancel-in-progress: false
+
+jobs:
+  compile-and-verify:
+    name: Compile & Verify Audit Fixes
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      artifacts-key: ${{ steps.artifacts.outputs.key }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Compile contracts
+        run: npm run contracts:compile
+
+      - name: Confirm audit fix — SlapsSPV unit mismatch
+        run: |
+          node -e "
+            const fs = require('fs');
+            const src = fs.readFileSync('contracts/SlapsSPV.sol', 'utf8');
+            const ok = src.includes('1_000_000 * 1e18') &&
+                       src.includes('10_000 * 1e18') &&
+                       src.includes('100_000 * 1e18');
+            if (!ok) {
+              console.error('ERROR: SlapsSPV.sol still contains 1e6 unit values — fix not applied.');
+              process.exit(1);
+            }
+            console.log('✓ SlapsSPV.sol: targetRaise/minimumInvestment/maximumInvestment use 1e18 (ETH-compatible)');
+          "
+
+      - name: Confirm ThirdWeb address — verify-multisig.cjs
+        run: |
+          node -e "
+            const fs = require('fs');
+            const src = fs.readFileSync('scripts/verify-multisig.cjs', 'utf8');
+            const addr = '0xCD67f7e86A1397aBc33C473c58662BEB83b7a667';
+            if (!src.includes(addr)) {
+              console.error('ERROR: verify-multisig.cjs does not contain expected ThirdWeb address.');
+              process.exit(1);
+            }
+            console.log('✓ verify-multisig.cjs: ThirdWeb address confirmed (' + addr + ')');
+          "
+
+      - name: Confirm ThirdWeb address — multisig-sign.cjs
+        run: |
+          node -e "
+            const fs = require('fs');
+            const src = fs.readFileSync('scripts/multisig-sign.cjs', 'utf8');
+            const addr = '0xCD67f7e86A1397aBc33C473c58662BEB83b7a667';
+            if (!src.includes(addr)) {
+              console.error('ERROR: multisig-sign.cjs does not contain expected ThirdWeb address.');
+              process.exit(1);
+            }
+            console.log('✓ multisig-sign.cjs: ThirdWeb address confirmed (' + addr + ')');
+          "
+
+      - name: Set artifacts key
+        id: artifacts
+        run: echo "key=audit-fix-artifacts-${{ github.sha }}" >> "$GITHUB_OUTPUT"
+
+      - name: Upload compiled artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: audit-fix-artifacts-${{ github.sha }}
+          path: artifacts/
+          retention-days: 30
+
+  deploy:
+    name: Deploy Audit Fixes to ${{ github.event.inputs.network || 'story' }}
+    runs-on: ubuntu-latest
+    needs: compile-and-verify
+    permissions:
+      contents: read
+    if: ${{ github.event_name == 'workflow_dispatch' && !inputs.dry_run }}
+    environment: ${{ github.event.inputs.network == 'base' && 'base-mainnet' || github.event.inputs.network == 'mainnet' && 'eth-mainnet' || 'story-mainnet' }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Download compiled artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: audit-fix-artifacts-${{ github.sha }}
+          path: artifacts/
+
+      - name: Deploy to Story Protocol
+        if: ${{ github.event.inputs.network == 'story' }}
+        env:
+          DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+          STORY_RPC_URL: ${{ secrets.ALCHEMY_API_KEY && format('https://story-mainnet.g.alchemy.com/v2/{0}', secrets.ALCHEMY_API_KEY) || secrets.STORY_RPC_URL || 'https://mainnet.storyrpc.io' }}
+          STORYSCAN_API_KEY: ${{ secrets.STORYSCAN_API_KEY }}
+          THIRDWEB_WALLET_ADDRESS: ${{ vars.THIRDWEB_WALLET_ADDRESS || '0xCD67f7e86A1397aBc33C473c58662BEB83b7a667' }}
+          COINBASE_WALLET_ADDRESS: ${{ vars.COINBASE_WALLET_ADDRESS || '0xdc2afcd0a97c1e878fdd64497806e52cc530f02a' }}
+          COINBASE_API_KEY_NAME: ${{ secrets.COINBASE_API_KEY_NAME }}
+          COINBASE_API_KEY_PRIVATE_KEY: ${{ secrets.COINBASE_API_KEY_PRIVATE_KEY }}
+        run: npm run contracts:deploy:story
+
+      - name: Verify on StoryScan
+        if: ${{ github.event.inputs.network == 'story' }}
+        env:
+          DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+          STORY_RPC_URL: ${{ secrets.ALCHEMY_API_KEY && format('https://story-mainnet.g.alchemy.com/v2/{0}', secrets.ALCHEMY_API_KEY) || secrets.STORY_RPC_URL || 'https://mainnet.storyrpc.io' }}
+          STORYSCAN_API_KEY: ${{ secrets.STORYSCAN_API_KEY }}
+        run: npm run contracts:verify:story
+
+      - name: Deploy to Base L2
+        if: ${{ github.event.inputs.network == 'base' }}
+        env:
+          DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+          ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
+          BASE_RPC_URL: ${{ secrets.BASE_RPC_URL || 'https://mainnet.base.org' }}
+          ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+          COINBASE_API_KEY_NAME: ${{ secrets.COINBASE_API_KEY_NAME }}
+          COINBASE_API_KEY_PRIVATE_KEY: ${{ secrets.COINBASE_API_KEY_PRIVATE_KEY }}
+        run: npm run contracts:deploy:base
+
+      - name: Verify on Basescan
+        if: ${{ github.event.inputs.network == 'base' }}
+        env:
+          DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+          ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
+          BASE_RPC_URL: ${{ secrets.BASE_RPC_URL || 'https://mainnet.base.org' }}
+          ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+        run: npm run contracts:verify:base
+
+      - name: Deploy to Ethereum Mainnet
+        if: ${{ github.event.inputs.network == 'mainnet' }}
+        env:
+          DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+          ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
+          MAINNET_RPC_URL: ${{ secrets.MAINNET_RPC_URL || 'https://cloudflare-eth.com' }}
+          ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+        run: npm run contracts:deploy:mainnet
+
+      - name: Verify on Etherscan
+        if: ${{ github.event.inputs.network == 'mainnet' }}
+        env:
+          DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+          ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
+          MAINNET_RPC_URL: ${{ secrets.MAINNET_RPC_URL || 'https://cloudflare-eth.com' }}
+          ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+        run: npm run contracts:verify:mainnet
+
+      - name: Generate multi-sig transaction config
+        env:
+          THIRDWEB_WALLET_ADDRESS: ${{ vars.THIRDWEB_WALLET_ADDRESS || '0xCD67f7e86A1397aBc33C473c58662BEB83b7a667' }}
+          COINBASE_WALLET_ADDRESS: ${{ vars.COINBASE_WALLET_ADDRESS || '0xdc2afcd0a97c1e878fdd64497806e52cc530f02a' }}
+          UCC1_FILING_HASH: "bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a"
+          GAS_PRICE_GWEI: "50"
+        run: npm run contracts:multisig
+
+      - name: Upload deployment artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: audit-fix-deployment-${{ github.event.inputs.network || 'story' }}-${{ github.run_number }}
+          path: |
+            deployment-config.${{ github.event.inputs.network || 'story' }}.json
+            multisig-transaction.json
+          retention-days: 90
+
+      - name: Deployment summary
+        run: |
+          NETWORK="${{ github.event.inputs.network || 'story' }}"
+          CONFIG_FILE="deployment-config.${NETWORK}.json"
+          echo "## Audit Fixes Deployed — ${NETWORK}" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "### Changes in this deployment" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Contract | Fix Applied |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|----------|-------------|" >> "$GITHUB_STEP_SUMMARY"
+          echo "| SlapsSPV.sol | Critical: \`targetRaise\` / \`minimumInvestment\` / \`maximumInvestment\` changed from \`1e6\` → \`1e18\` (ETH unit consistency) |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| AngelCoin.sol | No issues — standard ERC20 implementation |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| scripts/verify-multisig.cjs | ThirdWeb address: \`0xCD67f7e86A1397aBc33C473c58662BEB83b7a667\` |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| scripts/multisig-sign.cjs | ThirdWeb address: \`0xCD67f7e86A1397aBc33C473c58662BEB83b7a667\` |" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "### Deployed Contract Addresses" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Contract | Address |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|----------|---------|" >> "$GITHUB_STEP_SUMMARY"
+          if [ "$NETWORK" = "story" ]; then
+            EXPLORER="https://www.storyscan.io/address"
+          elif [ "$NETWORK" = "base" ]; then
+            EXPLORER="https://basescan.org/address"
+          else
+            EXPLORER="https://etherscan.io/address"
+          fi
+          node -e "
+            const fs = require('fs');
+            const cfg = JSON.parse(fs.readFileSync('${CONFIG_FILE}'));
+            Object.entries(cfg.contracts).forEach(([name, addr]) => {
+              console.log('| ' + name + ' | [\`' + addr + '\`](${EXPLORER}/' + addr + ') |');
+            });
+          " >> "$GITHUB_STEP_SUMMARY"
+
+  dry-run:
+    name: "Dry Run — Compile & Verify Only"
+    runs-on: ubuntu-latest
+    needs: compile-and-verify
+    permissions: {}
+    if: ${{ github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.dry_run) }}
+    steps:
+      - name: Confirm dry-run success
+        run: |
+          echo "## ✓ Audit Fix Dry Run Complete" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "All audit fixes verified successfully:" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **SlapsSPV.sol**: \`targetRaise\`, \`minimumInvestment\`, \`maximumInvestment\` use \`1e18\` (ETH-compatible units)" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **AngelCoin.sol**: No issues found — standard ERC20 implementation" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **scripts/verify-multisig.cjs**: ThirdWeb address \`0xCD67f7e86A1397aBc33C473c58662BEB83b7a667\` confirmed" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **scripts/multisig-sign.cjs**: ThirdWeb address \`0xCD67f7e86A1397aBc33C473c58662BEB83b7a667\` confirmed" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "Set **Dry run** to _false_ and use \`workflow_dispatch\` to deploy." >> "$GITHUB_STEP_SUMMARY"

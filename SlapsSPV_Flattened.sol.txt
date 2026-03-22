@@ -97,9 +97,9 @@ contract SlapsSPV is ERC20, ERC20Burnable, AccessControl, ReentrancyGuard, Pausa
     constructor() ERC20("Slaps SPV Token", "SLAP-SPV") {
         spvName = "Slaps Streaming LLC SPV";
         spvPurpose = "IP-backed stablecoin lending with PIL licensing revenue allocation";
-        targetRaise = 1_000_000 * 1e6;
-        minimumInvestment = 10_000 * 1e6;
-        maximumInvestment = 100_000 * 1e6;
+        targetRaise = 1_000_000 * 1e18;
+        minimumInvestment = 10_000 * 1e18;
+        maximumInvestment = 100_000 * 1e18;
         spvStartDate = block.timestamp;
         spvEndDate = block.timestamp + (365 * 1 days);
         
