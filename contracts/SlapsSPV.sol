@@ -210,7 +210,8 @@ contract SlapsSPV is ERC20, ERC20Burnable, AccessControl, ReentrancyGuard, Pausa
         totalDistributed += claimable;
         pendingDistribution -= claimable;
 
-        payable(msg.sender).transfer(claimable);
+        (bool successClaim, ) = payable(msg.sender).call{value: claimable}("");
+        require(successClaim, "ETH transfer failed");
 
         emit DistributionClaimed(msg.sender, claimable);
     }
@@ -349,7 +350,8 @@ contract SlapsSPV is ERC20, ERC20Burnable, AccessControl, ReentrancyGuard, Pausa
         if (fee > balance) fee = balance;
         require(fee > 0, "No fees available");
         
-        payable(msg.sender).transfer(fee);
+        (bool successFee, ) = payable(msg.sender).call{value: fee}("");
+        require(successFee, "ETH transfer failed");
     }
 
     // ============ VIEW FUNCTIONS ============

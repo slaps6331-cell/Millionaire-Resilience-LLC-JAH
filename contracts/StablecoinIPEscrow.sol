@@ -482,15 +482,6 @@ contract StablecoinIPEscrow is Ownable, ReentrancyGuard, Pausable {
         // Approve Morpho Blue to spend tokens
         IERC20(marketId.loanToken).approve(morphoBlue, assets);
         
-        // Encode market params as Morpho expects
-        bytes memory marketParams = abi.encode(
-            marketId.loanToken,
-            marketId.collateralToken,
-            marketId.oracle,
-            marketId.irm,
-            marketId.lltv
-        );
-        
         // Call Morpho Blue supply function
         (bool success, bytes memory returnData) = morphoBlue.call(
             abi.encodeWithSignature(
