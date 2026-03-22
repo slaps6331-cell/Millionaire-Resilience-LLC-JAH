@@ -23,7 +23,7 @@ A CI compilation error (now fixed) was also blocking any deployment workflow fro
 
 | Workflow | Branch | Status | Details |
 |----------|--------|--------|---------|
-| Check Smart Contracts | `main` | ❌ **FAILING** (now fixed) | `DeclarationError: Undeclared identifier` — `gladiatorEinLetterHash` in `contracts/GladiatorHoldingsSpvLoan.sol:589` |
+| Check Smart Contracts | `main` | ❌ **FAILING** (now fixed) | `DeclarationError: Undeclared identifier` — `gladiatorEinLetterHash` in `contracts/GladiatorHoldingsSpvLoan.sol` |
 | Deploy Smart Contracts | — | 🔵 Never triggered | Manual `workflow_dispatch` only |
 
 ### Fix Applied
