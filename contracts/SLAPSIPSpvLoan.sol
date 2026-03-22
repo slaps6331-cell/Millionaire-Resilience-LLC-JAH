@@ -762,7 +762,7 @@ contract SLAPSIPSpvLoan is ERC20, Ownable, ReentrancyGuard {
         
         // Transfer IP NFT to lender via Story Protocol (best-effort: may not be on this chain)
         // solhint-disable-next-line avoid-low-level-calls
-        (bool ipTransferSuccess,) = STORY_PROTOCOL_REGISTRY.call(
+        (bool _ipCallResult,) = STORY_PROTOCOL_REGISTRY.call(
             abi.encodeWithSignature(
                 "transferIP(address,address,uint256)",
                 loan.borrower,
@@ -770,8 +770,8 @@ contract SLAPSIPSpvLoan is ERC20, Ownable, ReentrancyGuard {
                 loan.ipTokenId
             )
         );
-        // ipTransferSuccess is intentionally unchecked: best-effort Story Protocol call
-        ipTransferSuccess;
+        // _ipCallResult intentionally not checked: best-effort Story Protocol call
+        (_ipCallResult);
         
         // Update loan status
         loan.status = LoanStatus.Liquidated;
@@ -795,26 +795,26 @@ contract SLAPSIPSpvLoan is ERC20, Ownable, ReentrancyGuard {
         
         // Best-effort calls to Story Protocol (may not be deployed on this chain)
         // solhint-disable-next-line avoid-low-level-calls
-        (bool licensingSuccess, ) = STORY_LICENSING_MODULE.call(
+        (bool _licResult, ) = STORY_LICENSING_MODULE.call(
             abi.encodeWithSignature(
                 "transferLicenseOwnership(address,address)",
                 loan.ipAssetId,
                 loan.lender
             )
         );
-        // licensingSuccess is intentionally unchecked: best-effort Story Protocol call
-        licensingSuccess;
+        // _licResult intentionally not checked: best-effort Story Protocol call
+        (_licResult);
         
         // solhint-disable-next-line avoid-low-level-calls
-        (bool royaltyRedirectSuccess, ) = STORY_ROYALTY_MODULE.call(
+        (bool _royResult, ) = STORY_ROYALTY_MODULE.call(
             abi.encodeWithSignature(
                 "setRoyaltyReceiver(address,address)",
                 loan.ipAssetId,
                 loan.lender
             )
         );
-        // royaltyRedirectSuccess is intentionally unchecked: best-effort Story Protocol call
-        royaltyRedirectSuccess;
+        // _royResult intentionally not checked: best-effort Story Protocol call
+        (_royResult);
     }
     
     // ============ VIEW FUNCTIONS ============
