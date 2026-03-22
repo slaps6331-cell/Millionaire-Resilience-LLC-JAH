@@ -580,15 +580,13 @@ contract PILLoanEnforcement is Ownable, ReentrancyGuard {
         // Best-effort call to Royalty Module to redirect royalties (may not be deployed on this chain)
         if (success) {
             // solhint-disable-next-line avoid-low-level-calls
-            (bool _royaltyCallResult, ) = STORY_ROYALTY_MODULE.call(
+            STORY_ROYALTY_MODULE.call(
                 abi.encodeWithSignature(
                     "setRoyaltyReceiver(address,address)",
                     loan.ipAssetId,
                     loan.lender
                 )
             );
-            // _royaltyCallResult intentionally not checked: best-effort Story Protocol call
-            (_royaltyCallResult);
         }
     }
     
