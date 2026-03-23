@@ -108,6 +108,13 @@ jobs:
           # Fall back to STORY_RPC_URL secret, then the public endpoint.
           STORY_RPC_URL: ${{ secrets.ALCHEMY_API_KEY && format('https://story-mainnet.g.alchemy.com/v2/{0}', secrets.ALCHEMY_API_KEY) || secrets.STORY_RPC_URL || 'https://mainnet.storyrpc.io' }}
           STORYSCAN_API_KEY: ${{ secrets.STORYSCAN_API_KEY }}
+          # Pinata / IPFS credentials — used by deployment scripts that pin or fetch
+          # documents from IPFS via the Pinata gateway.
+          PINATA_API_KEY: ${{ secrets.PINATA_API_KEY }}
+          PINATA_SECRET_API_KEY: ${{ secrets.PINATA_SECRET_API_KEY }}
+          PINATA_JWT: ${{ secrets.PINATA_JWT }}
+          PINATA_GATEWAY_TOKEN: ${{ secrets.PINATA_GATEWAY_TOKEN }}
+          PINATA_GATEWAY_NAME: ${{ vars.PINATA_GATEWAY_NAME }}
           # Coinbase CDP credentials — used to authenticate with Coinbase Developer Platform APIs.
           COINBASE_API_KEY_NAME: ${{ secrets.COINBASE_API_KEY_NAME }}
           COINBASE_API_KEY_PRIVATE_KEY: ${{ secrets.COINBASE_API_KEY_PRIVATE_KEY }}
@@ -123,17 +130,52 @@ jobs:
           STORYSCAN_API_KEY: ${{ secrets.STORYSCAN_API_KEY }}
         run: npm run contracts:verify:story
 
+      - name: Generate valuation attestation hashes
+        run: npm run contracts:attestation-hashes
+
       - name: Post-deployment orchestration (Story Protocol)
         env:
           DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
           STORY_RPC_URL: ${{ secrets.ALCHEMY_API_KEY && format('https://story-mainnet.g.alchemy.com/v2/{0}', secrets.ALCHEMY_API_KEY) || secrets.STORY_RPC_URL || 'https://mainnet.storyrpc.io' }}
           UCC1_FILING_HASH: "bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a"
+          UCC1_AUXILIARY_DOCS: "bafybeidkp74w2idrwkg2qey66uepfaes5ekonxjqt62uztyxawii7yye7y"
           UCC1_FILING_NUMBER: ${{ vars.UCC1_FILING_NUMBER || '2024-NM-UCC-0001' }}
           UCC1_JURISDICTION: "New Mexico Secretary of State"
           THIRDWEB_WALLET_ADDRESS: ${{ vars.THIRDWEB_WALLET_ADDRESS || '0xCD67f7e86A1397aBc33C473c58662BEB83b7a667' }}
           COINBASE_WALLET_ADDRESS: ${{ vars.COINBASE_WALLET_ADDRESS || '0xdc2afcd0a97c1e878fdd64497806e52cc530f02a' }}
           COINBASE_API_KEY_NAME: ${{ secrets.COINBASE_API_KEY_NAME }}
           COINBASE_API_KEY_PRIVATE_KEY: ${{ secrets.COINBASE_API_KEY_PRIVATE_KEY }}
+          # Thirdweb SDK credentials
+          THIRDWEB_CLIENT_ID: ${{ secrets.THIRDWEB_CLIENT_ID }}
+          THIRDWEB_SECRET_KEY: ${{ secrets.THIRDWEB_SECRET_KEY }}
+          # Pinata / IPFS credentials
+          PINATA_API_KEY: ${{ secrets.PINATA_API_KEY }}
+          PINATA_SECRET_API_KEY: ${{ secrets.PINATA_SECRET_API_KEY }}
+          PINATA_JWT: ${{ secrets.PINATA_JWT }}
+          PINATA_GATEWAY_TOKEN: ${{ secrets.PINATA_GATEWAY_TOKEN }}
+          PINATA_GATEWAY_NAME: ${{ vars.PINATA_GATEWAY_NAME }}
+          # Corporate document IPFS CIDs — these are network-agnostic but must be
+          # set at the step level because ${{ vars.X || 'default' }} expressions are
+          # only supported within job/step env blocks, not at the workflow level.
+          IPFS_GLADIATOR_CERT_CID: ${{ vars.IPFS_GLADIATOR_CERT_CID || 'bafybeiba2j4g34bizjjm26qznc2pf4upgotffrcwjtkw6lj3qa6squrzpu' }}
+          IPFS_GLADIATOR_NOTICE_CID: ${{ vars.IPFS_GLADIATOR_NOTICE_CID || 'bafkreifbikc26xs2cu2mvsghzlrginwm6icqotdp4ntsvq3sn6h4flrhhm' }}
+          IPFS_MR_ARTICLES_CID: ${{ vars.IPFS_MR_ARTICLES_CID || 'bafkreifxiesrze736sxhvsa5op64q6f3ddvv3rismnvd75wi3yfqilu4py' }}
+          IPFS_MR_EIN_LETTER_CID: ${{ vars.IPFS_MR_EIN_LETTER_CID || 'bafkreihz5zpp33pimzckaey64mht2vezlbzngoxe46urrfctzqvjvsdboe' }}
+          IPFS_SLAPS_ARTICLES_CID: ${{ vars.IPFS_SLAPS_ARTICLES_CID || 'bafkreic3n6bdf25tobljqbjxzvzkbch6s7xkqq5yehmyt3zju4de7ey52u' }}
+          IPFS_SLAPS_EIN_LETTER_CID: ${{ vars.IPFS_SLAPS_EIN_LETTER_CID || 'bafkreifnuwchbvbolmhbgionvsltdi3edzasfqytd4zzqlvu42m5m4jhei' }}
+          IPFS_RBW_EIN_LETTER_CID: ${{ vars.IPFS_RBW_EIN_LETTER_CID || 'bafkreid77fuxwqtwyku5syp3dswmy75rymvxh6v3tf7rfrzqbrizoutxtu' }}
+          IPFS_NM_SOS_RECEIPT_CID: ${{ vars.IPFS_NM_SOS_RECEIPT_CID || 'bafkreigjsqx6d47sgqwkjxgtt3qrjnoz3hdth4hqk7qnxflqog2ikjs2kq' }}
+          IPFS_BENEFICIAL_OWNER_ID_CID: ${{ vars.IPFS_BENEFICIAL_OWNER_ID_CID || 'bafkreie5spkgxxhmafdqylwyfplx37jqhcjrs3es3neasgcnynzgkg5mzi' }}
+          IPFS_PATENTSIGHT_PORTFOLIO_CID: ${{ vars.IPFS_PATENTSIGHT_PORTFOLIO_CID || 'bafkreibxqnmhir5iifpboxdv5ndltm5vnbplso4ndtcuzfnanykudrwdbu' }}
+          IPFS_PATENTSIGHT_MR_CID: ${{ vars.IPFS_PATENTSIGHT_MR_CID || 'bafkreihls2yoi265uxzmcmh7wzk2ytyo5yvopmb4jib4blw4nptlchivqm' }}
+          IPFS_PATENTSIGHT_SLAPS_CID: ${{ vars.IPFS_PATENTSIGHT_SLAPS_CID || 'bafkreiflmhdsflvv53e24mo2woafdgecpkvfljcbm5heafnzdxzbj5ct4i' }}
+          IPFS_IPLYTICS_DECLARATION_CID: ${{ vars.IPFS_IPLYTICS_DECLARATION_CID || 'bafkreiej7wfskl53hxo4j47g55bxjkyyulihovjjtpjvtf264kfoddxc5i' }}
+          # Story Protocol contract addresses
+          STORY_PROTOCOL_REGISTRY: ${{ vars.STORY_PROTOCOL_REGISTRY || '0x1a9d0d28a0422F26D31Be72Edc6f13ea4371E11B' }}
+          STORY_LICENSING_MODULE: ${{ vars.STORY_LICENSING_MODULE || '0xd81fd78f557b457b4350cB95D20b547bFEb4D857' }}
+          STORY_ROYALTY_MODULE: ${{ vars.STORY_ROYALTY_MODULE || '0xCC8b9f0c9Dc370Ed1F41d95F74C9f72E08f24C90' }}
+          MR_PARENT_IPID: ${{ vars.MR_PARENT_IPID || '0x98971c660ac20880b60F86Cc3113eBd979eb3aAE' }}
+          MR_TOKEN_ID: ${{ vars.MR_TOKEN_ID || '15192' }}
         run: npm run contracts:orchestrate:story
 
       - name: Generate multi-sig transaction config
@@ -152,6 +194,8 @@ jobs:
             deployment-config.story.json
             multisig-transaction.json
             registration-attestation.story.json
+            valuation-attestation.json
+            yield-summary.json
           retention-days: 90
 
       - name: Show deployed contract addresses
@@ -228,6 +272,13 @@ jobs:
           ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
           BASE_RPC_URL: ${{ secrets.BASE_RPC_URL || 'https://mainnet.base.org' }}
           ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+          # Pinata / IPFS credentials — used by deployment scripts that pin or fetch
+          # documents from IPFS via the Pinata gateway.
+          PINATA_API_KEY: ${{ secrets.PINATA_API_KEY }}
+          PINATA_SECRET_API_KEY: ${{ secrets.PINATA_SECRET_API_KEY }}
+          PINATA_JWT: ${{ secrets.PINATA_JWT }}
+          PINATA_GATEWAY_TOKEN: ${{ secrets.PINATA_GATEWAY_TOKEN }}
+          PINATA_GATEWAY_NAME: ${{ vars.PINATA_GATEWAY_NAME }}
           # Coinbase CDP credentials — used to authenticate with Coinbase Developer Platform APIs.
           COINBASE_API_KEY_NAME: ${{ secrets.COINBASE_API_KEY_NAME }}
           COINBASE_API_KEY_PRIVATE_KEY: ${{ secrets.COINBASE_API_KEY_PRIVATE_KEY }}
@@ -242,18 +293,55 @@ jobs:
           ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
         run: npm run contracts:verify:base
 
+      - name: Generate valuation attestation hashes
+        run: npm run contracts:attestation-hashes
+
       - name: Post-deployment orchestration (Base L2)
         env:
           DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
           ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
           BASE_RPC_URL: ${{ secrets.BASE_RPC_URL || 'https://mainnet.base.org' }}
           UCC1_FILING_HASH: "bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a"
+          UCC1_AUXILIARY_DOCS: "bafybeidkp74w2idrwkg2qey66uepfaes5ekonxjqt62uztyxawii7yye7y"
           UCC1_FILING_NUMBER: ${{ vars.UCC1_FILING_NUMBER || '2024-NM-UCC-0001' }}
           UCC1_JURISDICTION: "New Mexico Secretary of State"
           THIRDWEB_WALLET_ADDRESS: ${{ vars.THIRDWEB_WALLET_ADDRESS || '0xCD67f7e86A1397aBc33C473c58662BEB83b7a667' }}
           COINBASE_WALLET_ADDRESS: ${{ vars.COINBASE_WALLET_ADDRESS || '0xdc2afcd0a97c1e878fdd64497806e52cc530f02a' }}
           COINBASE_API_KEY_NAME: ${{ secrets.COINBASE_API_KEY_NAME }}
           COINBASE_API_KEY_PRIVATE_KEY: ${{ secrets.COINBASE_API_KEY_PRIVATE_KEY }}
+          # Thirdweb SDK credentials
+          THIRDWEB_CLIENT_ID: ${{ secrets.THIRDWEB_CLIENT_ID }}
+          THIRDWEB_SECRET_KEY: ${{ secrets.THIRDWEB_SECRET_KEY }}
+          # Pinata / IPFS credentials
+          PINATA_API_KEY: ${{ secrets.PINATA_API_KEY }}
+          PINATA_SECRET_API_KEY: ${{ secrets.PINATA_SECRET_API_KEY }}
+          PINATA_JWT: ${{ secrets.PINATA_JWT }}
+          PINATA_GATEWAY_TOKEN: ${{ secrets.PINATA_GATEWAY_TOKEN }}
+          PINATA_GATEWAY_NAME: ${{ vars.PINATA_GATEWAY_NAME }}
+          # Corporate document IPFS CIDs — these are network-agnostic but must be
+          # set at the step level because ${{ vars.X || 'default' }} expressions are
+          # only supported within job/step env blocks, not at the workflow level.
+          IPFS_GLADIATOR_CERT_CID: ${{ vars.IPFS_GLADIATOR_CERT_CID || 'bafybeiba2j4g34bizjjm26qznc2pf4upgotffrcwjtkw6lj3qa6squrzpu' }}
+          IPFS_GLADIATOR_NOTICE_CID: ${{ vars.IPFS_GLADIATOR_NOTICE_CID || 'bafkreifbikc26xs2cu2mvsghzlrginwm6icqotdp4ntsvq3sn6h4flrhhm' }}
+          IPFS_MR_ARTICLES_CID: ${{ vars.IPFS_MR_ARTICLES_CID || 'bafkreifxiesrze736sxhvsa5op64q6f3ddvv3rismnvd75wi3yfqilu4py' }}
+          IPFS_MR_EIN_LETTER_CID: ${{ vars.IPFS_MR_EIN_LETTER_CID || 'bafkreihz5zpp33pimzckaey64mht2vezlbzngoxe46urrfctzqvjvsdboe' }}
+          IPFS_SLAPS_ARTICLES_CID: ${{ vars.IPFS_SLAPS_ARTICLES_CID || 'bafkreic3n6bdf25tobljqbjxzvzkbch6s7xkqq5yehmyt3zju4de7ey52u' }}
+          IPFS_SLAPS_EIN_LETTER_CID: ${{ vars.IPFS_SLAPS_EIN_LETTER_CID || 'bafkreifnuwchbvbolmhbgionvsltdi3edzasfqytd4zzqlvu42m5m4jhei' }}
+          IPFS_RBW_EIN_LETTER_CID: ${{ vars.IPFS_RBW_EIN_LETTER_CID || 'bafkreid77fuxwqtwyku5syp3dswmy75rymvxh6v3tf7rfrzqbrizoutxtu' }}
+          IPFS_NM_SOS_RECEIPT_CID: ${{ vars.IPFS_NM_SOS_RECEIPT_CID || 'bafkreigjsqx6d47sgqwkjxgtt3qrjnoz3hdth4hqk7qnxflqog2ikjs2kq' }}
+          IPFS_BENEFICIAL_OWNER_ID_CID: ${{ vars.IPFS_BENEFICIAL_OWNER_ID_CID || 'bafkreie5spkgxxhmafdqylwyfplx37jqhcjrs3es3neasgcnynzgkg5mzi' }}
+          IPFS_PATENTSIGHT_PORTFOLIO_CID: ${{ vars.IPFS_PATENTSIGHT_PORTFOLIO_CID || 'bafkreibxqnmhir5iifpboxdv5ndltm5vnbplso4ndtcuzfnanykudrwdbu' }}
+          IPFS_PATENTSIGHT_MR_CID: ${{ vars.IPFS_PATENTSIGHT_MR_CID || 'bafkreihls2yoi265uxzmcmh7wzk2ytyo5yvopmb4jib4blw4nptlchivqm' }}
+          IPFS_PATENTSIGHT_SLAPS_CID: ${{ vars.IPFS_PATENTSIGHT_SLAPS_CID || 'bafkreiflmhdsflvv53e24mo2woafdgecpkvfljcbm5heafnzdxzbj5ct4i' }}
+          IPFS_IPLYTICS_DECLARATION_CID: ${{ vars.IPFS_IPLYTICS_DECLARATION_CID || 'bafkreiej7wfskl53hxo4j47g55bxjkyyulihovjjtpjvtf264kfoddxc5i' }}
+          # Morpho Blue parameters
+          MORPHO_BLUE: ${{ vars.MORPHO_BLUE || '0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb' }}
+          BASE_USDC: ${{ vars.BASE_USDC || '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913' }}
+          BTC_LOAN_AMOUNT: ${{ vars.BTC_LOAN_AMOUNT || '5000000000000' }}
+          ETH_LOAN_AMOUNT: ${{ vars.ETH_LOAN_AMOUNT || '1000000000000' }}
+          BTC_LOAN_APR: ${{ vars.BTC_LOAN_APR || '400' }}
+          ETH_LOAN_APR: ${{ vars.ETH_LOAN_APR || '600' }}
+          MORPHO_LLTV: ${{ vars.MORPHO_LLTV || '860000000000000000' }}
         run: npm run contracts:orchestrate:base
 
       - name: Upload deployment artifacts
@@ -263,6 +351,8 @@ jobs:
           path: |
             deployment-config.base.json
             registration-attestation.base.json
+            valuation-attestation.json
+            yield-summary.json
           retention-days: 90
 
       - name: Show deployed contract addresses
