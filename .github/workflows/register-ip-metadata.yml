@@ -1,0 +1,219 @@
+name: Register IPA Metadata on Story Protocol
+
+on:
+  # Auto-register whenever an IPA metadata JSON file or this workflow changes
+  # on the main branch.
+  push:
+    branches:
+      - main
+    paths:
+      - "GladiatorHoldingsIPAMetadata.json"
+      - "MillionaireResilienceIPAMetadata.json"
+      - "SlapsStreamingIPAMetadata.json"
+      - ".github/workflows/register-ip-metadata.yml"
+
+  # Manual override — choose which metadata file to register and whether to
+  # run in dry-run mode (pin + hash only, no on-chain setMetadata call).
+  workflow_dispatch:
+    inputs:
+      metadata_file:
+        description: "IPA metadata JSON file to register"
+        required: true
+        default: "MillionaireResilienceIPAMetadata.json"
+        type: choice
+        options:
+          - GladiatorHoldingsIPAMetadata.json
+          - MillionaireResilienceIPAMetadata.json
+          - SlapsStreamingIPAMetadata.json
+      dry_run:
+        description: "Dry run (pin + hash only, skip on-chain setMetadata)"
+        required: true
+        default: false
+        type: boolean
+
+# Prevent concurrent metadata registrations for the same asset.
+concurrency:
+  group: register-metadata-${{ github.event.inputs.metadata_file || 'all' }}
+  cancel-in-progress: false
+
+jobs:
+  register-gladiator:
+    name: Register — GladiatorHoldingsIPAMetadata
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    # Run on push (all three files) or when explicitly chosen via workflow_dispatch.
+    if: |
+      github.event_name == 'push' ||
+      github.event.inputs.metadata_file == 'GladiatorHoldingsIPAMetadata.json'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Pin & register Gladiator Holdings metadata
+        env:
+          PINATA_JWT: ${{ secrets.PINATA_JWT }}
+          PINATA_GATEWAY_NAME: ${{ vars.PINATA_GATEWAY_NAME }}
+          STORY_RPC_URL: ${{ secrets.ALCHEMY_API_KEY && format('https://story-mainnet.g.alchemy.com/v2/{0}', secrets.ALCHEMY_API_KEY) || secrets.STORY_RPC_URL || 'https://mainnet.storyrpc.io' }}
+          DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+        run: |
+          node scripts/register-ip-metadata.cjs GladiatorHoldingsIPAMetadata.json \
+            ${{ inputs.dry_run == true && '--dry-run' || '' }}
+
+      - name: Upload registration record
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: metadata-registration-gladiator-${{ github.run_number }}
+          path: ip-metadata-registration.gladiatorholdingsipametadata.json
+          if-no-files-found: ignore
+          retention-days: 90
+
+      - name: Show registration summary
+        if: always()
+        run: |
+          echo "## Gladiator Holdings IPA Metadata Registration" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          node -e "
+            const fs = require('fs');
+            const f = 'ip-metadata-registration.gladiatorholdingsipametadata.json';
+            if (!fs.existsSync(f)) { console.log('_Registration record not found._'); process.exit(0); }
+            const r = JSON.parse(fs.readFileSync(f));
+            console.log('| Field | Value |');
+            console.log('|-------|-------|');
+            console.log('| Title | ' + r.title + ' |');
+            console.log('| IPFS CID | ' + (r.ipfsCid || '_pending_') + ' |');
+            console.log('| Metadata URI | \`' + (r.metadataURI || 'N/A') + '\` |');
+            console.log('| SHA-256 Hash | \`' + r.metadataHash + '\` |');
+            console.log('| IP Account | \`' + (r.ipId || 'N/A') + '\` |');
+            console.log('| Tx Hash | ' + (r.txHash ? '[\`' + r.txHash.slice(0,14) + '…\`](https://www.storyscan.io/tx/' + r.txHash + ')' : (r.skipped ? '_skipped — ' + r.skipReason + '_' : '_failed_')) + ' |');
+          " >> "$GITHUB_STEP_SUMMARY"
+
+  register-mr:
+    name: Register — MillionaireResilienceIPAMetadata
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    if: |
+      github.event_name == 'push' ||
+      github.event.inputs.metadata_file == 'MillionaireResilienceIPAMetadata.json'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Pin & register Millionaire Resilience metadata
+        env:
+          PINATA_JWT: ${{ secrets.PINATA_JWT }}
+          PINATA_GATEWAY_NAME: ${{ vars.PINATA_GATEWAY_NAME }}
+          STORY_RPC_URL: ${{ secrets.ALCHEMY_API_KEY && format('https://story-mainnet.g.alchemy.com/v2/{0}', secrets.ALCHEMY_API_KEY) || secrets.STORY_RPC_URL || 'https://mainnet.storyrpc.io' }}
+          DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+        run: |
+          node scripts/register-ip-metadata.cjs MillionaireResilienceIPAMetadata.json \
+            ${{ inputs.dry_run == true && '--dry-run' || '' }}
+
+      - name: Upload registration record
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: metadata-registration-mr-${{ github.run_number }}
+          path: ip-metadata-registration.millionaireresilienceipametadata.json
+          if-no-files-found: ignore
+          retention-days: 90
+
+      - name: Show registration summary
+        if: always()
+        run: |
+          echo "## Millionaire Resilience IPA Metadata Registration" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          node -e "
+            const fs = require('fs');
+            const f = 'ip-metadata-registration.millionaireresilienceipametadata.json';
+            if (!fs.existsSync(f)) { console.log('_Registration record not found._'); process.exit(0); }
+            const r = JSON.parse(fs.readFileSync(f));
+            console.log('| Field | Value |');
+            console.log('|-------|-------|');
+            console.log('| Title | ' + r.title + ' |');
+            console.log('| IPFS CID | ' + (r.ipfsCid || '_pending_') + ' |');
+            console.log('| Metadata URI | \`' + (r.metadataURI || 'N/A') + '\` |');
+            console.log('| SHA-256 Hash | \`' + r.metadataHash + '\` |');
+            console.log('| IP Account | \`' + (r.ipId || 'N/A') + '\` |');
+            console.log('| Tx Hash | ' + (r.txHash ? '[\`' + r.txHash.slice(0,14) + '…\`](https://www.storyscan.io/tx/' + r.txHash + ')' : (r.skipped ? '_skipped — ' + r.skipReason + '_' : '_failed_')) + ' |');
+          " >> "$GITHUB_STEP_SUMMARY"
+
+  register-slaps:
+    name: Register — SlapsStreamingIPAMetadata
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    if: |
+      github.event_name == 'push' ||
+      github.event.inputs.metadata_file == 'SlapsStreamingIPAMetadata.json'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Pin & register SLAPS Streaming metadata
+        env:
+          PINATA_JWT: ${{ secrets.PINATA_JWT }}
+          PINATA_GATEWAY_NAME: ${{ vars.PINATA_GATEWAY_NAME }}
+          STORY_RPC_URL: ${{ secrets.ALCHEMY_API_KEY && format('https://story-mainnet.g.alchemy.com/v2/{0}', secrets.ALCHEMY_API_KEY) || secrets.STORY_RPC_URL || 'https://mainnet.storyrpc.io' }}
+          DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+        run: |
+          node scripts/register-ip-metadata.cjs SlapsStreamingIPAMetadata.json \
+            ${{ inputs.dry_run == true && '--dry-run' || '' }}
+
+      - name: Upload registration record
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: metadata-registration-slaps-${{ github.run_number }}
+          path: ip-metadata-registration.slapsstreamingipametadata.json
+          if-no-files-found: ignore
+          retention-days: 90
+
+      - name: Show registration summary
+        if: always()
+        run: |
+          echo "## SLAPS Streaming IPA Metadata Registration" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          node -e "
+            const fs = require('fs');
+            const f = 'ip-metadata-registration.slapsstreamingipametadata.json';
+            if (!fs.existsSync(f)) { console.log('_Registration record not found._'); process.exit(0); }
+            const r = JSON.parse(fs.readFileSync(f));
+            console.log('| Field | Value |');
+            console.log('|-------|-------|');
+            console.log('| Title | ' + r.title + ' |');
+            console.log('| IPFS CID | ' + (r.ipfsCid || '_pending_') + ' |');
+            console.log('| Metadata URI | \`' + (r.metadataURI || 'N/A') + '\` |');
+            console.log('| SHA-256 Hash | \`' + r.metadataHash + '\` |');
+            console.log('| IP Account | \`' + (r.ipId || 'N/A') + '\` |');
+            console.log('| Tx Hash | ' + (r.txHash ? '[\`' + r.txHash.slice(0,14) + '…\`](https://www.storyscan.io/tx/' + r.txHash + ')' : (r.skipped ? '_skipped — ' + r.skipReason + '_' : '_failed_')) + ' |');
+          " >> "$GITHUB_STEP_SUMMARY"

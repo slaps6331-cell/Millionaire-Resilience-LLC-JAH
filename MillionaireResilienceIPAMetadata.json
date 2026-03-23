@@ -1,0 +1,98 @@
+{
+  "title": "Millionaire Resilience LLC IP Portfolio",
+  "description": "Standard Essential Patent (SEP) portfolio for Millionaire Resilience LLC (EIN: 41-3789881). 42 SEPs with PatentSight+ PAI score 92. Present value $95M USD. Status: PROTECTED — registered UCC-1 Filing Debtor with the New Mexico Secretary of State (Entry 5095898). Parent entity: Gladiator Holdings LLC (NM Entity ID 0008034162). 100% of PIL licensing revenue is routed to loan repayment via the Story Protocol Royalty Module.",
+  "createdAt": "2025-06-27T00:00:00Z",
+  "image": "ipfs://bafkreihls2yoi265uxzmcmh7wzk2ytyo5yvopmb4jib4blw4nptlchivqm",
+  "imageHash": "0x748cc0dbf1a1a51ff1edfbfab0a79f600b5904a3c5476acaca9adac6c2f5beb3",
+  "mediaUrl": "ipfs://bafkreihls2yoi265uxzmcmh7wzk2ytyo5yvopmb4jib4blw4nptlchivqm",
+  "mediaHash": "0x748cc0dbf1a1a51ff1edfbfab0a79f600b5904a3c5476acaca9adac6c2f5beb3",
+  "mediaType": "image/jpeg",
+  "creators": [
+    {
+      "name": "Millionaire Resilience LLC",
+      "address": "0x597856e93f19877a399f686D2F43b298e2268618",
+      "description": "IP Owner — EIN 41-3789881, New Mexico LLC, UCC-1 Filing Debtor (Entry 5095898)",
+      "contributionPercent": 100,
+      "socialMedia": [
+        {
+          "platform": "Website",
+          "url": "https://millionaireresilience.com"
+        }
+      ]
+    }
+  ],
+  "ipType": "SEP Patent Portfolio",
+  "tags": [
+    "Standard Essential Patents",
+    "SEP",
+    "PatentSight+",
+    "IP-Backed Lending",
+    "PIL License",
+    "DeFi",
+    "Story Protocol",
+    "New Mexico",
+    "UCC-1"
+  ],
+  "relationships": [
+    {
+      "ipId": "0x98971c660ac20880b60F86Cc3113eBd979eb3aAE",
+      "type": "BELONGS_TO",
+      "uri": "ipfs://bafybeiba2j4g34bizjjm26qznc2pf4upgotffrcwjtkw6lj3qa6squrzpu",
+      "summary": "Millionaire Resilience LLC IP BELONGS_TO the Gladiator Holdings LLC parent portfolio"
+    }
+  ],
+  "robotTerms": {
+    "userTerm": "NoTrainAI",
+    "aiTrainingTerms": "NoTrainAI"
+  },
+  "media": [
+    {
+      "name": "PatentSight+ Portfolio Report — Millionaire Resilience",
+      "url": "ipfs://bafkreihls2yoi265uxzmcmh7wzk2ytyo5yvopmb4jib4blw4nptlchivqm",
+      "mimeType": "image/jpeg"
+    },
+    {
+      "name": "Articles of Organization — Millionaire Resilience LLC",
+      "url": "ipfs://bafkreifxiesrze736sxhvsa5op64q6f3ddvv3rismnvd75wi3yfqilu4py",
+      "mimeType": "application/pdf"
+    },
+    {
+      "name": "EIN Confirmation Letter — Millionaire Resilience LLC",
+      "url": "ipfs://bafkreihz5zpp33pimzckaey64mht2vezlbzngoxe46urrfctzqvjvsdboe",
+      "mimeType": "application/pdf"
+    },
+    {
+      "name": "IPlytics SEP Declaration",
+      "url": "ipfs://bafkreiej7wfskl53hxo4j47g55bxjkyyulihovjjtpjvtf264kfoddxc5i",
+      "mimeType": "application/pdf"
+    }
+  ],
+  "storyProtocol": {
+    "chainId": 1514,
+    "ipId": "0x98971c660ac20880b60F86Cc3113eBd979eb3aAE",
+    "tokenId": 15192,
+    "owner": "0x597856e93f19877a399f686D2F43b298e2268618",
+    "registryAddress": "0x1a9d0d28a0422F26D31Be72Edc6f13ea4371E11B",
+    "royaltyModule": "0xcc8b9f0c9dC370ED1F41D95f74C9F72E08f24C90",
+    "licensingModule": "0xd81fd78f557b457b4350cB95D20b547bFEb4D857"
+  },
+  "valuation": {
+    "presentValue_USD": 95000000,
+    "projectedValue5Y_USD": 500000000,
+    "projectedValue10Y_USD": 1700000000,
+    "patentSightScore": 92,
+    "sepCount": 42,
+    "methodology": "DCF + PatentSight+ PAI",
+    "status": "PROTECTED",
+    "atRisk": false
+  },
+  "loanRole": {
+    "role": "UCC-1 Filing Debtor",
+    "loanAmount_USD": 5000000,
+    "primaryCollateral": "Bitcoin (BTC)",
+    "repaymentSource": "100% PIL Licensing Revenue",
+    "filingJurisdiction": "New Mexico Secretary of State",
+    "filingNumber": "2024-NM-UCC-0001",
+    "ucc1CID": "bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a"
+  }
+}
