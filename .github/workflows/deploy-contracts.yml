@@ -104,9 +104,10 @@ jobs:
       - name: Deploy contracts to Story Protocol
         env:
           DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
-          # STORY_RPC_URL is built from ALCHEMY_API_KEY when available (recommended).
-          # Fall back to STORY_RPC_URL secret, then the public endpoint.
-          STORY_RPC_URL: ${{ secrets.ALCHEMY_API_KEY && format('https://story-mainnet.g.alchemy.com/v2/{0}', secrets.ALCHEMY_API_KEY) || secrets.STORY_RPC_URL || 'https://mainnet.storyrpc.io' }}
+          # ALCHEMY_API_KEY drives the Story Protocol Alchemy endpoint in hardhat.config.cjs.
+          # Falls back to STORY_RPC_URL secret, then the public endpoint.
+          ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
+          STORY_RPC_URL: ${{ secrets.STORY_RPC_URL || 'https://mainnet.storyrpc.io' }}
           STORYSCAN_API_KEY: ${{ secrets.STORYSCAN_API_KEY }}
           # Pinata / IPFS credentials — used by deployment scripts that pin or fetch
           # documents from IPFS via the Pinata gateway.
@@ -124,9 +125,8 @@ jobs:
         if: inputs.verify || github.event_name == 'push'
         env:
           DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
-          # STORY_RPC_URL is built from ALCHEMY_API_KEY when available (recommended).
-          # Fall back to STORY_RPC_URL secret, then the public endpoint.
-          STORY_RPC_URL: ${{ secrets.ALCHEMY_API_KEY && format('https://story-mainnet.g.alchemy.com/v2/{0}', secrets.ALCHEMY_API_KEY) || secrets.STORY_RPC_URL || 'https://mainnet.storyrpc.io' }}
+          ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
+          STORY_RPC_URL: ${{ secrets.STORY_RPC_URL || 'https://mainnet.storyrpc.io' }}
           STORYSCAN_API_KEY: ${{ secrets.STORYSCAN_API_KEY }}
         run: npm run contracts:verify:story
 
@@ -136,7 +136,8 @@ jobs:
       - name: Post-deployment orchestration (Story Protocol)
         env:
           DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
-          STORY_RPC_URL: ${{ secrets.ALCHEMY_API_KEY && format('https://story-mainnet.g.alchemy.com/v2/{0}', secrets.ALCHEMY_API_KEY) || secrets.STORY_RPC_URL || 'https://mainnet.storyrpc.io' }}
+          ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
+          STORY_RPC_URL: ${{ secrets.STORY_RPC_URL || 'https://mainnet.storyrpc.io' }}
           UCC1_FILING_HASH: "bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a"
           UCC1_AUXILIARY_DOCS: "bafybeidkp74w2idrwkg2qey66uepfaes5ekonxjqt62uztyxawii7yye7y"
           UCC1_FILING_NUMBER: ${{ vars.UCC1_FILING_NUMBER || '2024-NM-UCC-0001' }}

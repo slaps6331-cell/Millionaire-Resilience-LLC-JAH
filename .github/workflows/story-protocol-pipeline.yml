@@ -1,0 +1,583 @@
+name: Story Protocol Deployment Pipeline
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Full deployment pipeline for Story Protocol (Chain 1514).
+#
+# Pipeline stages:
+#   1. compile          — Compile all 11 contracts and upload build artifacts
+#   2. deploy-story     — Deploy attestation service, orchestration service,
+#                         and all supporting contracts to Story Protocol mainnet
+#   3. verify-story     — Verify every deployed contract on StoryScan
+#   4. orchestrate      — Wire contracts together and record on-chain:
+#                           • SOS.setAttestationServiceAddress
+#                           • SAS.registerSAS / registerSOS
+#                           • SAS.recordUCC1FilingNumber
+#                           • SAS.requestStoryRegistryEntry  (StoryScan indexing)
+#   5. register-ipa     — Pin IPA metadata to IPFS via Pinata and call
+#                           setMetadata on each Story Protocol IP Account
+#
+# Required GitHub Secrets (Settings → Secrets and variables → Actions):
+#   DEPLOYER_PRIVATE_KEY      — Deployer wallet private key (holds IP for gas)
+#   ALCHEMY_API_KEY           — Alchemy API key (story-mainnet endpoint)
+#   STORYSCAN_API_KEY         — StoryScan API key for contract verification
+#   PINATA_JWT                — Pinata JWT bearer token (for IPFS pinning)
+#   PINATA_GATEWAY_TOKEN      — Pinata dedicated-gateway access token (optional)
+#   COINBASE_API_KEY_NAME     — Coinbase CDP API key name
+#   COINBASE_API_KEY_PRIVATE_KEY — Coinbase CDP API private key
+#   THIRDWEB_CLIENT_ID        — Thirdweb client ID
+#   THIRDWEB_SECRET_KEY       — Thirdweb secret key
+#   STORY_RPC_URL             — (fallback) Story Protocol RPC URL if no Alchemy key
+#
+# Required GitHub Variables (Settings → Secrets and variables → Actions → Variables):
+#   PINATA_GATEWAY_NAME       — Pinata gateway subdomain (e.g. lavender-neat-urial-76)
+#   UCC1_FILING_NUMBER        — Official UCC-1 filing number (e.g. 2024-NM-UCC-0001)
+#   THIRDWEB_WALLET_ADDRESS   — ThirdWeb multi-sig wallet address
+#   COINBASE_WALLET_ADDRESS   — Coinbase multi-sig wallet address
+#   STORY_PROTOCOL_REGISTRY   — Story Protocol IP registry address on chain 1514
+#   STORY_LICENSING_MODULE    — Story Protocol Licensing Module address
+#   STORY_ROYALTY_MODULE      — Story Protocol Royalty Module address
+#   MR_PARENT_IPID            — Millionaire Resilience parent IPID address
+#   MR_TOKEN_ID               — Millionaire Resilience IP token ID
+#   IPFS_GLADIATOR_CERT_CID   — IPFS CID for Gladiator Holdings certificate
+#   IPFS_GLADIATOR_NOTICE_CID — IPFS CID for Gladiator Holdings notice of filing
+#   IPFS_MR_ARTICLES_CID      — IPFS CID for MR articles of incorporation
+#   IPFS_MR_EIN_LETTER_CID    — IPFS CID for MR EIN letter
+#   IPFS_SLAPS_ARTICLES_CID   — IPFS CID for Slaps Streaming articles
+#   IPFS_SLAPS_EIN_LETTER_CID — IPFS CID for Slaps Streaming EIN letter
+#   IPFS_RBW_EIN_LETTER_CID   — IPFS CID for RBW EIN letter
+#   IPFS_NM_SOS_RECEIPT_CID   — IPFS CID for NM SOS payment receipts
+#   IPFS_BENEFICIAL_OWNER_ID_CID — IPFS CID for beneficial owner identification
+#   IPFS_PATENTSIGHT_PORTFOLIO_CID — IPFS CID for PatentSight+ portfolio report
+#   IPFS_PATENTSIGHT_MR_CID   — IPFS CID for PatentSight+ MR report
+#   IPFS_PATENTSIGHT_SLAPS_CID — IPFS CID for PatentSight+ SLAPS report
+#   IPFS_IPLYTICS_DECLARATION_CID — IPFS CID for IPlytics SEP declaration
+# ─────────────────────────────────────────────────────────────────────────────
+
+on:
+  # Manual trigger with full control over each pipeline stage.
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run — compile only, skip all on-chain transactions (set to false to deploy)"
+        required: true
+        default: true
+        type: boolean
+      skip_verify:
+        description: "Skip StoryScan contract verification"
+        required: true
+        default: false
+        type: boolean
+      skip_orchestrate:
+        description: "Skip post-deployment orchestration (contract wiring)"
+        required: true
+        default: false
+        type: boolean
+      skip_ipa_registration:
+        description: "Skip Story Protocol IPA metadata registration"
+        required: true
+        default: false
+        type: boolean
+
+# Only one pipeline run at a time for Story Protocol.
+concurrency:
+  group: story-protocol-pipeline
+  cancel-in-progress: false
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Stage 1 — Compile all contracts
+# ─────────────────────────────────────────────────────────────────────────────
+jobs:
+  compile:
+    name: "Stage 1 — Compile Contracts"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      artifacts-key: ${{ steps.key.outputs.key }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Compile all contracts
+        run: npm run contracts:compile
+
+      - name: Set artifact cache key
+        id: key
+        run: echo "key=story-artifacts-${{ github.sha }}" >> "$GITHUB_OUTPUT"
+
+      - name: Upload compiled artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: story-artifacts-${{ github.sha }}
+          path: artifacts/
+          retention-days: 30
+
+      - name: Compilation summary
+        run: |
+          echo "## ✅ Stage 1 — Contracts Compiled" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "All 11 contracts compiled with Solidity 0.8.26 (viaIR, cancun, optimizer runs=200)." >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          if [ "${{ inputs.dry_run }}" = "true" ]; then
+            echo "> **Dry run enabled** — subsequent stages (deploy, verify, orchestrate, register) are skipped." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # Stage 2 — Deploy all contracts to Story Protocol (Chain 1514)
+  # ─────────────────────────────────────────────────────────────────────────
+  deploy-story:
+    name: "Stage 2 — Deploy to Story Protocol (Chain 1514)"
+    runs-on: ubuntu-latest
+    needs: compile
+    if: ${{ !inputs.dry_run }}
+    permissions:
+      contents: read
+    environment: story-mainnet
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Download compiled artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: story-artifacts-${{ github.sha }}
+          path: artifacts/
+
+      - name: Deploy contracts to Story Protocol
+        env:
+          DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+          # ALCHEMY_API_KEY drives the Story Protocol Alchemy endpoint in hardhat.config.cjs.
+          # Falls back to STORY_RPC_URL secret, then the public endpoint.
+          ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
+          STORY_RPC_URL: ${{ secrets.STORY_RPC_URL || 'https://mainnet.storyrpc.io' }}
+          STORYSCAN_API_KEY: ${{ secrets.STORYSCAN_API_KEY }}
+          # Pinata / IPFS credentials
+          PINATA_API_KEY: ${{ secrets.PINATA_API_KEY }}
+          PINATA_SECRET_API_KEY: ${{ secrets.PINATA_SECRET_API_KEY }}
+          PINATA_JWT: ${{ secrets.PINATA_JWT }}
+          PINATA_GATEWAY_TOKEN: ${{ secrets.PINATA_GATEWAY_TOKEN }}
+          PINATA_GATEWAY_NAME: ${{ vars.PINATA_GATEWAY_NAME }}
+          # Coinbase CDP credentials
+          COINBASE_API_KEY_NAME: ${{ secrets.COINBASE_API_KEY_NAME }}
+          COINBASE_API_KEY_PRIVATE_KEY: ${{ secrets.COINBASE_API_KEY_PRIVATE_KEY }}
+        run: npm run contracts:deploy:story
+
+      - name: Upload deployment config
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployment-config-story-${{ github.run_number }}
+          path: deployment-config.story.json
+          retention-days: 90
+
+      - name: Show deployed contract addresses
+        run: |
+          echo "## 🚀 Stage 2 — Deployed to Story Protocol" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Contract | Address |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|----------|---------|" >> "$GITHUB_STEP_SUMMARY"
+          node -e "
+            const fs = require('fs');
+            const cfg = JSON.parse(fs.readFileSync('deployment-config.story.json'));
+            Object.entries(cfg.contracts).forEach(([name, addr]) => {
+              console.log('| ' + name + ' | [\`' + addr + '\`](https://www.storyscan.io/address/' + addr + ') |');
+            });
+            console.log('');
+            console.log('**Deployer:** \`' + cfg.deployer + '\`');
+            console.log('');
+            console.log('**Chain:** ' + cfg.chainId + ' (Story Protocol)');
+          " >> "$GITHUB_STEP_SUMMARY"
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # Stage 3 — Verify contracts on StoryScan
+  # ─────────────────────────────────────────────────────────────────────────
+  verify-story:
+    name: "Stage 3 — Verify on StoryScan"
+    runs-on: ubuntu-latest
+    needs: deploy-story
+    if: ${{ !inputs.dry_run && !inputs.skip_verify }}
+    permissions:
+      contents: read
+    environment: story-mainnet
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Download deployment config
+        uses: actions/download-artifact@v4
+        with:
+          name: deployment-config-story-${{ github.run_number }}
+
+      - name: Download compiled artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: story-artifacts-${{ github.sha }}
+          path: artifacts/
+
+      - name: Verify contracts on StoryScan
+        env:
+          DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+          ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
+          STORY_RPC_URL: ${{ secrets.STORY_RPC_URL || 'https://mainnet.storyrpc.io' }}
+          STORYSCAN_API_KEY: ${{ secrets.STORYSCAN_API_KEY }}
+        run: npm run contracts:verify:story
+
+      - name: Verification summary
+        run: |
+          echo "## ✅ Stage 3 — Contracts Verified on StoryScan" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "All deployed contracts verified at [storyscan.io](https://www.storyscan.io)." >> "$GITHUB_STEP_SUMMARY"
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # Stage 4 — Post-deployment orchestration
+  #   • SOS.setAttestationServiceAddress  (wire SOS → SAS)
+  #   • SOS.setSpvLoanContractAddress     (wire SOS → SPV loan)
+  #   • SAS.registerSAS                   (register attestation service hash)
+  #   • SAS.registerSOS                   (register orchestration service hash)
+  #   • SAS.recordUCC1FilingNumber        (record UCC-1 filing on-chain)
+  #   • SAS.requestStoryRegistryEntry     (emit event for StoryScan indexing)
+  # ─────────────────────────────────────────────────────────────────────────
+  orchestrate-story:
+    name: "Stage 4 — Orchestrate Services (Story Protocol)"
+    runs-on: ubuntu-latest
+    needs: deploy-story
+    if: ${{ !inputs.dry_run && !inputs.skip_orchestrate }}
+    permissions:
+      contents: read
+    environment: story-mainnet
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Download deployment config
+        uses: actions/download-artifact@v4
+        with:
+          name: deployment-config-story-${{ github.run_number }}
+
+      - name: Download compiled artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: story-artifacts-${{ github.sha }}
+          path: artifacts/
+
+      - name: Run post-deployment orchestration
+        env:
+          DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+          ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
+          STORY_RPC_URL: ${{ secrets.STORY_RPC_URL || 'https://mainnet.storyrpc.io' }}
+          # UCC-1 filing metadata (New Mexico SOS — publicly recorded)
+          UCC1_FILING_HASH: "bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a"
+          UCC1_AUXILIARY_DOCS: "bafybeidkp74w2idrwkg2qey66uepfaes5ekonxjqt62uztyxawii7yye7y"
+          UCC1_FILING_NUMBER: ${{ vars.UCC1_FILING_NUMBER || '2024-NM-UCC-0001' }}
+          UCC1_JURISDICTION: "New Mexico Secretary of State"
+          # Multi-sig wallets
+          THIRDWEB_WALLET_ADDRESS: ${{ vars.THIRDWEB_WALLET_ADDRESS || '0xCD67f7e86A1397aBc33C473c58662BEB83b7a667' }}
+          COINBASE_WALLET_ADDRESS: ${{ vars.COINBASE_WALLET_ADDRESS || '0xdc2afcd0a97c1e878fdd64497806e52cc530f02a' }}
+          # ThirdWeb SDK credentials
+          THIRDWEB_CLIENT_ID: ${{ secrets.THIRDWEB_CLIENT_ID }}
+          THIRDWEB_SECRET_KEY: ${{ secrets.THIRDWEB_SECRET_KEY }}
+          # Coinbase CDP credentials
+          COINBASE_API_KEY_NAME: ${{ secrets.COINBASE_API_KEY_NAME }}
+          COINBASE_API_KEY_PRIVATE_KEY: ${{ secrets.COINBASE_API_KEY_PRIVATE_KEY }}
+          # Pinata / IPFS credentials
+          PINATA_API_KEY: ${{ secrets.PINATA_API_KEY }}
+          PINATA_SECRET_API_KEY: ${{ secrets.PINATA_SECRET_API_KEY }}
+          PINATA_JWT: ${{ secrets.PINATA_JWT }}
+          PINATA_GATEWAY_TOKEN: ${{ secrets.PINATA_GATEWAY_TOKEN }}
+          PINATA_GATEWAY_NAME: ${{ vars.PINATA_GATEWAY_NAME }}
+          # Corporate document IPFS CIDs
+          IPFS_GLADIATOR_CERT_CID: ${{ vars.IPFS_GLADIATOR_CERT_CID || 'bafybeiba2j4g34bizjjm26qznc2pf4upgotffrcwjtkw6lj3qa6squrzpu' }}
+          IPFS_GLADIATOR_NOTICE_CID: ${{ vars.IPFS_GLADIATOR_NOTICE_CID || 'bafkreifbikc26xs2cu2mvsghzlrginwm6icqotdp4ntsvq3sn6h4flrhhm' }}
+          IPFS_MR_ARTICLES_CID: ${{ vars.IPFS_MR_ARTICLES_CID || 'bafkreifxiesrze736sxhvsa5op64q6f3ddvv3rismnvd75wi3yfqilu4py' }}
+          IPFS_MR_EIN_LETTER_CID: ${{ vars.IPFS_MR_EIN_LETTER_CID || 'bafkreihz5zpp33pimzckaey64mht2vezlbzngoxe46urrfctzqvjvsdboe' }}
+          IPFS_SLAPS_ARTICLES_CID: ${{ vars.IPFS_SLAPS_ARTICLES_CID || 'bafkreic3n6bdf25tobljqbjxzvzkbch6s7xkqq5yehmyt3zju4de7ey52u' }}
+          IPFS_SLAPS_EIN_LETTER_CID: ${{ vars.IPFS_SLAPS_EIN_LETTER_CID || 'bafkreifnuwchbvbolmhbgionvsltdi3edzasfqytd4zzqlvu42m5m4jhei' }}
+          IPFS_RBW_EIN_LETTER_CID: ${{ vars.IPFS_RBW_EIN_LETTER_CID || 'bafkreid77fuxwqtwyku5syp3dswmy75rymvxh6v3tf7rfrzqbrizoutxtu' }}
+          IPFS_NM_SOS_RECEIPT_CID: ${{ vars.IPFS_NM_SOS_RECEIPT_CID || 'bafkreigjsqx6d47sgqwkjxgtt3qrjnoz3hdth4hqk7qnxflqog2ikjs2kq' }}
+          IPFS_BENEFICIAL_OWNER_ID_CID: ${{ vars.IPFS_BENEFICIAL_OWNER_ID_CID || 'bafkreie5spkgxxhmafdqylwyfplx37jqhcjrs3es3neasgcnynzgkg5mzi' }}
+          IPFS_PATENTSIGHT_PORTFOLIO_CID: ${{ vars.IPFS_PATENTSIGHT_PORTFOLIO_CID || 'bafkreibxqnmhir5iifpboxdv5ndltm5vnbplso4ndtcuzfnanykudrwdbu' }}
+          IPFS_PATENTSIGHT_MR_CID: ${{ vars.IPFS_PATENTSIGHT_MR_CID || 'bafkreihls2yoi265uxzmcmh7wzk2ytyo5yvopmb4jib4blw4nptlchivqm' }}
+          IPFS_PATENTSIGHT_SLAPS_CID: ${{ vars.IPFS_PATENTSIGHT_SLAPS_CID || 'bafkreiflmhdsflvv53e24mo2woafdgecpkvfljcbm5heafnzdxzbj5ct4i' }}
+          IPFS_IPLYTICS_DECLARATION_CID: ${{ vars.IPFS_IPLYTICS_DECLARATION_CID || 'bafkreiej7wfskl53hxo4j47g55bxjkyyulihovjjtpjvtf264kfoddxc5i' }}
+          # Story Protocol contract addresses
+          STORY_PROTOCOL_REGISTRY: ${{ vars.STORY_PROTOCOL_REGISTRY || '0x1a9d0d28a0422F26D31Be72Edc6f13ea4371E11B' }}
+          STORY_LICENSING_MODULE: ${{ vars.STORY_LICENSING_MODULE || '0xd81fd78f557b457b4350cB95D20b547bFEb4D857' }}
+          STORY_ROYALTY_MODULE: ${{ vars.STORY_ROYALTY_MODULE || '0xCC8b9f0c9Dc370Ed1F41d95F74C9f72E08f24C90' }}
+          MR_PARENT_IPID: ${{ vars.MR_PARENT_IPID || '0x98971c660ac20880b60F86Cc3113eBd979eb3aAE' }}
+          MR_TOKEN_ID: ${{ vars.MR_TOKEN_ID || '15192' }}
+        run: npm run contracts:orchestrate:story
+
+      - name: Generate multi-sig transaction config
+        env:
+          THIRDWEB_WALLET_ADDRESS: ${{ vars.THIRDWEB_WALLET_ADDRESS || '0xCD67f7e86A1397aBc33C473c58662BEB83b7a667' }}
+          COINBASE_WALLET_ADDRESS: ${{ vars.COINBASE_WALLET_ADDRESS || '0xdc2afcd0a97c1e878fdd64497806e52cc530f02a' }}
+          UCC1_FILING_HASH: "bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a"
+          GAS_PRICE_GWEI: "50"
+        run: npm run contracts:multisig
+
+      - name: Upload orchestration artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: orchestration-story-${{ github.run_number }}
+          path: |
+            registration-attestation.story.json
+            multisig-transaction.json
+            valuation-attestation.json
+            yield-summary.json
+          retention-days: 90
+          if-no-files-found: ignore
+
+      - name: Orchestration summary
+        run: |
+          echo "## 🔗 Stage 4 — Services Orchestrated (Story Protocol)" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          node -e "
+            const fs = require('fs');
+            const f = 'registration-attestation.story.json';
+            if (!fs.existsSync(f)) { console.log('_Attestation record not found._'); process.exit(0); }
+            const att = JSON.parse(fs.readFileSync(f));
+            console.log('**Status:** ' + att.status);
+            console.log('');
+            console.log('| Step | Tx Hash |');
+            console.log('|------|---------|');
+            for (const [key, val] of Object.entries(att.transactions || {})) {
+              const hash = val.txHash
+                ? '[\`' + val.txHash.slice(0, 12) + '…\`](https://www.storyscan.io/tx/' + val.txHash + ')'
+                : (val.skipped ? '_skipped_' : '_failed_');
+              console.log('| ' + key + ' | ' + hash + ' |');
+            }
+            const rs = att.registryStatus || {};
+            console.log('');
+            console.log('**SAS registered:** ' + rs.sasRegistered + ' | **SOS registered:** ' + rs.sosRegistered);
+          " >> "$GITHUB_STEP_SUMMARY"
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # Stage 5a — Register Gladiator Holdings IPA metadata on Story Protocol
+  # ─────────────────────────────────────────────────────────────────────────
+  register-ipa-gladiator:
+    name: "Stage 5a — Register IPA Metadata (Gladiator Holdings)"
+    runs-on: ubuntu-latest
+    needs: orchestrate-story
+    if: ${{ !inputs.dry_run && !inputs.skip_ipa_registration }}
+    permissions:
+      contents: read
+    environment: story-mainnet
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Pin & register Gladiator Holdings IPA metadata
+        env:
+          PINATA_JWT: ${{ secrets.PINATA_JWT }}
+          PINATA_GATEWAY_NAME: ${{ vars.PINATA_GATEWAY_NAME }}
+          ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
+          STORY_RPC_URL: ${{ secrets.STORY_RPC_URL || 'https://mainnet.storyrpc.io' }}
+          DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+        run: node scripts/register-ip-metadata.cjs GladiatorHoldingsIPAMetadata.json
+
+      - name: Upload registration record
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ipa-reg-gladiator-${{ github.run_number }}
+          path: ip-metadata-registration.gladiatorholdingsipametadata.json
+          if-no-files-found: ignore
+          retention-days: 90
+
+      - name: IPA registration summary
+        if: always()
+        run: |
+          echo "## 📋 Stage 5a — Gladiator Holdings IPA Metadata" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          node -e "
+            const fs = require('fs');
+            const f = 'ip-metadata-registration.gladiatorholdingsipametadata.json';
+            if (!fs.existsSync(f)) { console.log('_Record not found._'); process.exit(0); }
+            const r = JSON.parse(fs.readFileSync(f));
+            console.log('| Field | Value |');
+            console.log('|-------|-------|');
+            console.log('| Title | ' + r.title + ' |');
+            console.log('| IPFS CID | \`' + (r.ipfsCid || 'pending') + '\` |');
+            console.log('| SHA-256 | \`' + r.metadataHash + '\` |');
+            const txLink = r.txHash
+              ? '[\`' + r.txHash.slice(0,14) + '…\`](https://www.storyscan.io/tx/' + r.txHash + ')'
+              : (r.skipped ? '_skipped — ' + r.skipReason + '_' : '_failed_');
+            console.log('| Tx Hash | ' + txLink + ' |');
+          " >> "$GITHUB_STEP_SUMMARY"
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # Stage 5b — Register Millionaire Resilience IPA metadata on Story Protocol
+  # ─────────────────────────────────────────────────────────────────────────
+  register-ipa-mr:
+    name: "Stage 5b — Register IPA Metadata (Millionaire Resilience)"
+    runs-on: ubuntu-latest
+    needs: orchestrate-story
+    if: ${{ !inputs.dry_run && !inputs.skip_ipa_registration }}
+    permissions:
+      contents: read
+    environment: story-mainnet
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Pin & register Millionaire Resilience IPA metadata
+        env:
+          PINATA_JWT: ${{ secrets.PINATA_JWT }}
+          PINATA_GATEWAY_NAME: ${{ vars.PINATA_GATEWAY_NAME }}
+          ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
+          STORY_RPC_URL: ${{ secrets.STORY_RPC_URL || 'https://mainnet.storyrpc.io' }}
+          DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+        run: node scripts/register-ip-metadata.cjs MillionaireResilienceIPAMetadata.json
+
+      - name: Upload registration record
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ipa-reg-mr-${{ github.run_number }}
+          path: ip-metadata-registration.millionaireresilienceipametadata.json
+          if-no-files-found: ignore
+          retention-days: 90
+
+      - name: IPA registration summary
+        if: always()
+        run: |
+          echo "## 📋 Stage 5b — Millionaire Resilience IPA Metadata" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          node -e "
+            const fs = require('fs');
+            const f = 'ip-metadata-registration.millionaireresilienceipametadata.json';
+            if (!fs.existsSync(f)) { console.log('_Record not found._'); process.exit(0); }
+            const r = JSON.parse(fs.readFileSync(f));
+            console.log('| Field | Value |');
+            console.log('|-------|-------|');
+            console.log('| Title | ' + r.title + ' |');
+            console.log('| IPFS CID | \`' + (r.ipfsCid || 'pending') + '\` |');
+            console.log('| SHA-256 | \`' + r.metadataHash + '\` |');
+            const txLink = r.txHash
+              ? '[\`' + r.txHash.slice(0,14) + '…\`](https://www.storyscan.io/tx/' + r.txHash + ')'
+              : (r.skipped ? '_skipped — ' + r.skipReason + '_' : '_failed_');
+            console.log('| Tx Hash | ' + txLink + ' |');
+          " >> "$GITHUB_STEP_SUMMARY"
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # Stage 5c — Register SLAPS Streaming IPA metadata on Story Protocol
+  # ─────────────────────────────────────────────────────────────────────────
+  register-ipa-slaps:
+    name: "Stage 5c — Register IPA Metadata (SLAPS Streaming)"
+    runs-on: ubuntu-latest
+    needs: orchestrate-story
+    if: ${{ !inputs.dry_run && !inputs.skip_ipa_registration }}
+    permissions:
+      contents: read
+    environment: story-mainnet
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Pin & register SLAPS Streaming IPA metadata
+        env:
+          PINATA_JWT: ${{ secrets.PINATA_JWT }}
+          PINATA_GATEWAY_NAME: ${{ vars.PINATA_GATEWAY_NAME }}
+          ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
+          STORY_RPC_URL: ${{ secrets.STORY_RPC_URL || 'https://mainnet.storyrpc.io' }}
+          DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+        run: node scripts/register-ip-metadata.cjs SlapsStreamingIPAMetadata.json
+
+      - name: Upload registration record
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ipa-reg-slaps-${{ github.run_number }}
+          path: ip-metadata-registration.slapsstreamingipametadata.json
+          if-no-files-found: ignore
+          retention-days: 90
+
+      - name: IPA registration summary
+        if: always()
+        run: |
+          echo "## 📋 Stage 5c — SLAPS Streaming IPA Metadata" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          node -e "
+            const fs = require('fs');
+            const f = 'ip-metadata-registration.slapsstreamingipametadata.json';
+            if (!fs.existsSync(f)) { console.log('_Record not found._'); process.exit(0); }
+            const r = JSON.parse(fs.readFileSync(f));
+            console.log('| Field | Value |');
+            console.log('|-------|-------|');
+            console.log('| Title | ' + r.title + ' |');
+            console.log('| IPFS CID | \`' + (r.ipfsCid || 'pending') + '\` |');
+            console.log('| SHA-256 | \`' + r.metadataHash + '\` |');
+            const txLink = r.txHash
+              ? '[\`' + r.txHash.slice(0,14) + '…\`](https://www.storyscan.io/tx/' + r.txHash + ')'
+              : (r.skipped ? '_skipped — ' + r.skipReason + '_' : '_failed_');
+            console.log('| Tx Hash | ' + txLink + ' |');
+          " >> "$GITHUB_STEP_SUMMARY"

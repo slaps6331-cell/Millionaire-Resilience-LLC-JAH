@@ -139,7 +139,8 @@ jobs:
         if: ${{ github.event.inputs.network == 'story' }}
         env:
           DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
-          STORY_RPC_URL: ${{ secrets.ALCHEMY_API_KEY && format('https://story-mainnet.g.alchemy.com/v2/{0}', secrets.ALCHEMY_API_KEY) || secrets.STORY_RPC_URL || 'https://mainnet.storyrpc.io' }}
+          ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
+          STORY_RPC_URL: ${{ secrets.STORY_RPC_URL || 'https://mainnet.storyrpc.io' }}
           STORYSCAN_API_KEY: ${{ secrets.STORYSCAN_API_KEY }}
           THIRDWEB_WALLET_ADDRESS: ${{ vars.THIRDWEB_WALLET_ADDRESS || '0xCD67f7e86A1397aBc33C473c58662BEB83b7a667' }}
           COINBASE_WALLET_ADDRESS: ${{ vars.COINBASE_WALLET_ADDRESS || '0xdc2afcd0a97c1e878fdd64497806e52cc530f02a' }}
@@ -151,7 +152,8 @@ jobs:
         if: ${{ github.event.inputs.network == 'story' }}
         env:
           DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
-          STORY_RPC_URL: ${{ secrets.ALCHEMY_API_KEY && format('https://story-mainnet.g.alchemy.com/v2/{0}', secrets.ALCHEMY_API_KEY) || secrets.STORY_RPC_URL || 'https://mainnet.storyrpc.io' }}
+          ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
+          STORY_RPC_URL: ${{ secrets.STORY_RPC_URL || 'https://mainnet.storyrpc.io' }}
           STORYSCAN_API_KEY: ${{ secrets.STORYSCAN_API_KEY }}
         run: npm run contracts:verify:story
 

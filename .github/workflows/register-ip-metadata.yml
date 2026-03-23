@@ -63,7 +63,8 @@ jobs:
         env:
           PINATA_JWT: ${{ secrets.PINATA_JWT }}
           PINATA_GATEWAY_NAME: ${{ vars.PINATA_GATEWAY_NAME }}
-          STORY_RPC_URL: ${{ secrets.ALCHEMY_API_KEY && format('https://story-mainnet.g.alchemy.com/v2/{0}', secrets.ALCHEMY_API_KEY) || secrets.STORY_RPC_URL || 'https://mainnet.storyrpc.io' }}
+          ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
+          STORY_RPC_URL: ${{ secrets.STORY_RPC_URL || 'https://mainnet.storyrpc.io' }}
           DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
         run: |
           node scripts/register-ip-metadata.cjs GladiatorHoldingsIPAMetadata.json \
@@ -123,7 +124,8 @@ jobs:
         env:
           PINATA_JWT: ${{ secrets.PINATA_JWT }}
           PINATA_GATEWAY_NAME: ${{ vars.PINATA_GATEWAY_NAME }}
-          STORY_RPC_URL: ${{ secrets.ALCHEMY_API_KEY && format('https://story-mainnet.g.alchemy.com/v2/{0}', secrets.ALCHEMY_API_KEY) || secrets.STORY_RPC_URL || 'https://mainnet.storyrpc.io' }}
+          ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
+          STORY_RPC_URL: ${{ secrets.STORY_RPC_URL || 'https://mainnet.storyrpc.io' }}
           DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
         run: |
           node scripts/register-ip-metadata.cjs MillionaireResilienceIPAMetadata.json \
@@ -183,7 +185,8 @@ jobs:
         env:
           PINATA_JWT: ${{ secrets.PINATA_JWT }}
           PINATA_GATEWAY_NAME: ${{ vars.PINATA_GATEWAY_NAME }}
-          STORY_RPC_URL: ${{ secrets.ALCHEMY_API_KEY && format('https://story-mainnet.g.alchemy.com/v2/{0}', secrets.ALCHEMY_API_KEY) || secrets.STORY_RPC_URL || 'https://mainnet.storyrpc.io' }}
+          ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
+          STORY_RPC_URL: ${{ secrets.STORY_RPC_URL || 'https://mainnet.storyrpc.io' }}
           DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
         run: |
           node scripts/register-ip-metadata.cjs SlapsStreamingIPAMetadata.json \
