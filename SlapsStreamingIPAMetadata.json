@@ -1,0 +1,101 @@
+{
+  "title": "SLAPS Streaming LLC IP Portfolio",
+  "description": "Music and media streaming IP portfolio for SLAPS Streaming LLC (EIN: 41-4045773). 18 Standard Essential Patents with PatentSight+ PAI score 78. Present value $75M USD. Status: AT_RISK — pledged as secondary IP collateral for the Gladiator Holdings $5M USDC/BTC loan via Coinbase. Parent entity: Gladiator Holdings LLC (NM Entity ID 0008034162). PIL licensing revenue routed to loan repayment via the Story Protocol Royalty Module.",
+  "createdAt": "2025-06-27T00:00:00Z",
+  "image": "ipfs://bafkreiflmhdsflvv53e24mo2woafdgecpkvfljcbm5heafnzdxzbj5ct4i",
+  "imageHash": "0x49988b157b3375869c3ef3dbe8c3dbbcffb4acf3644495c7c0b27bfe1e122b53",
+  "mediaUrl": "ipfs://bafkreiflmhdsflvv53e24mo2woafdgecpkvfljcbm5heafnzdxzbj5ct4i",
+  "mediaHash": "0x49988b157b3375869c3ef3dbe8c3dbbcffb4acf3644495c7c0b27bfe1e122b53",
+  "mediaType": "image/jpeg",
+  "creators": [
+    {
+      "name": "SLAPS Streaming LLC",
+      "address": "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a",
+      "description": "IP Owner — EIN 41-4045773, New Mexico LLC, Secondary IP Collateral Provider",
+      "contributionPercent": 100,
+      "socialMedia": [
+        {
+          "platform": "Website",
+          "url": "https://millionaireresilience.com"
+        }
+      ]
+    }
+  ],
+  "ipType": "Music & Streaming IP Portfolio",
+  "tags": [
+    "Standard Essential Patents",
+    "SEP",
+    "Music Streaming",
+    "PatentSight+",
+    "IP-Backed Lending",
+    "PIL License",
+    "DeFi",
+    "Story Protocol",
+    "New Mexico",
+    "Secondary Collateral"
+  ],
+  "relationships": [
+    {
+      "ipId": "0x98971c660ac20880b60F86Cc3113eBd979eb3aAE",
+      "type": "BELONGS_TO",
+      "uri": "ipfs://bafybeiba2j4g34bizjjm26qznc2pf4upgotffrcwjtkw6lj3qa6squrzpu",
+      "summary": "SLAPS Streaming LLC IP BELONGS_TO the Gladiator Holdings LLC parent portfolio"
+    },
+    {
+      "ipId": "0x98971c660ac20880b60F86Cc3113eBd979eb3aAE",
+      "type": "RELATES_TO",
+      "uri": "ipfs://bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a",
+      "summary": "SLAPS Streaming IP RELATES_TO the Millionaire Resilience primary IP portfolio as secondary collateral in the same loan structure"
+    }
+  ],
+  "robotTerms": {
+    "userTerm": "NoTrainAI",
+    "aiTrainingTerms": "NoTrainAI"
+  },
+  "media": [
+    {
+      "name": "PatentSight+ Portfolio Report — SLAPS Streaming",
+      "url": "ipfs://bafkreiflmhdsflvv53e24mo2woafdgecpkvfljcbm5heafnzdxzbj5ct4i",
+      "mimeType": "image/jpeg"
+    },
+    {
+      "name": "Articles of Organization — SLAPS Streaming LLC",
+      "url": "ipfs://bafkreic3n6bdf25tobljqbjxzvzkbch6s7xkqq5yehmyt3zju4de7ey52u",
+      "mimeType": "application/pdf"
+    },
+    {
+      "name": "EIN Confirmation Letter — SLAPS Streaming LLC",
+      "url": "ipfs://bafkreifnuwchbvbolmhbgionvsltdi3edzasfqytd4zzqlvu42m5m4jhei",
+      "mimeType": "application/pdf"
+    }
+  ],
+  "storyProtocol": {
+    "chainId": 1514,
+    "ipId": "0x0000000000000000000000000000000000000000",
+    "tokenId": null,
+    "owner": "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a",
+    "registryAddress": "0x1a9d0d28a0422F26D31Be72Edc6f13ea4371E11B",
+    "royaltyModule": "0xcc8b9f0c9dC370ED1F41D95f74C9F72E08f24C90",
+    "licensingModule": "0xd81fd78f557b457b4350cB95D20b547bFEb4D857",
+    "note": "ipId uses ZeroAddress placeholder — update after Story Protocol IP registration"
+  },
+  "valuation": {
+    "presentValue_USD": 75000000,
+    "projectedValue5Y_USD": 300000000,
+    "projectedValue10Y_USD": 900000000,
+    "patentSightScore": 78,
+    "sepCount": 18,
+    "methodology": "DCF + PatentSight+ PAI",
+    "status": "AT_RISK",
+    "atRisk": true
+  },
+  "loanRole": {
+    "role": "Secondary IP Collateral Provider",
+    "pledgedAmount_USD": 5000000,
+    "primaryCollateral": "Bitcoin (BTC)",
+    "repaymentSource": "PIL Licensing Revenue",
+    "filingJurisdiction": "New Mexico Secretary of State",
+    "filingNumber": "2024-NM-UCC-0001",
+    "ucc1CID": "bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a"
+  }
+}

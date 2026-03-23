@@ -24,7 +24,8 @@
     "contracts:anchor-signature": "node scripts/anchor-signature.cjs",
     "contracts:node": "npx hardhat node",
     "contracts:attestation-hashes": "node scripts/generate-valuation-attestation.cjs",
-    "contracts:tx-hashes": "node scripts/generate-tx-hashes.cjs"
+    "contracts:tx-hashes": "node scripts/generate-tx-hashes.cjs",
+    "contracts:register-metadata": "node scripts/register-ip-metadata.cjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

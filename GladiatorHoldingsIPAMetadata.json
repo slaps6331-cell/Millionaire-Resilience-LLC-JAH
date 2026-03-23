@@ -1,8 +1,7 @@
 {
-  "$schema": "https://docs.story.foundation/ipa-metadata-schema.json",
-  "title": "Gladiator Holdings IP Portfolio",
-  "description": "Multi-SPV IP-Backed Lending Platform with segregated portfolio risk. $5M USDC Stablecoin Bitcoin Loan via Coinbase with SLAPS IP as secondary collateral. Millionaire Resilience LLC (EIN: 41-3789881) is UCC-1 Filing Debtor in New Mexico. Millionaire Resilience IP ($95M) is PROTECTED. SLAPS Streaming IP ($75M) is AT RISK as secondary collateral.",
-  "createdAt": "1738713600",
+  "title": "Gladiator Holdings LLC — Multi-SPV IP Portfolio",
+  "description": "Parent holding company IP portfolio for Gladiator Holdings LLC (NM Entity ID 0008034162, Entry 5095898). Umbrella for a Multi-SPV IP-Backed Lending structure: Millionaire Resilience LLC ($95M, PROTECTED, UCC-1 Filing Debtor) and SLAPS Streaming LLC ($75M, AT_RISK, secondary collateral). Combined portfolio valuation: $300M. $5M USDC Bitcoin loan via Coinbase is repaid 100% from PIL licensing revenue routed through the Story Protocol Royalty Module.",
+  "createdAt": "2025-06-27T00:00:00Z",
   "image": "ipfs://bafybeiba2j4g34bizjjm26qznc2pf4upgotffrcwjtkw6lj3qa6squrzpu",
   "imageHash": "0x9d327eb7fdae91d33c186a9d3b770f5004f679a70a34aeb94716042978a8a4fa",
   "mediaUrl": "ipfs://bafybeiba2j4g34bizjjm26qznc2pf4upgotffrcwjtkw6lj3qa6squrzpu",
@@ -12,7 +11,7 @@
     {
       "name": "Gladiator Holdings LLC",
       "address": "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a",
-      "description": "Parent Holding Company - NM Entity ID 0008034162",
+      "description": "Parent Holding Company — NM Entity ID 0008034162, Entry 5095898, Effective 2025-06-27",
       "contributionPercent": 100,
       "socialMedia": [
         {
@@ -22,29 +21,7 @@
       ]
     }
   ],
-  "attributes": [
-    {"trait_type": "IP_Type", "value": "Multi-SPV Portfolio"},
-    {"trait_type": "Corporate_Structure", "value": "Gladiator Holdings LLC"},
-    {"trait_type": "Entity_ID", "value": "0008034162"},
-    {"trait_type": "Entry_Number", "value": "5095898"},
-    {"trait_type": "Effective_Date", "value": "June 27, 2025"},
-    {"trait_type": "State", "value": "New Mexico"},
-    {"trait_type": "Combined_Valuation_USD", "value": "300000000"},
-    {"trait_type": "MR_Valuation_USD", "value": "95000000"},
-    {"trait_type": "MR_Status", "value": "PROTECTED"},
-    {"trait_type": "SLAPS_Valuation_USD", "value": "75000000"},
-    {"trait_type": "SLAPS_Status", "value": "AT_RISK"},
-    {"trait_type": "License_Type", "value": "PIL"},
-    {"trait_type": "Chain", "value": "Story Protocol"},
-    {"trait_type": "PatentSight_Score", "value": "92"},
-    {"trait_type": "SEP_Count", "value": "42"},
-    {"trait_type": "Primary_Loan_Principal", "value": "5000000"},
-    {"trait_type": "Primary_Loan_Platform", "value": "Coinbase"},
-    {"trait_type": "Primary_Collateral", "value": "Bitcoin (BTC)"},
-    {"trait_type": "Secondary_Collateral", "value": "SLAPS IP Portfolio"},
-    {"trait_type": "Filing_Debtor", "value": "Millionaire Resilience LLC"},
-    {"trait_type": "Filing_Jurisdiction", "value": "New Mexico"}
-  ],
+  "ipType": "Multi-SPV Corporate IP Portfolio",
   "tags": [
     "IP-Backed Lending",
     "DeFi",
@@ -54,21 +31,94 @@
     "PatentSight+",
     "Coinbase",
     "Base L2",
-    "USDC"
+    "USDC",
+    "Story Protocol",
+    "New Mexico",
+    "UCC-1"
   ],
-  "ipType": "Corporate IP Portfolio",
+  "relationships": [
+    {
+      "ipId": "0x98971c660ac20880b60F86Cc3113eBd979eb3aAE",
+      "type": "PART_OF",
+      "uri": "ipfs://bafkreihls2yoi265uxzmcmh7wzk2ytyo5yvopmb4jib4blw4nptlchivqm",
+      "summary": "Millionaire Resilience LLC IP is PART_OF the Gladiator Holdings portfolio"
+    },
+    {
+      "ipId": "0x0000000000000000000000000000000000000000",
+      "type": "PART_OF",
+      "uri": "ipfs://bafkreiflmhdsflvv53e24mo2woafdgecpkvfljcbm5heafnzdxzbj5ct4i",
+      "summary": "SLAPS Streaming LLC IP is PART_OF the Gladiator Holdings portfolio"
+    }
+  ],
+  "robotTerms": {
+    "userTerm": "NoTrainAI",
+    "aiTrainingTerms": "NoTrainAI"
+  },
+  "media": [
+    {
+      "name": "Certificate of Organization — Gladiator Holdings LLC",
+      "url": "ipfs://bafybeiba2j4g34bizjjm26qznc2pf4upgotffrcwjtkw6lj3qa6squrzpu",
+      "mimeType": "image/jpeg"
+    },
+    {
+      "name": "Notice of Filing Approval — NM SOS",
+      "url": "ipfs://bafkreifbikc26xs2cu2mvsghzlrginwm6icqotdp4ntsvq3sn6h4flrhhm",
+      "mimeType": "application/pdf"
+    },
+    {
+      "name": "PatentSight+ Combined Portfolio Report",
+      "url": "ipfs://bafkreibxqnmhir5iifpboxdv5ndltm5vnbplso4ndtcuzfnanykudrwdbu",
+      "mimeType": "application/pdf"
+    },
+    {
+      "name": "UCC-1 Filing — New Mexico Secretary of State",
+      "url": "ipfs://bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a",
+      "mimeType": "application/pdf"
+    },
+    {
+      "name": "NM SOS Filing Receipt",
+      "url": "ipfs://bafkreigjsqx6d47sgqwkjxgtt3qrjnoz3hdth4hqk7qnxflqog2ikjs2kq",
+      "mimeType": "application/pdf"
+    },
+    {
+      "name": "Beneficial Owner ID — RBW",
+      "url": "ipfs://bafkreid77fuxwqtwyku5syp3dswmy75rymvxh6v3tf7rfrzqbrizoutxtu",
+      "mimeType": "application/pdf"
+    },
+    {
+      "name": "Beneficial Owner ID Verification",
+      "url": "ipfs://bafkreie5spkgxxhmafdqylwyfplx37jqhcjrs3es3neasgcnynzgkg5mzi",
+      "mimeType": "application/pdf"
+    },
+    {
+      "name": "IPlytics SEP Declaration",
+      "url": "ipfs://bafkreiej7wfskl53hxo4j47g55bxjkyyulihovjjtpjvtf264kfoddxc5i",
+      "mimeType": "application/pdf"
+    }
+  ],
+  "storyProtocol": {
+    "chainId": 1514,
+    "registryAddress": "0x1a9d0d28a0422F26D31Be72Edc6f13ea4371E11B",
+    "royaltyModule": "0xcc8b9f0c9dC370ED1F41D95f74C9F72E08f24C90",
+    "licensingModule": "0xd81fd78f557b457b4350cB95D20b547bFEb4D857",
+    "collectionWallet": "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a"
+  },
   "riskSegregation": {
     "millionaireResilience": {
       "ein": "41-3789881",
       "status": "PROTECTED",
       "atRisk": false,
       "ipId": "0x98971c660ac20880b60F86Cc3113eBd979eb3aAE",
+      "tokenId": 15192,
+      "presentValue_USD": 95000000,
       "role": "UCC-1 Filing Debtor"
     },
     "slapsStreaming": {
       "ein": "41-4045773",
       "status": "AT_RISK",
       "atRisk": true,
+      "ipId": "0x0000000000000000000000000000000000000000",
+      "presentValue_USD": 75000000,
       "pledgedForLoan": 5000000,
       "role": "Secondary IP Collateral Provider"
     }
@@ -81,8 +131,9 @@
     "primaryCollateral": "Bitcoin (BTC)",
     "secondaryCollateral": "SLAPS IP Portfolio",
     "filingDebtor": "Millionaire Resilience LLC",
-    "filingJurisdiction": "New Mexico",
-    "ucc1Document": "documents/UCC1_MillionaireResilience_NewMexico.md",
+    "filingJurisdiction": "New Mexico Secretary of State",
+    "filingNumber": "2024-NM-UCC-0001",
+    "ucc1CID": "bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a",
     "repaymentSource": "100% PIL Licensing Revenue"
   },
   "documentHashes": {
@@ -126,7 +177,7 @@
         "status": "PROTECTED"
       },
       {
-        "name": "Slaps Streaming LLC",
+        "name": "SLAPS Streaming LLC",
         "status": "AT_RISK"
       }
     ]
