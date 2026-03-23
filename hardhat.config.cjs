@@ -17,6 +17,21 @@ module.exports = {
         },
       },
     ],
+    overrides: {
+      "contracts/StoryAttestationService.sol": {
+        version: "0.8.26",
+        settings: {
+          optimizer: {
+            enabled: true,
+            // runs=1 keeps the bytecode under the 24 576-byte EVM contract-size limit
+            // for this larger contract while still producing optimized code.
+            runs: 1,
+          },
+          evmVersion: "cancun",
+          viaIR: true,
+        },
+      },
+    },
   },
   networks: {
     story: {
