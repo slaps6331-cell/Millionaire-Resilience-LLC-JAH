@@ -38,7 +38,24 @@ async function main() {
   console.log("=".repeat(60));
   console.log(`Timestamp: ${new Date().toISOString()}`);
 
+  if (!process.env.DEPLOYER_PRIVATE_KEY) {
+    console.error(
+      "ERROR: DEPLOYER_PRIVATE_KEY environment variable is not set.\n" +
+      "Set this variable to a funded wallet private key before deploying.\n" +
+      "Example: export DEPLOYER_PRIVATE_KEY=0x<your-private-key>"
+    );
+    process.exit(1);
+  }
+
   const [deployer] = await ethers.getSigners();
+  if (!deployer) {
+    console.error(
+      "ERROR: No deployer account available. " +
+      "Ensure DEPLOYER_PRIVATE_KEY is a valid private key."
+    );
+    process.exit(1);
+  }
+
   const network = await ethers.provider.getNetwork();
 
   console.log(`\nNetwork:   ${hre.network.name} (Chain ${network.chainId})`);

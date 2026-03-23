@@ -515,7 +515,7 @@ contract StoryAttestationService is Ownable, ReentrancyGuard {
         string calldata jurisdiction,
         string calldata filingNumber,
         address ipAssetId,
-        uint256 collateralValue,
+        uint256 /* collateralValue */,
         string calldata metadataURI
     ) external onlyAuthorizedAttestor returns (bytes32 attestationId) {
         if (filingHash == bytes32(0)) revert InvalidFilingHash();
@@ -865,7 +865,7 @@ contract StoryAttestationService is Ownable, ReentrancyGuard {
         return (true, maxLoanAmount, "Approved for Morpho Protocol lending");
     }
 
-    function getProtectedPortfolioValue() external view returns (
+    function getProtectedPortfolioValue() external pure returns (
         uint256 mrPlatformValue,
         uint256 whetstoneValue,
         uint256 lexisNexisValue,
