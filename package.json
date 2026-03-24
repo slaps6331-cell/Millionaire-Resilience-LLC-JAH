@@ -25,7 +25,8 @@
     "contracts:node": "npx hardhat node",
     "contracts:attestation-hashes": "node scripts/generate-valuation-attestation.cjs",
     "contracts:tx-hashes": "node scripts/generate-tx-hashes.cjs",
-    "contracts:register-metadata": "node scripts/register-ip-metadata.cjs"
+    "contracts:register-metadata": "node scripts/register-ip-metadata.cjs",
+    "contracts:export-abi-proof": "node scripts/export-abi-proof.cjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
