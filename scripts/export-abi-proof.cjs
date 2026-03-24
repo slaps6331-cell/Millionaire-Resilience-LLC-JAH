@@ -109,7 +109,13 @@ const STORY_ADDRESSES = {
 
 /** keccak256 of a hex string (bytecode) using ethers.js. */
 function keccak256Hex(hexStr) {
-  if (!hexStr || hexStr === "0x") return ethers.ZeroHash;
+  if (!hexStr || hexStr === "0x") {
+    // Return the all-zeros sentinel rather than ethers.ZeroHash to avoid
+    // coupling to the ethers API surface (ethers.ZeroHash was removed in some
+    // minor versions). The value is semantically "no bytecode" — not the
+    // actual keccak256 of empty input (which would be 0xc5d246…).
+    return "0x0000000000000000000000000000000000000000000000000000000000000000";
+  }
   return ethers.keccak256(hexStr);
 }
 

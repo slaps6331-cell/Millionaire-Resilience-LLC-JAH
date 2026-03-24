@@ -9,8 +9,8 @@ name: IPFS to StoryScan — Push Pinata Docs & Verify Contracts
 #   4. Verifies contract source code on StoryScan (storyscan.io)
 #   5. Runs post-deployment orchestration (SAS ↔ SOS wiring, UCC-1 recording,
 #      StoryScan registry request)
-#   6. Pins the abi-proof.json and the IPFS document manifest to Pinata and
-#      registers both with the Story Protocol IP asset
+#   6. Pins the abi-proof.json to Pinata and registers all three IPA metadata
+#      files with the Story Protocol IP asset
 #
 # Secrets required (Settings → Secrets and variables → Actions → Secrets):
 #   DEPLOYER_PRIVATE_KEY        private key of the deployer wallet
@@ -36,7 +36,7 @@ name: IPFS to StoryScan — Push Pinata Docs & Verify Contracts
 #   STORY_ROYALTY_MODULE        Story Royalty Module address
 #   MR_PARENT_IPID              MR parent IP asset ID
 #   MR_TOKEN_ID                 MR parent token ID
-#   IPFS_GLADIATOR_CERT_CID     and all other IPFS_* CID variables
+#   IPFS_GLADIATOR_CERT_CID     (and all other IPFS_* CID variables)
 # ─────────────────────────────────────────────────────────────────────────────
 
 on:
@@ -46,6 +46,8 @@ on:
     paths:
       - "contracts/**"
       - "scripts/export-abi-proof.cjs"
+      - "scripts/build-ipfs-manifest.cjs"
+      - "scripts/pin-to-pinata.cjs"
       - "scripts/post-deploy-orchestrate.cjs"
       - "scripts/register-ip-metadata.cjs"
       - "GladiatorHoldingsIPAMetadata.json"
@@ -76,7 +78,7 @@ on:
         default: true
         type: boolean
 
-# One workflow run at a time (protect mainnet deployments).
+# Only one deployment workflow at a time to protect mainnet state.
 concurrency:
   group: ipfs-to-storyscan
   cancel-in-progress: false
@@ -150,18 +152,25 @@ jobs:
         run: |
           echo "## ABI / Bytecode Proof" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "| Contract | Deployed Bytecode Size | keccak256 |" >> "$GITHUB_STEP_SUMMARY"
-          echo "|----------|----------------------|-----------|" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Contract | Deployed Size | keccak256 | ABI SHA-256 |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|----------|--------------|-----------|-------------|" >> "$GITHUB_STEP_SUMMARY"
           node -e "
             const p = require('./abi-proof.json');
             for (const [name, c] of Object.entries(p.contracts)) {
               if (c.status !== 'COMPILED') {
-                console.log('| ' + name + ' | _not compiled_ | — |');
+                console.log('| ' + name + ' | _not compiled_ | — | — |');
                 continue;
               }
-              const size = c.deployedBytecodeSize ? c.deployedBytecodeSize.toLocaleString() + ' bytes' : 'N/A';
-              const hash = c.deployedBytecodeKeccak256 ? '\`' + c.deployedBytecodeKeccak256.slice(0,14) + '…\`' : 'N/A';
-              console.log('| ' + name + ' | ' + size + ' | ' + hash + ' |');
+              const size = c.deployedBytecodeSize
+                ? c.deployedBytecodeSize.toLocaleString() + ' B'
+                : 'N/A';
+              const kHash = c.deployedBytecodeKeccak256
+                ? '\`' + c.deployedBytecodeKeccak256.slice(0, 14) + '…\`'
+                : 'N/A';
+              const aHash = c.abiSha256
+                ? '\`' + c.abiSha256.slice(0, 14) + '…\`'
+                : 'N/A';
+              console.log('| ' + name + ' | ' + size + ' | ' + kHash + ' | ' + aHash + ' |');
             }
           " >> "$GITHUB_STEP_SUMMARY"
 
@@ -174,7 +183,7 @@ jobs:
     needs: build-abi-proof
     permissions:
       contents: read
-    if: ${{ !inputs.skip_ipfs_fetch }}
+    if: inputs.skip_ipfs_fetch != true
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -185,9 +194,10 @@ jobs:
           node-version: "20"
           cache: "npm"
 
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
       - name: Build IPFS document manifest
-        # Resolves every CID from environment variables against the Pinata gateway,
-        # verifies HEAD reachability, and writes ipfs-document-manifest.json.
         env:
           PINATA_GATEWAY_NAME: ${{ vars.PINATA_GATEWAY_NAME }}
           PINATA_GATEWAY_TOKEN: ${{ secrets.PINATA_GATEWAY_TOKEN }}
@@ -206,81 +216,7 @@ jobs:
           IPFS_PATENTSIGHT_MR_CID: ${{ vars.IPFS_PATENTSIGHT_MR_CID || 'bafkreihls2yoi265uxzmcmh7wzk2ytyo5yvopmb4jib4blw4nptlchivqm' }}
           IPFS_PATENTSIGHT_SLAPS_CID: ${{ vars.IPFS_PATENTSIGHT_SLAPS_CID || 'bafkreiflmhdsflvv53e24mo2woafdgecpkvfljcbm5heafnzdxzbj5ct4i' }}
           IPFS_IPLYTICS_DECLARATION_CID: ${{ vars.IPFS_IPLYTICS_DECLARATION_CID || 'bafkreiej7wfskl53hxo4j47g55bxjkyyulihovjjtpjvtf264kfoddxc5i' }}
-        run: |
-          node << 'MANIFEST_SCRIPT'
-          "use strict";
-          const https  = require("https");
-          const http   = require("http");
-          const crypto = require("crypto");
-          const fs     = require("fs");
-
-          const GATEWAY = process.env.PINATA_GATEWAY_NAME
-            ? `https://${process.env.PINATA_GATEWAY_NAME}.mypinata.cloud/ipfs`
-            : "https://ipfs.io/ipfs";
-          const TOKEN = process.env.PINATA_GATEWAY_TOKEN || "";
-
-          const CIDS = {
-            ucc1Filing:           process.env.UCC1_FILING_HASH,
-            ucc1AuxDocs:          process.env.UCC1_AUXILIARY_DOCS,
-            gladiatorCert:        process.env.IPFS_GLADIATOR_CERT_CID,
-            gladiatorNotice:      process.env.IPFS_GLADIATOR_NOTICE_CID,
-            mrArticles:           process.env.IPFS_MR_ARTICLES_CID,
-            mrEinLetter:          process.env.IPFS_MR_EIN_LETTER_CID,
-            slapsArticles:        process.env.IPFS_SLAPS_ARTICLES_CID,
-            slapsEinLetter:       process.env.IPFS_SLAPS_EIN_LETTER_CID,
-            rbwEinLetter:         process.env.IPFS_RBW_EIN_LETTER_CID,
-            nmSosReceipt:         process.env.IPFS_NM_SOS_RECEIPT_CID,
-            beneficialOwnerID:    process.env.IPFS_BENEFICIAL_OWNER_ID_CID,
-            patentsightPortfolio: process.env.IPFS_PATENTSIGHT_PORTFOLIO_CID,
-            patentsightMR:        process.env.IPFS_PATENTSIGHT_MR_CID,
-            patentsightSLAPS:     process.env.IPFS_PATENTSIGHT_SLAPS_CID,
-            iplyticsDeclaration:  process.env.IPFS_IPLYTICS_DECLARATION_CID,
-          };
-
-          function headRequest(url) {
-            return new Promise((resolve) => {
-              const mod = url.startsWith("https") ? https : http;
-              const hdrs = TOKEN ? { "x-pinata-gateway-token": TOKEN } : {};
-              const req = mod.request(url, { method: "HEAD", headers: hdrs }, (res) => {
-                resolve({ status: res.statusCode, contentType: res.headers["content-type"] || "" });
-              });
-              req.on("error", () => resolve({ status: 0, contentType: "" }));
-              req.setTimeout(10000, () => { req.destroy(); resolve({ status: 0, contentType: "" }); });
-              req.end();
-            });
-          }
-
-          async function main() {
-            const manifest = {
-              generatedAt: new Date().toISOString(),
-              gateway: GATEWAY,
-              documents: {},
-            };
-            let ok = 0, fail = 0;
-            for (const [key, cid] of Object.entries(CIDS)) {
-              if (!cid) { manifest.documents[key] = { cid: null, status: "NOT_SET" }; continue; }
-              const url = `${GATEWAY}/${cid}${TOKEN ? "?pinataGatewayToken=" + TOKEN : ""}`;
-              const displayUrl = `${GATEWAY}/${cid}`;
-              process.stdout.write(`  ${key.padEnd(30)} ${cid.slice(0, 20)}… `);
-              const res = await headRequest(url);
-              const reachable = res.status >= 200 && res.status < 400;
-              if (reachable) { ok++;   process.stdout.write("✓\n"); }
-              else           { fail++; process.stdout.write(`✗ (HTTP ${res.status})\n`); }
-              manifest.documents[key] = {
-                cid,
-                url:     displayUrl,
-                cidSha256: "0x" + crypto.createHash("sha256").update(cid).digest("hex"),
-                httpStatus:  res.status,
-                reachable,
-                contentType: res.contentType,
-              };
-            }
-            fs.writeFileSync("ipfs-document-manifest.json", JSON.stringify(manifest, null, 2));
-            console.log(`\nDocument manifest: ${ok} reachable, ${fail} unreachable`);
-            console.log("Written: ipfs-document-manifest.json");
-          }
-          main().catch((e) => { console.error(e); process.exit(1); });
-          MANIFEST_SCRIPT
+        run: npm run contracts:build-ipfs-manifest
 
       - name: Upload IPFS manifest
         if: always()
@@ -300,12 +236,15 @@ jobs:
           echo "|----------|-----|-----------|" >> "$GITHUB_STEP_SUMMARY"
           node -e "
             const fs = require('fs');
-            if (!fs.existsSync('ipfs-document-manifest.json')) { console.log('_Manifest not generated._'); process.exit(0); }
+            if (!fs.existsSync('ipfs-document-manifest.json')) {
+              console.log('_Manifest not generated._');
+              process.exit(0);
+            }
             const m = JSON.parse(fs.readFileSync('ipfs-document-manifest.json'));
             const gw = m.gateway || 'https://ipfs.io/ipfs';
             for (const [key, doc] of Object.entries(m.documents)) {
               if (!doc.cid) { console.log('| ' + key + ' | _not set_ | — |'); continue; }
-              const cidShort = doc.cid.slice(0, 20) + '…';
+              const cidShort = doc.cid.slice(0, 22) + '…';
               const link = '[' + cidShort + '](' + gw + '/' + doc.cid + ')';
               const reach = doc.reachable ? '✓' : ('✗ HTTP ' + doc.httpStatus);
               console.log('| ' + key + ' | ' + link + ' | ' + reach + ' |');
@@ -322,9 +261,11 @@ jobs:
     permissions:
       contents: read
     # Deploy on push to main OR when workflow_dispatch with deploy=true and dry_run=false.
-    if: |
+    if: >-
       (github.event_name == 'push') ||
-      (github.event_name == 'workflow_dispatch' && inputs.deploy == true && inputs.dry_run == false)
+      (github.event_name == 'workflow_dispatch' &&
+       inputs.deploy == true &&
+       inputs.dry_run != true)
     environment: story-mainnet
     steps:
       - name: Checkout repository
@@ -348,6 +289,8 @@ jobs:
       - name: Deploy all 11 contracts to Story Protocol
         env:
           DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+          # STORY_RPC_URL is built from ALCHEMY_API_KEY when set (recommended).
+          # Falls back to STORY_RPC_URL secret, then the public endpoint.
           STORY_RPC_URL: ${{ secrets.ALCHEMY_API_KEY && format('https://story-mainnet.g.alchemy.com/v2/{0}', secrets.ALCHEMY_API_KEY) || secrets.STORY_RPC_URL || 'https://mainnet.storyrpc.io' }}
           ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
           STORYSCAN_API_KEY: ${{ secrets.STORYSCAN_API_KEY }}
@@ -361,7 +304,7 @@ jobs:
         run: npm run contracts:deploy:story
 
       - name: Verify source code on StoryScan
-        if: ${{ github.event_name == 'push' || inputs.verify }}
+        if: github.event_name == 'push' || inputs.verify
         env:
           DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
           STORY_RPC_URL: ${{ secrets.ALCHEMY_API_KEY && format('https://story-mainnet.g.alchemy.com/v2/{0}', secrets.ALCHEMY_API_KEY) || secrets.STORY_RPC_URL || 'https://mainnet.storyrpc.io' }}
@@ -372,7 +315,7 @@ jobs:
       - name: Generate valuation attestation hashes
         run: npm run contracts:attestation-hashes
 
-      - name: Post-deployment orchestration
+      - name: Post-deployment orchestration (SAS ↔ SOS wiring / UCC-1 recording)
         env:
           DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
           STORY_RPC_URL: ${{ secrets.ALCHEMY_API_KEY && format('https://story-mainnet.g.alchemy.com/v2/{0}', secrets.ALCHEMY_API_KEY) || secrets.STORY_RPC_URL || 'https://mainnet.storyrpc.io' }}
@@ -440,13 +383,13 @@ jobs:
             }
             const cfg = JSON.parse(fs.readFileSync('deployment-config.story.json'));
             Object.entries(cfg.contracts).forEach(([name, addr]) => {
-              const link = '[\`' + addr.slice(0,10) + '…\`](https://www.storyscan.io/address/' + addr + ')';
-              const verifyLink = '[verify](https://www.storyscan.io/address/' + addr + '#code)';
-              console.log('| ' + name + ' | ' + link + ' | ' + verifyLink + ' |');
+              const link = '[\`' + addr.slice(0, 10) + '…\`](https://www.storyscan.io/address/' + addr + ')';
+              const vLink = '[verify](https://www.storyscan.io/address/' + addr + '#code)';
+              console.log('| ' + name + ' | ' + link + ' | ' + vLink + ' |');
             });
           " >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "### Orchestration (SAS ↔ SOS wiring / UCC-1 recording)" >> "$GITHUB_STEP_SUMMARY"
+          echo "### Orchestration" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
           node -e "
             const fs = require('fs');
@@ -461,23 +404,26 @@ jobs:
             console.log('|------|---------|');
             for (const [key, val] of Object.entries(att.transactions || {})) {
               const hash = val.txHash
-                ? '[\`' + val.txHash.slice(0,12) + '…\`](https://www.storyscan.io/tx/' + val.txHash + ')'
+                ? '[\`' + val.txHash.slice(0, 12) + '…\`](https://www.storyscan.io/tx/' + val.txHash + ')'
                 : (val.skipped ? '_skipped_' : '_failed_');
               console.log('| ' + key + ' | ' + hash + ' |');
             }
           " >> "$GITHUB_STEP_SUMMARY"
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Job 4 — Pin ABI proof to Pinata and register on Story Protocol IP asset
+# Job 4 — Pin ABI proof to Pinata and register IPA metadata on Story Protocol
 # ─────────────────────────────────────────────────────────────────────────────
   pin-and-register-proof:
     name: Pin ABI Proof to Pinata & Register on Story Protocol
     runs-on: ubuntu-latest
     needs: [build-abi-proof, fetch-ipfs-docs]
-    if: |
+    # always() ensures this job runs even if fetch-ipfs-docs was skipped
+    # (via skip_ipfs_fetch=true).  On push events inputs.dry_run is undefined;
+    # inputs.dry_run != true correctly evaluates to true in that case.
+    if: >-
       always() &&
       needs.build-abi-proof.result == 'success' &&
-      !inputs.dry_run
+      inputs.dry_run != true
     permissions:
       contents: read
     steps:
@@ -500,7 +446,7 @@ jobs:
           path: .
 
       - name: Download IPFS document manifest
-        if: ${{ !inputs.skip_ipfs_fetch }}
+        if: inputs.skip_ipfs_fetch != true
         uses: actions/download-artifact@v4
         with:
           name: ipfs-document-manifest-${{ github.run_number }}
@@ -511,69 +457,9 @@ jobs:
         env:
           PINATA_JWT: ${{ secrets.PINATA_JWT }}
           PINATA_GATEWAY_NAME: ${{ vars.PINATA_GATEWAY_NAME }}
-        run: |
-          node << 'PIN_SCRIPT'
-          "use strict";
-          const https  = require("https");
-          const fs     = require("fs");
-          const crypto = require("crypto");
-
-          const JWT = process.env.PINATA_JWT;
-          if (!JWT) { console.log("PINATA_JWT not set — skipping pin"); process.exit(0); }
-
-          const content  = fs.readFileSync("abi-proof.json", "utf8");
-          const boundary = "----FormBoundary" + crypto.randomBytes(8).toString("hex");
-          const header   = `--${boundary}\r\nContent-Disposition: form-data; name="file"; filename="abi-proof.json"\r\nContent-Type: application/json\r\n\r\n`;
-          const footer   = `\r\n--${boundary}--\r\n`;
-          const pname    = `\r\n--${boundary}\r\nContent-Disposition: form-data; name="pinataMetadata"\r\n\r\n{"name":"abi-proof.json"}\r\n`;
-          const body     = Buffer.concat([
-            Buffer.from(header),
-            Buffer.from(content, "utf8"),
-            Buffer.from(pname),
-            Buffer.from(footer),
-          ]);
-
-          const options = {
-            hostname: "api.pinata.cloud",
-            path:     "/pinning/pinFileToIPFS",
-            method:   "POST",
-            headers:  {
-              Authorization:  `Bearer ${JWT}`,
-              "Content-Type": `multipart/form-data; boundary=${boundary}`,
-              "Content-Length": body.length,
-            },
-          };
-
-          const req = https.request(options, (res) => {
-            let data = "";
-            res.on("data", (chunk) => { data += chunk; });
-            res.on("end", () => {
-              try {
-                const result = JSON.parse(data);
-                if (result.IpfsHash) {
-                  const gw = process.env.PINATA_GATEWAY_NAME
-                    ? `https://${process.env.PINATA_GATEWAY_NAME}.mypinata.cloud/ipfs/${result.IpfsHash}`
-                    : `https://ipfs.io/ipfs/${result.IpfsHash}`;
-                  console.log(`✓ abi-proof.json pinned to Pinata`);
-                  console.log(`  CID: ${result.IpfsHash}`);
-                  console.log(`  URL: ${gw}`);
-                  fs.writeFileSync("abi-proof-pin.json", JSON.stringify({ cid: result.IpfsHash, url: gw, pinnedAt: new Date().toISOString() }, null, 2));
-                  // Append CID to GitHub step summary
-                  if (process.env.GITHUB_STEP_SUMMARY) {
-                    fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY,
-                      `\n**abi-proof.json CID:** \`${result.IpfsHash}\`\n\n**IPFS URL:** [${gw}](${gw})\n`);
-                  }
-                } else {
-                  console.error("Pin failed:", data);
-                  process.exit(1);
-                }
-              } catch (e) { console.error("Parse error:", e.message, data); process.exit(1); }
-            });
-          });
-          req.on("error", (e) => { console.error(e); process.exit(1); });
-          req.write(body);
-          req.end();
-          PIN_SCRIPT
+        run: >-
+          node scripts/pin-to-pinata.cjs abi-proof.json
+          "Gladiator Holdings ABI Proof $(date -u +%Y-%m-%d)" || true
 
       - name: Register IPA metadata on Story Protocol
         env:
@@ -586,7 +472,7 @@ jobs:
           node scripts/register-ip-metadata.cjs GladiatorHoldingsIPAMetadata.json
           node scripts/register-ip-metadata.cjs SlapsStreamingIPAMetadata.json
 
-      - name: Upload pin records
+      - name: Upload pin and registration records
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -606,19 +492,19 @@ jobs:
             const fs = require('fs');
             if (fs.existsSync('abi-proof-pin.json')) {
               const p = JSON.parse(fs.readFileSync('abi-proof-pin.json'));
-              console.log('**abi-proof.json pinned:** \`' + p.cid + '\`');
+              console.log('**abi-proof.json CID:** \`' + p.cid + '\`');
               console.log('**IPFS URL:** [' + p.url + '](' + p.url + ')');
               console.log('');
             }
-            const regFiles = fs.readdirSync('.').filter(f => f.startsWith('ip-metadata-registration.'));
+            const regFiles = fs.readdirSync('.').filter(f => f.startsWith('ip-metadata-registration.') && f.endsWith('.json'));
             if (regFiles.length === 0) { console.log('_No registration records found._'); return; }
             console.log('| Asset | IPFS CID | Tx Hash |');
             console.log('|-------|----------|---------|');
             for (const f of regFiles) {
               const r = JSON.parse(fs.readFileSync(f));
               const cid = r.ipfsCid ? '\`' + r.ipfsCid + '\`' : '_pending_';
-              const tx  = r.txHash
-                ? '[\`' + r.txHash.slice(0,12) + '…\`](https://www.storyscan.io/tx/' + r.txHash + ')'
+              const tx = r.txHash
+                ? '[\`' + r.txHash.slice(0, 12) + '…\`](https://www.storyscan.io/tx/' + r.txHash + ')'
                 : (r.skipped ? '_skipped_' : '_failed_');
               console.log('| ' + (r.title || f) + ' | ' + cid + ' | ' + tx + ' |');
             }
@@ -631,7 +517,8 @@ jobs:
     name: Dry Run — Compile & Export Only
     runs-on: ubuntu-latest
     needs: [build-abi-proof, fetch-ipfs-docs]
-    if: ${{ inputs.dry_run == true }}
+    # Only run on explicit dry-run dispatch (not on push events).
+    if: inputs.dry_run == true
     permissions: {}
     steps:
       - name: Dry-run complete
@@ -640,7 +527,7 @@ jobs:
           echo "" >> "$GITHUB_STEP_SUMMARY"
           echo "All 11 contracts compiled and ABI proof exported successfully." >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "IPFS document manifest built from Pinata gateway." >> "$GITHUB_STEP_SUMMARY"
+          echo "IPFS document manifest built from Pinata gateway (15 CIDs)." >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
           echo "To deploy to Story Protocol mainnet and verify on StoryScan, re-run with:" >> "$GITHUB_STEP_SUMMARY"
           echo "- **Deploy contracts:** true" >> "$GITHUB_STEP_SUMMARY"
