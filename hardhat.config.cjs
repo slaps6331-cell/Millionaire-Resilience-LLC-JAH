@@ -17,12 +17,31 @@ module.exports = {
         },
       },
     ],
+    // StoryAttestationService is the largest contract (~23.8 KB with runs=200).
+    // Override to runs=1 gives extra headroom under the 24 576-byte EVM limit.
+    overrides: {
+      "contracts/StoryAttestationService.sol": {
+        version: "0.8.26",
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 1,
+          },
+          evmVersion: "cancun",
+          viaIR: true,
+        },
+      },
+    },
   },
   networks: {
     story: {
-      // Set STORY_RPC_URL env var to a dedicated node (e.g. Alchemy/QuickNode)
-      // to avoid rate-limiting on the public endpoint during deployment.
-      url: process.env.STORY_RPC_URL || "https://mainnet.storyrpc.io",
+      // If ALCHEMY_API_KEY is set the Alchemy Story Protocol endpoint is used
+      // automatically; otherwise falls back to STORY_RPC_URL secret, then the
+      // public endpoint.  Set ALCHEMY_API_KEY for production deployments to
+      // avoid rate-limiting on the public endpoint.
+      url: process.env.ALCHEMY_API_KEY
+        ? `https://story-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
+        : process.env.STORY_RPC_URL || "https://mainnet.storyrpc.io",
       accounts: process.env.DEPLOYER_PRIVATE_KEY
         ? [process.env.DEPLOYER_PRIVATE_KEY]
         : [],

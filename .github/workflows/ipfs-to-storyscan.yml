@@ -1,0 +1,534 @@
+name: IPFS to StoryScan — Push Pinata Docs & Verify Contracts
+
+# ─────────────────────────────────────────────────────────────────────────────
+# This workflow:
+#   1. Compiles all 11 smart contracts and exports ABI/bytecode proof
+#   2. Fetches every IPFS CID pinned on Pinata (from repository variables)
+#      and builds a combined document manifest
+#   3. Deploys all 11 contracts to Story Protocol mainnet (Chain 1514)
+#   4. Verifies contract source code on StoryScan (storyscan.io)
+#   5. Runs post-deployment orchestration (SAS ↔ SOS wiring, UCC-1 recording,
+#      StoryScan registry request)
+#   6. Pins the abi-proof.json to Pinata and registers all three IPA metadata
+#      files with the Story Protocol IP asset
+#
+# Secrets required (Settings → Secrets and variables → Actions → Secrets):
+#   DEPLOYER_PRIVATE_KEY        private key of the deployer wallet
+#   STORYSCAN_API_KEY           StoryScan contract-verification API key
+#   ALCHEMY_API_KEY             Alchemy API key (preferred RPC; optional)
+#   STORY_RPC_URL               fallback Story RPC URL (optional)
+#   PINATA_JWT                  Pinata JWT bearer token
+#   PINATA_API_KEY              Pinata v2 API key (for pinList queries)
+#   PINATA_SECRET_API_KEY       Pinata v2 secret API key
+#   PINATA_GATEWAY_TOKEN        Pinata gateway access token (private gateways)
+#   COINBASE_API_KEY_NAME       Coinbase CDP API key name
+#   COINBASE_API_KEY_PRIVATE_KEY Coinbase CDP API private key
+#   THIRDWEB_CLIENT_ID          ThirdWeb client ID
+#   THIRDWEB_SECRET_KEY         ThirdWeb secret key
+#
+# Repository variables (Settings → Secrets and variables → Actions → Variables):
+#   PINATA_GATEWAY_NAME         Pinata gateway subdomain (no https://)
+#   UCC1_FILING_NUMBER          NM SOS UCC-1 filing number
+#   THIRDWEB_WALLET_ADDRESS     ThirdWeb wallet address
+#   COINBASE_WALLET_ADDRESS     Coinbase wallet address
+#   STORY_PROTOCOL_REGISTRY     Story IP Registry contract address
+#   STORY_LICENSING_MODULE      Story Licensing Module address
+#   STORY_ROYALTY_MODULE        Story Royalty Module address
+#   MR_PARENT_IPID              MR parent IP asset ID
+#   MR_TOKEN_ID                 MR parent token ID
+#   IPFS_GLADIATOR_CERT_CID     (and all other IPFS_* CID variables)
+# ─────────────────────────────────────────────────────────────────────────────
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "contracts/**"
+      - "scripts/export-abi-proof.cjs"
+      - "scripts/build-ipfs-manifest.cjs"
+      - "scripts/pin-to-pinata.cjs"
+      - "scripts/post-deploy-orchestrate.cjs"
+      - "scripts/register-ip-metadata.cjs"
+      - "GladiatorHoldingsIPAMetadata.json"
+      - "MillionaireResilienceIPAMetadata.json"
+      - "SlapsStreamingIPAMetadata.json"
+      - ".github/workflows/ipfs-to-storyscan.yml"
+
+  workflow_dispatch:
+    inputs:
+      deploy:
+        description: "Deploy contracts to Story Protocol mainnet"
+        required: true
+        default: false
+        type: boolean
+      verify:
+        description: "Verify contracts on StoryScan after deployment"
+        required: true
+        default: true
+        type: boolean
+      skip_ipfs_fetch:
+        description: "Skip IPFS document fetch (abi-proof export only)"
+        required: false
+        default: false
+        type: boolean
+      dry_run:
+        description: "Dry run — compile and export only, no on-chain transactions"
+        required: true
+        default: true
+        type: boolean
+
+# Only one deployment workflow at a time to protect mainnet state.
+concurrency:
+  group: ipfs-to-storyscan
+  cancel-in-progress: false
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Job 1 — Compile contracts & export ABI / bytecode proof
+# ─────────────────────────────────────────────────────────────────────────────
+jobs:
+  build-abi-proof:
+    name: Compile Contracts & Export ABI Proof
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      artifacts-key: ${{ steps.artifacts.outputs.key }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Compile all 11 contracts
+        run: npm run contracts:compile
+
+      - name: Export ABI / bytecode proof
+        env:
+          PINATA_GATEWAY_NAME: ${{ vars.PINATA_GATEWAY_NAME }}
+          STORY_PROTOCOL_REGISTRY: ${{ vars.STORY_PROTOCOL_REGISTRY || '0x1a9d0d28a0422F26D31Be72Edc6f13ea4371E11B' }}
+          STORY_LICENSING_MODULE: ${{ vars.STORY_LICENSING_MODULE || '0xd81fd78f557b457b4350cB95D20b547bFEb4D857' }}
+          STORY_ROYALTY_MODULE: ${{ vars.STORY_ROYALTY_MODULE || '0xCC8b9f0c9Dc370Ed1F41d95F74C9f72E08f24C90' }}
+          MR_PARENT_IPID: ${{ vars.MR_PARENT_IPID || '0x98971c660ac20880b60F86Cc3113eBd979eb3aAE' }}
+          MR_TOKEN_ID: ${{ vars.MR_TOKEN_ID || '15192' }}
+          UCC1_FILING_HASH: "bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a"
+          UCC1_AUXILIARY_DOCS: "bafybeidkp74w2idrwkg2qey66uepfaes5ekonxjqt62uztyxawii7yye7y"
+          IPFS_GLADIATOR_CERT_CID: ${{ vars.IPFS_GLADIATOR_CERT_CID || 'bafybeiba2j4g34bizjjm26qznc2pf4upgotffrcwjtkw6lj3qa6squrzpu' }}
+          IPFS_GLADIATOR_NOTICE_CID: ${{ vars.IPFS_GLADIATOR_NOTICE_CID || 'bafkreifbikc26xs2cu2mvsghzlrginwm6icqotdp4ntsvq3sn6h4flrhhm' }}
+          IPFS_MR_ARTICLES_CID: ${{ vars.IPFS_MR_ARTICLES_CID || 'bafkreifxiesrze736sxhvsa5op64q6f3ddvv3rismnvd75wi3yfqilu4py' }}
+          IPFS_MR_EIN_LETTER_CID: ${{ vars.IPFS_MR_EIN_LETTER_CID || 'bafkreihz5zpp33pimzckaey64mht2vezlbzngoxe46urrfctzqvjvsdboe' }}
+          IPFS_SLAPS_ARTICLES_CID: ${{ vars.IPFS_SLAPS_ARTICLES_CID || 'bafkreic3n6bdf25tobljqbjxzvzkbch6s7xkqq5yehmyt3zju4de7ey52u' }}
+          IPFS_SLAPS_EIN_LETTER_CID: ${{ vars.IPFS_SLAPS_EIN_LETTER_CID || 'bafkreifnuwchbvbolmhbgionvsltdi3edzasfqytd4zzqlvu42m5m4jhei' }}
+          IPFS_RBW_EIN_LETTER_CID: ${{ vars.IPFS_RBW_EIN_LETTER_CID || 'bafkreid77fuxwqtwyku5syp3dswmy75rymvxh6v3tf7rfrzqbrizoutxtu' }}
+          IPFS_NM_SOS_RECEIPT_CID: ${{ vars.IPFS_NM_SOS_RECEIPT_CID || 'bafkreigjsqx6d47sgqwkjxgtt3qrjnoz3hdth4hqk7qnxflqog2ikjs2kq' }}
+          IPFS_BENEFICIAL_OWNER_ID_CID: ${{ vars.IPFS_BENEFICIAL_OWNER_ID_CID || 'bafkreie5spkgxxhmafdqylwyfplx37jqhcjrs3es3neasgcnynzgkg5mzi' }}
+          IPFS_PATENTSIGHT_PORTFOLIO_CID: ${{ vars.IPFS_PATENTSIGHT_PORTFOLIO_CID || 'bafkreibxqnmhir5iifpboxdv5ndltm5vnbplso4ndtcuzfnanykudrwdbu' }}
+          IPFS_PATENTSIGHT_MR_CID: ${{ vars.IPFS_PATENTSIGHT_MR_CID || 'bafkreihls2yoi265uxzmcmh7wzk2ytyo5yvopmb4jib4blw4nptlchivqm' }}
+          IPFS_PATENTSIGHT_SLAPS_CID: ${{ vars.IPFS_PATENTSIGHT_SLAPS_CID || 'bafkreiflmhdsflvv53e24mo2woafdgecpkvfljcbm5heafnzdxzbj5ct4i' }}
+          IPFS_IPLYTICS_DECLARATION_CID: ${{ vars.IPFS_IPLYTICS_DECLARATION_CID || 'bafkreiej7wfskl53hxo4j47g55bxjkyyulihovjjtpjvtf264kfoddxc5i' }}
+        run: npm run contracts:export-abi-proof
+
+      - name: Set artifact key
+        id: artifacts
+        run: echo "key=abi-proof-${{ github.sha }}" >> "$GITHUB_OUTPUT"
+
+      - name: Upload compiled artifacts + ABI proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: abi-proof-${{ github.sha }}
+          path: |
+            artifacts/
+            abi-proof.json
+          retention-days: 90
+
+      - name: ABI proof summary
+        run: |
+          echo "## ABI / Bytecode Proof" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Contract | Deployed Size | keccak256 | ABI SHA-256 |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|----------|--------------|-----------|-------------|" >> "$GITHUB_STEP_SUMMARY"
+          node -e "
+            const p = require('./abi-proof.json');
+            for (const [name, c] of Object.entries(p.contracts)) {
+              if (c.status !== 'COMPILED') {
+                console.log('| ' + name + ' | _not compiled_ | — | — |');
+                continue;
+              }
+              const size = c.deployedBytecodeSize
+                ? c.deployedBytecodeSize.toLocaleString() + ' B'
+                : 'N/A';
+              const kHash = c.deployedBytecodeKeccak256
+                ? '\`' + c.deployedBytecodeKeccak256.slice(0, 14) + '…\`'
+                : 'N/A';
+              const aHash = c.abiSha256
+                ? '\`' + c.abiSha256.slice(0, 14) + '…\`'
+                : 'N/A';
+              console.log('| ' + name + ' | ' + size + ' | ' + kHash + ' | ' + aHash + ' |');
+            }
+          " >> "$GITHUB_STEP_SUMMARY"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Job 2 — Fetch Pinata IPFS documents & build manifest
+# ─────────────────────────────────────────────────────────────────────────────
+  fetch-ipfs-docs:
+    name: Fetch Pinata IPFS Documents & Build Manifest
+    runs-on: ubuntu-latest
+    needs: build-abi-proof
+    permissions:
+      contents: read
+    if: inputs.skip_ipfs_fetch != true
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Build IPFS document manifest
+        env:
+          PINATA_GATEWAY_NAME: ${{ vars.PINATA_GATEWAY_NAME }}
+          PINATA_GATEWAY_TOKEN: ${{ secrets.PINATA_GATEWAY_TOKEN }}
+          UCC1_FILING_HASH: "bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a"
+          UCC1_AUXILIARY_DOCS: "bafybeidkp74w2idrwkg2qey66uepfaes5ekonxjqt62uztyxawii7yye7y"
+          IPFS_GLADIATOR_CERT_CID: ${{ vars.IPFS_GLADIATOR_CERT_CID || 'bafybeiba2j4g34bizjjm26qznc2pf4upgotffrcwjtkw6lj3qa6squrzpu' }}
+          IPFS_GLADIATOR_NOTICE_CID: ${{ vars.IPFS_GLADIATOR_NOTICE_CID || 'bafkreifbikc26xs2cu2mvsghzlrginwm6icqotdp4ntsvq3sn6h4flrhhm' }}
+          IPFS_MR_ARTICLES_CID: ${{ vars.IPFS_MR_ARTICLES_CID || 'bafkreifxiesrze736sxhvsa5op64q6f3ddvv3rismnvd75wi3yfqilu4py' }}
+          IPFS_MR_EIN_LETTER_CID: ${{ vars.IPFS_MR_EIN_LETTER_CID || 'bafkreihz5zpp33pimzckaey64mht2vezlbzngoxe46urrfctzqvjvsdboe' }}
+          IPFS_SLAPS_ARTICLES_CID: ${{ vars.IPFS_SLAPS_ARTICLES_CID || 'bafkreic3n6bdf25tobljqbjxzvzkbch6s7xkqq5yehmyt3zju4de7ey52u' }}
+          IPFS_SLAPS_EIN_LETTER_CID: ${{ vars.IPFS_SLAPS_EIN_LETTER_CID || 'bafkreifnuwchbvbolmhbgionvsltdi3edzasfqytd4zzqlvu42m5m4jhei' }}
+          IPFS_RBW_EIN_LETTER_CID: ${{ vars.IPFS_RBW_EIN_LETTER_CID || 'bafkreid77fuxwqtwyku5syp3dswmy75rymvxh6v3tf7rfrzqbrizoutxtu' }}
+          IPFS_NM_SOS_RECEIPT_CID: ${{ vars.IPFS_NM_SOS_RECEIPT_CID || 'bafkreigjsqx6d47sgqwkjxgtt3qrjnoz3hdth4hqk7qnxflqog2ikjs2kq' }}
+          IPFS_BENEFICIAL_OWNER_ID_CID: ${{ vars.IPFS_BENEFICIAL_OWNER_ID_CID || 'bafkreie5spkgxxhmafdqylwyfplx37jqhcjrs3es3neasgcnynzgkg5mzi' }}
+          IPFS_PATENTSIGHT_PORTFOLIO_CID: ${{ vars.IPFS_PATENTSIGHT_PORTFOLIO_CID || 'bafkreibxqnmhir5iifpboxdv5ndltm5vnbplso4ndtcuzfnanykudrwdbu' }}
+          IPFS_PATENTSIGHT_MR_CID: ${{ vars.IPFS_PATENTSIGHT_MR_CID || 'bafkreihls2yoi265uxzmcmh7wzk2ytyo5yvopmb4jib4blw4nptlchivqm' }}
+          IPFS_PATENTSIGHT_SLAPS_CID: ${{ vars.IPFS_PATENTSIGHT_SLAPS_CID || 'bafkreiflmhdsflvv53e24mo2woafdgecpkvfljcbm5heafnzdxzbj5ct4i' }}
+          IPFS_IPLYTICS_DECLARATION_CID: ${{ vars.IPFS_IPLYTICS_DECLARATION_CID || 'bafkreiej7wfskl53hxo4j47g55bxjkyyulihovjjtpjvtf264kfoddxc5i' }}
+        run: npm run contracts:build-ipfs-manifest
+
+      - name: Upload IPFS manifest
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ipfs-document-manifest-${{ github.run_number }}
+          path: ipfs-document-manifest.json
+          if-no-files-found: warn
+          retention-days: 90
+
+      - name: IPFS manifest summary
+        if: always()
+        run: |
+          echo "## Pinata IPFS Document Manifest" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Document | CID | Reachable |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|----------|-----|-----------|" >> "$GITHUB_STEP_SUMMARY"
+          node -e "
+            const fs = require('fs');
+            if (!fs.existsSync('ipfs-document-manifest.json')) {
+              console.log('_Manifest not generated._');
+              process.exit(0);
+            }
+            const m = JSON.parse(fs.readFileSync('ipfs-document-manifest.json'));
+            const gw = m.gateway || 'https://ipfs.io/ipfs';
+            for (const [key, doc] of Object.entries(m.documents)) {
+              if (!doc.cid) { console.log('| ' + key + ' | _not set_ | — |'); continue; }
+              const cidShort = doc.cid.slice(0, 22) + '…';
+              const link = '[' + cidShort + '](' + gw + '/' + doc.cid + ')';
+              const reach = doc.reachable ? '✓' : ('✗ HTTP ' + doc.httpStatus);
+              console.log('| ' + key + ' | ' + link + ' | ' + reach + ' |');
+            }
+          " >> "$GITHUB_STEP_SUMMARY"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Job 3 — Deploy & verify all 11 contracts on Story Protocol mainnet
+# ─────────────────────────────────────────────────────────────────────────────
+  deploy-and-verify-story:
+    name: Deploy & Verify on Story Protocol (Chain 1514)
+    runs-on: ubuntu-latest
+    needs: build-abi-proof
+    permissions:
+      contents: read
+    # Deploy on push to main OR when workflow_dispatch with deploy=true and dry_run=false.
+    if: >-
+      (github.event_name == 'push') ||
+      (github.event_name == 'workflow_dispatch' &&
+       inputs.deploy == true &&
+       inputs.dry_run != true)
+    environment: story-mainnet
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Download compiled artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: abi-proof-${{ github.sha }}
+          path: .
+
+      - name: Deploy all 11 contracts to Story Protocol
+        env:
+          DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+          # STORY_RPC_URL is built from ALCHEMY_API_KEY when set (recommended).
+          # Falls back to STORY_RPC_URL secret, then the public endpoint.
+          STORY_RPC_URL: ${{ secrets.ALCHEMY_API_KEY && format('https://story-mainnet.g.alchemy.com/v2/{0}', secrets.ALCHEMY_API_KEY) || secrets.STORY_RPC_URL || 'https://mainnet.storyrpc.io' }}
+          ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
+          STORYSCAN_API_KEY: ${{ secrets.STORYSCAN_API_KEY }}
+          PINATA_JWT: ${{ secrets.PINATA_JWT }}
+          PINATA_API_KEY: ${{ secrets.PINATA_API_KEY }}
+          PINATA_SECRET_API_KEY: ${{ secrets.PINATA_SECRET_API_KEY }}
+          PINATA_GATEWAY_TOKEN: ${{ secrets.PINATA_GATEWAY_TOKEN }}
+          PINATA_GATEWAY_NAME: ${{ vars.PINATA_GATEWAY_NAME }}
+          COINBASE_API_KEY_NAME: ${{ secrets.COINBASE_API_KEY_NAME }}
+          COINBASE_API_KEY_PRIVATE_KEY: ${{ secrets.COINBASE_API_KEY_PRIVATE_KEY }}
+        run: npm run contracts:deploy:story
+
+      - name: Verify source code on StoryScan
+        if: github.event_name == 'push' || inputs.verify
+        env:
+          DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+          STORY_RPC_URL: ${{ secrets.ALCHEMY_API_KEY && format('https://story-mainnet.g.alchemy.com/v2/{0}', secrets.ALCHEMY_API_KEY) || secrets.STORY_RPC_URL || 'https://mainnet.storyrpc.io' }}
+          ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
+          STORYSCAN_API_KEY: ${{ secrets.STORYSCAN_API_KEY }}
+        run: npm run contracts:verify:story
+
+      - name: Generate valuation attestation hashes
+        run: npm run contracts:attestation-hashes
+
+      - name: Post-deployment orchestration (SAS ↔ SOS wiring / UCC-1 recording)
+        env:
+          DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+          STORY_RPC_URL: ${{ secrets.ALCHEMY_API_KEY && format('https://story-mainnet.g.alchemy.com/v2/{0}', secrets.ALCHEMY_API_KEY) || secrets.STORY_RPC_URL || 'https://mainnet.storyrpc.io' }}
+          ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
+          UCC1_FILING_HASH: "bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a"
+          UCC1_AUXILIARY_DOCS: "bafybeidkp74w2idrwkg2qey66uepfaes5ekonxjqt62uztyxawii7yye7y"
+          UCC1_FILING_NUMBER: ${{ vars.UCC1_FILING_NUMBER || '2024-NM-UCC-0001' }}
+          UCC1_JURISDICTION: "New Mexico Secretary of State"
+          THIRDWEB_WALLET_ADDRESS: ${{ vars.THIRDWEB_WALLET_ADDRESS || '0xCD67f7e86A1397aBc33C473c58662BEB83b7a667' }}
+          COINBASE_WALLET_ADDRESS: ${{ vars.COINBASE_WALLET_ADDRESS || '0xdc2afcd0a97c1e878fdd64497806e52cc530f02a' }}
+          COINBASE_API_KEY_NAME: ${{ secrets.COINBASE_API_KEY_NAME }}
+          COINBASE_API_KEY_PRIVATE_KEY: ${{ secrets.COINBASE_API_KEY_PRIVATE_KEY }}
+          THIRDWEB_CLIENT_ID: ${{ secrets.THIRDWEB_CLIENT_ID }}
+          THIRDWEB_SECRET_KEY: ${{ secrets.THIRDWEB_SECRET_KEY }}
+          PINATA_JWT: ${{ secrets.PINATA_JWT }}
+          PINATA_API_KEY: ${{ secrets.PINATA_API_KEY }}
+          PINATA_SECRET_API_KEY: ${{ secrets.PINATA_SECRET_API_KEY }}
+          PINATA_GATEWAY_TOKEN: ${{ secrets.PINATA_GATEWAY_TOKEN }}
+          PINATA_GATEWAY_NAME: ${{ vars.PINATA_GATEWAY_NAME }}
+          IPFS_GLADIATOR_CERT_CID: ${{ vars.IPFS_GLADIATOR_CERT_CID || 'bafybeiba2j4g34bizjjm26qznc2pf4upgotffrcwjtkw6lj3qa6squrzpu' }}
+          IPFS_GLADIATOR_NOTICE_CID: ${{ vars.IPFS_GLADIATOR_NOTICE_CID || 'bafkreifbikc26xs2cu2mvsghzlrginwm6icqotdp4ntsvq3sn6h4flrhhm' }}
+          IPFS_MR_ARTICLES_CID: ${{ vars.IPFS_MR_ARTICLES_CID || 'bafkreifxiesrze736sxhvsa5op64q6f3ddvv3rismnvd75wi3yfqilu4py' }}
+          IPFS_MR_EIN_LETTER_CID: ${{ vars.IPFS_MR_EIN_LETTER_CID || 'bafkreihz5zpp33pimzckaey64mht2vezlbzngoxe46urrfctzqvjvsdboe' }}
+          IPFS_SLAPS_ARTICLES_CID: ${{ vars.IPFS_SLAPS_ARTICLES_CID || 'bafkreic3n6bdf25tobljqbjxzvzkbch6s7xkqq5yehmyt3zju4de7ey52u' }}
+          IPFS_SLAPS_EIN_LETTER_CID: ${{ vars.IPFS_SLAPS_EIN_LETTER_CID || 'bafkreifnuwchbvbolmhbgionvsltdi3edzasfqytd4zzqlvu42m5m4jhei' }}
+          IPFS_RBW_EIN_LETTER_CID: ${{ vars.IPFS_RBW_EIN_LETTER_CID || 'bafkreid77fuxwqtwyku5syp3dswmy75rymvxh6v3tf7rfrzqbrizoutxtu' }}
+          IPFS_NM_SOS_RECEIPT_CID: ${{ vars.IPFS_NM_SOS_RECEIPT_CID || 'bafkreigjsqx6d47sgqwkjxgtt3qrjnoz3hdth4hqk7qnxflqog2ikjs2kq' }}
+          IPFS_BENEFICIAL_OWNER_ID_CID: ${{ vars.IPFS_BENEFICIAL_OWNER_ID_CID || 'bafkreie5spkgxxhmafdqylwyfplx37jqhcjrs3es3neasgcnynzgkg5mzi' }}
+          IPFS_PATENTSIGHT_PORTFOLIO_CID: ${{ vars.IPFS_PATENTSIGHT_PORTFOLIO_CID || 'bafkreibxqnmhir5iifpboxdv5ndltm5vnbplso4ndtcuzfnanykudrwdbu' }}
+          IPFS_PATENTSIGHT_MR_CID: ${{ vars.IPFS_PATENTSIGHT_MR_CID || 'bafkreihls2yoi265uxzmcmh7wzk2ytyo5yvopmb4jib4blw4nptlchivqm' }}
+          IPFS_PATENTSIGHT_SLAPS_CID: ${{ vars.IPFS_PATENTSIGHT_SLAPS_CID || 'bafkreiflmhdsflvv53e24mo2woafdgecpkvfljcbm5heafnzdxzbj5ct4i' }}
+          IPFS_IPLYTICS_DECLARATION_CID: ${{ vars.IPFS_IPLYTICS_DECLARATION_CID || 'bafkreiej7wfskl53hxo4j47g55bxjkyyulihovjjtpjvtf264kfoddxc5i' }}
+          STORY_PROTOCOL_REGISTRY: ${{ vars.STORY_PROTOCOL_REGISTRY || '0x1a9d0d28a0422F26D31Be72Edc6f13ea4371E11B' }}
+          STORY_LICENSING_MODULE: ${{ vars.STORY_LICENSING_MODULE || '0xd81fd78f557b457b4350cB95D20b547bFEb4D857' }}
+          STORY_ROYALTY_MODULE: ${{ vars.STORY_ROYALTY_MODULE || '0xCC8b9f0c9Dc370Ed1F41d95F74C9f72E08f24C90' }}
+          MR_PARENT_IPID: ${{ vars.MR_PARENT_IPID || '0x98971c660ac20880b60F86Cc3113eBd979eb3aAE' }}
+          MR_TOKEN_ID: ${{ vars.MR_TOKEN_ID || '15192' }}
+        run: npm run contracts:orchestrate:story
+
+      - name: Upload deployment artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployment-story-storyscan-${{ github.run_number }}
+          path: |
+            deployment-config.story.json
+            registration-attestation.story.json
+            valuation-attestation.json
+            yield-summary.json
+          if-no-files-found: warn
+          retention-days: 90
+
+      - name: Story Protocol deployment summary
+        if: always()
+        run: |
+          echo "## Story Protocol Deployment & StoryScan Verification" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Contract | Address | StoryScan |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|----------|---------|-----------|" >> "$GITHUB_STEP_SUMMARY"
+          node -e "
+            const fs = require('fs');
+            if (!fs.existsSync('deployment-config.story.json')) {
+              console.log('_deployment-config.story.json not found_');
+              process.exit(0);
+            }
+            const cfg = JSON.parse(fs.readFileSync('deployment-config.story.json'));
+            Object.entries(cfg.contracts).forEach(([name, addr]) => {
+              const link = '[\`' + addr.slice(0, 10) + '…\`](https://www.storyscan.io/address/' + addr + ')';
+              const vLink = '[verify](https://www.storyscan.io/address/' + addr + '#code)';
+              console.log('| ' + name + ' | ' + link + ' | ' + vLink + ' |');
+            });
+          " >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "### Orchestration" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          node -e "
+            const fs = require('fs');
+            if (!fs.existsSync('registration-attestation.story.json')) {
+              console.log('_registration-attestation.story.json not found_');
+              process.exit(0);
+            }
+            const att = JSON.parse(fs.readFileSync('registration-attestation.story.json'));
+            console.log('**Status:** ' + att.status);
+            console.log('');
+            console.log('| Step | Tx Hash |');
+            console.log('|------|---------|');
+            for (const [key, val] of Object.entries(att.transactions || {})) {
+              const hash = val.txHash
+                ? '[\`' + val.txHash.slice(0, 12) + '…\`](https://www.storyscan.io/tx/' + val.txHash + ')'
+                : (val.skipped ? '_skipped_' : '_failed_');
+              console.log('| ' + key + ' | ' + hash + ' |');
+            }
+          " >> "$GITHUB_STEP_SUMMARY"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Job 4 — Pin ABI proof to Pinata and register IPA metadata on Story Protocol
+# ─────────────────────────────────────────────────────────────────────────────
+  pin-and-register-proof:
+    name: Pin ABI Proof to Pinata & Register on Story Protocol
+    runs-on: ubuntu-latest
+    needs: [build-abi-proof, fetch-ipfs-docs]
+    # always() ensures this job runs even if fetch-ipfs-docs was skipped
+    # (via skip_ipfs_fetch=true).  On push events inputs.dry_run is undefined;
+    # inputs.dry_run != true correctly evaluates to true in that case.
+    if: >-
+      always() &&
+      needs.build-abi-proof.result == 'success' &&
+      inputs.dry_run != true
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Download ABI proof artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: abi-proof-${{ github.sha }}
+          path: .
+
+      - name: Download IPFS document manifest
+        if: inputs.skip_ipfs_fetch != true
+        uses: actions/download-artifact@v4
+        with:
+          name: ipfs-document-manifest-${{ github.run_number }}
+          path: .
+        continue-on-error: true
+
+      - name: Pin abi-proof.json to Pinata
+        env:
+          PINATA_JWT: ${{ secrets.PINATA_JWT }}
+          PINATA_GATEWAY_NAME: ${{ vars.PINATA_GATEWAY_NAME }}
+        run: >-
+          node scripts/pin-to-pinata.cjs abi-proof.json
+          "Gladiator Holdings ABI Proof $(date -u +%Y-%m-%d)" || true
+
+      - name: Register IPA metadata on Story Protocol
+        env:
+          PINATA_JWT: ${{ secrets.PINATA_JWT }}
+          PINATA_GATEWAY_NAME: ${{ vars.PINATA_GATEWAY_NAME }}
+          STORY_RPC_URL: ${{ secrets.ALCHEMY_API_KEY && format('https://story-mainnet.g.alchemy.com/v2/{0}', secrets.ALCHEMY_API_KEY) || secrets.STORY_RPC_URL || 'https://mainnet.storyrpc.io' }}
+          DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+        run: |
+          node scripts/register-ip-metadata.cjs MillionaireResilienceIPAMetadata.json
+          node scripts/register-ip-metadata.cjs GladiatorHoldingsIPAMetadata.json
+          node scripts/register-ip-metadata.cjs SlapsStreamingIPAMetadata.json
+
+      - name: Upload pin and registration records
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pin-records-${{ github.run_number }}
+          path: |
+            abi-proof-pin.json
+            ip-metadata-registration.*.json
+          if-no-files-found: warn
+          retention-days: 90
+
+      - name: Pin & registration summary
+        if: always()
+        run: |
+          echo "## IPFS Pin & Story Protocol IP Registration" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          node -e "
+            const fs = require('fs');
+            if (fs.existsSync('abi-proof-pin.json')) {
+              const p = JSON.parse(fs.readFileSync('abi-proof-pin.json'));
+              console.log('**abi-proof.json CID:** \`' + p.cid + '\`');
+              console.log('**IPFS URL:** [' + p.url + '](' + p.url + ')');
+              console.log('');
+            }
+            const regFiles = fs.readdirSync('.').filter(f => f.startsWith('ip-metadata-registration.') && f.endsWith('.json'));
+            if (regFiles.length === 0) { console.log('_No registration records found._'); return; }
+            console.log('| Asset | IPFS CID | Tx Hash |');
+            console.log('|-------|----------|---------|');
+            for (const f of regFiles) {
+              const r = JSON.parse(fs.readFileSync(f));
+              const cid = r.ipfsCid ? '\`' + r.ipfsCid + '\`' : '_pending_';
+              const tx = r.txHash
+                ? '[\`' + r.txHash.slice(0, 12) + '…\`](https://www.storyscan.io/tx/' + r.txHash + ')'
+                : (r.skipped ? '_skipped_' : '_failed_');
+              console.log('| ' + (r.title || f) + ' | ' + cid + ' | ' + tx + ' |');
+            }
+          " >> "$GITHUB_STEP_SUMMARY"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Job 5 — Dry-run summary (compile + export only, no on-chain transactions)
+# ─────────────────────────────────────────────────────────────────────────────
+  dry-run-summary:
+    name: Dry Run — Compile & Export Only
+    runs-on: ubuntu-latest
+    needs: [build-abi-proof, fetch-ipfs-docs]
+    # Only run on explicit dry-run dispatch (not on push events).
+    if: inputs.dry_run == true
+    permissions: {}
+    steps:
+      - name: Dry-run complete
+        run: |
+          echo "## ✓ Dry Run Complete" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "All 11 contracts compiled and ABI proof exported successfully." >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "IPFS document manifest built from Pinata gateway (15 CIDs)." >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "To deploy to Story Protocol mainnet and verify on StoryScan, re-run with:" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Deploy contracts:** true" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Dry run:** false" >> "$GITHUB_STEP_SUMMARY"

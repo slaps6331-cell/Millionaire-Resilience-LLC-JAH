@@ -141,6 +141,7 @@ STORY_CONTRACTS.forEach((name, idx) => {
     network:     "Story Protocol Mainnet",
     explorerUrl: explorerUrl(STORYSCAN_BASE, txHash),
     note:        "Pre-deployment deterministic hash — replace with live tx hash after deployment",
+    status:      "pending",
   };
 });
 
@@ -161,6 +162,7 @@ storyScanHashes["registerIpAsset_MR"] = {
   tokenId:     15192,
   explorerUrl: explorerUrl(STORYSCAN_BASE, ipRegTxHash),
   note:        "IP asset registration call — Story Protocol IP Registry",
+  status:      "pending",
 };
 
 // PIL license terms binding tx
@@ -179,6 +181,7 @@ storyScanHashes["bindPILTerms_MR"] = {
   licenseTypes: ["PIL-PER (1%)", "PIL-COM (5%)", "PIL-ENT (12%)"],
   explorerUrl: explorerUrl(STORYSCAN_BASE, pilTxHash),
   note:        "PIL license terms binding call — Story Protocol Licensing Module",
+  status:      "pending",
 };
 
 // ── Build Basescan hash table ─────────────────────────────────────────────
@@ -195,6 +198,7 @@ BASE_CONTRACTS.forEach((name, idx) => {
     network:     "Base L2",
     explorerUrl: explorerUrl(BASESCAN_BASE, txHash),
     note:        "Pre-deployment deterministic hash — replace with live tx hash after deployment",
+    status:      "pending",
   };
 });
 
@@ -221,6 +225,7 @@ basescanHashes["createMorphoMarket_BTC"] = {
   morphoBlue:  MORPHO_BLUE,
   explorerUrl: explorerUrl(BASESCAN_BASE, morphoBtcTxHash),
   note:        "Morpho Blue market creation — BTC-collateralised USDC loan",
+  status:      "pending",
 };
 
 // Morpho market creation tx — ETH collateral ($1M, 6% APR)
@@ -246,6 +251,7 @@ basescanHashes["createMorphoMarket_ETH"] = {
   morphoBlue:  MORPHO_BLUE,
   explorerUrl: explorerUrl(BASESCAN_BASE, morphoEthTxHash),
   note:        "Morpho Blue market creation — ETH-collateralised USDC loan",
+  status:      "pending",
 };
 
 // ── Morpho multi-sig transaction hash ────────────────────────────────────
@@ -269,6 +275,9 @@ const morphoMultiSig = {
   storyscanUrl:     explorerUrl(STORYSCAN_BASE, multiSigTxHashStory),
   walletInstructions: "Run: node scripts/anchor-signature.cjs  then  node scripts/verify-multisig.cjs",
   note:             "Replace with the actual transaction hash returned by the network after broadcast",
+  status:           "pending",
+  thirdwebSigned:   false,
+  coinbaseSigned:   false,
 };
 
 // ── Assemble output record ────────────────────────────────────────────────
@@ -277,6 +286,12 @@ const record = {
   $schema:      "https://docs.story.foundation/tx-hash-schema.json",
   version:      "1.0.0",
   generatedAt:  new Date().toISOString(),
+  // statusCheckedAt records the last time deployment status was verified.
+  // It equals generatedAt on initial generation (pre-deployment).
+  // After broadcast, update this to reflect when live tx hashes were confirmed.
+  statusCheckedAt: new Date().toISOString(),
+  deploymentStatus: "PRE_DEPLOYMENT",
+  deploymentStatusNote: "All transaction hashes below are deterministic pre-deployment hashes computed via keccak256(abi.encode(deployer, contractName, chainId, nonce)). No contracts have been broadcast to any live network. Replace each txHash with the live transaction hash from deployment-config.<network>.json after actual deployment.",
   deployer:     MR_OWNER,
   entity:       "Gladiator Holdings LLC / Millionaire Resilience LLC",
 
