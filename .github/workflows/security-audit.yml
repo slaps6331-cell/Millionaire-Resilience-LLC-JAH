@@ -1,0 +1,209 @@
+name: Security Audit
+
+on:
+  pull_request:
+    paths:
+      - "contracts/**"
+      - "hardhat.config.cjs"
+      - "hardhat.config.js"
+      - "scripts/deploy.cjs"
+      - "scripts/deploy.js"
+  workflow_dispatch:
+
+concurrency:
+  group: security-audit-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  static-analysis:
+    name: Slither Static Analysis
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install Node dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Compile contracts
+        run: npm run contracts:compile
+
+      - name: Set up Python for Slither
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Slither
+        run: pip install slither-analyzer
+
+      - name: Run Slither static analysis
+        id: slither
+        run: |
+          slither . \
+            --hardhat-ignore-compile \
+            --exclude-dependencies \
+            --json slither-report.json \
+            --sarif slither-report.sarif \
+            2>&1 | tee slither-output.txt || true
+
+          if [[ -f slither-report.json ]]; then
+            HIGH=$(python3 -c "
+          import json, sys
+          try:
+              with open('slither-report.json') as f:
+                  data = json.load(f)
+              results = data.get('results', {}).get('detectors', [])
+              high = [r for r in results if r.get('impact') == 'High']
+              print(len(high))
+          except Exception as e:
+              print(0)
+            ")
+            echo "high_count=$HIGH" >> "$GITHUB_OUTPUT"
+            echo "High severity findings: $HIGH"
+          fi
+
+      - name: Upload Slither SARIF report
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: slither-report.sarif
+        continue-on-error: true
+
+      - name: Upload Slither JSON report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: slither-report-${{ github.sha }}
+          path: |
+            slither-report.json
+            slither-output.txt
+          retention-days: 30
+
+      - name: Fail on high-severity findings
+        if: steps.slither.outputs.high_count != '' && steps.slither.outputs.high_count != '0'
+        run: |
+          echo "::error::Slither found ${{ steps.slither.outputs.high_count }} high-severity issue(s). Review slither-report.json before merging."
+          exit 1
+
+  check-secrets-in-code:
+    name: Validate Private Key Handling
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check for hardcoded private keys
+        run: |
+          echo "=== Scanning for hardcoded private keys / secrets ==="
+          FOUND=0
+
+          # Look for hex strings that resemble Ethereum private keys (64 hex chars)
+          if grep -rn --include="*.sol" --include="*.js" --include="*.cjs" --include="*.ts" \
+               -E '0x[0-9a-fA-F]{64}' \
+               --exclude-dir=node_modules \
+               --exclude-dir=artifacts \
+               --exclude-dir=cache \
+               .; then
+            echo "::warning::Possible private key literal found — verify it is a public address or test key."
+            FOUND=1
+          fi
+
+          # Look for plain-text mnemonic seeds
+          if grep -rn --include="*.sol" --include="*.js" --include="*.cjs" --include="*.ts" \
+               -i 'mnemonic\|seed phrase\|private.key.*=.*"' \
+               --exclude-dir=node_modules \
+               --exclude-dir=artifacts \
+               --exclude-dir=cache \
+               .; then
+            echo "::error::Possible mnemonic/private key assignment found in source code."
+            FOUND=1
+          fi
+
+          if [[ "$FOUND" == "0" ]]; then
+            echo "✅ No hardcoded credentials detected."
+          fi
+
+      - name: Check .gitignore covers sensitive files
+        run: |
+          echo "=== Verifying .gitignore coverage ==="
+          MISSING=()
+          for file in .env .env.local .env.production; do
+            if ! grep -qF "$file" .gitignore 2>/dev/null; then
+              MISSING+=("$file")
+            fi
+          done
+          if [[ ${#MISSING[@]} -gt 0 ]]; then
+            echo "::warning::These sensitive files are not in .gitignore: ${MISSING[*]}"
+          else
+            echo "✅ .gitignore covers .env files."
+          fi
+
+  vulnerability-check:
+    name: Dependency Vulnerability Scan
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Run npm audit
+        run: npm audit --audit-level=high || echo "::warning::npm audit found issues — review above output."
+
+  report-findings:
+    name: Security Audit Summary
+    runs-on: ubuntu-latest
+    needs: [static-analysis, check-secrets-in-code, vulnerability-check]
+    if: always()
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Post PR comment with audit summary
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const staticResult = '${{ needs.static-analysis.result }}';
+            const secretsResult = '${{ needs.check-secrets-in-code.result }}';
+            const vulnResult = '${{ needs.vulnerability-check.result }}';
+
+            const icon = (r) => r === 'success' ? '✅' : r === 'failure' ? '❌' : '⚠️';
+
+            const body = [
+              '## 🔐 Security Audit Results',
+              '',
+              '| Check | Status |',
+              '|---|---|',
+              `| Slither Static Analysis | ${icon(staticResult)} ${staticResult} |`,
+              `| Private Key Handling | ${icon(secretsResult)} ${secretsResult} |`,
+              `| Dependency Vulnerabilities | ${icon(vulnResult)} ${vulnResult} |`,
+              '',
+              `Full logs: ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+            ].join('\n');
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body,
+            });

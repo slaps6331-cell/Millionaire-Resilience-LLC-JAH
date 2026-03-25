@@ -1,0 +1,120 @@
+{
+  "storyProtocolIPMetadata": {
+    "ipid": "0x98971c660ac20880b60F86Cc3113eBd979eb3aAE",
+    "chainId": 1514,
+    "entityName": "Millionaire Resilience LLC",
+    "entityEIN": "41-3789881",
+    "filingJurisdiction": "New Mexico",
+    "filingType": "UCC-1 Financing Statement",
+    "filingNumber": "2024-NM-UCC-0001",
+    "ucc1FilingCID": "bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a",
+    "ucc1AuxiliaryCID": "bafybeidkp74w2idrwkg2qey66uepfaes5ekonxjqt62uztyxawii7yye7y",
+    "corporateDocuments": {
+      "gladiatorCertOfOrg": "bafybeiba2j4g34bizjjm26qznc2pf4upgotffrcwjtkw6lj3qa6squrzpu",
+      "gladiatorNoticeOfFiling": "bafkreifbikc26xs2cu2mvsghzlrginwm6icqotdp4ntsvq3sn6h4flrhhm",
+      "mrArticlesOfIncorporation": "bafkreifxiesrze736sxhvsa5op64q6f3ddvv3rismnvd75wi3yfqilu4py",
+      "mrEinLetter": "bafkreihz5zpp33pimzckaey64mht2vezlbzngoxe46urrfctzqvjvsdboe",
+      "slapsArticles": "bafkreic3n6bdf25tobljqbjxzvzkbch6s7xkqq5yehmyt3zju4de7ey52u",
+      "slapsEinLetter": "bafkreifnuwchbvbolmhbgionvsltdi3edzasfqytd4zzqlvu42m5m4jhei",
+      "rbwEinLetter": "bafkreid77fuxwqtwyku5syp3dswmy75rymvxh6v3tf7rfrzqbrizoutxtu",
+      "nmSosReceipt": "bafkreigjsqx6d47sgqwkjxgtt3qrjnoz3hdth4hqk7qnxflqog2ikjs2kq"
+    },
+    "beneficialOwner": {
+      "name": "Clifton Kelly Bell",
+      "idDocumentCID": "bafkreie5spkgxxhmafdqylwyfplx37jqhcjrs3es3neasgcnynzgkg5mzi",
+      "idState": "Washington",
+      "idType": "State ID (Redacted for Privacy)"
+    },
+    "ipAssetType": "Patent Portfolio + SEP Licensing Rights",
+    "patentDocuments": {
+      "patentSightPortfolio": "bafkreibxqnmhir5iifpboxdv5ndltm5vnbplso4ndtcuzfnanykudrwdbu",
+      "patentSightMR": "bafkreihls2yoi265uxzmcmh7wzk2ytyo5yvopmb4jib4blw4nptlchivqm",
+      "patentSightSLAPS": "bafkreiflmhdsflvv53e24mo2woafdgecpkvfljcbm5heafnzdxzbj5ct4i",
+      "iplyticsDeclaration": "bafkreiej7wfskl53hxo4j47g55bxjkyyulihovjjtpjvtf264kfoddxc5i"
+    },
+    "patentStats": {
+      "totalPatents": 42,
+      "averageEssentiality": "71%"
+    },
+    "registryAddress": "0x1a9d0d28a0422F26D31Be72Edc6f13ea4371E11B",
+    "licensingModuleAddress": "0xd81fd78f557b457b4350cB95D20b547bFEb4D857",
+    "royaltyModuleAddress": "0xCC8b9f0c9Dc370Ed1F41d95F74C9f72E08f24C90",
+    "createdAt": "2026-03-24T00:00:00Z",
+    "tags": ["UCC-1-Financing", "Patent-Portfolio", "SEP-Licensing", "Story-Protocol", "Multi-SPV"]
+  },
+  "morphoProtocolMarketMetadata": {
+    "protocol": "Morpho Blue",
+    "chainId": 8453,
+    "contractAddress": "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
+    "collateral": {
+      "tokenType": "Story Protocol IP Tokens",
+      "valueEstimate": "$6,000,000",
+      "documentationCID": "bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a"
+    },
+    "borrowing": [
+      {
+        "loanType": "BTC Collateralized",
+        "amount": "5000000000000",
+        "amountFormatted": "5,000,000 (satoshis equivalent)",
+        "apr": 400,
+        "aprFormatted": "4.00%",
+        "lltv": "860000000000000000",
+        "lltvFormatted": "86%",
+        "oracle": "Chainlink BTC/USD"
+      },
+      {
+        "loanType": "ETH Collateralized",
+        "amount": "1000000000000",
+        "amountFormatted": "1,000,000 (wei equivalent)",
+        "apr": 600,
+        "aprFormatted": "6.00%",
+        "lltv": "860000000000000000",
+        "lltvFormatted": "86%",
+        "oracle": "Chainlink ETH/USD"
+      }
+    ],
+    "usdcAddress": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+    "multisigSigners": [
+      {
+        "signer": "ThirdWeb",
+        "address": "0xCD67f7e86A1397aBc33C473c58662BEB83b7a667",
+        "signingMethod": "EIP-191 personal_sign",
+        "purpose": "Approve Morpho market parameters"
+      },
+      {
+        "signer": "Coinbase",
+        "address": "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a",
+        "signingMethod": "EIP-191 personal_sign",
+        "purpose": "Approve Morpho market parameters"
+      }
+    ],
+    "verificationRequirements": {
+      "storyScan": "https://www.storyscan.io",
+      "baseScan": "https://basescan.org",
+      "methodologyDocument": "bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a",
+      "complianceDocumentation": "bafybeidkp74w2idrwkg2qey66uepfaes5ekonxjqt62uztyxawii7yye7y"
+    }
+  },
+  "entityInformation": {
+    "primaryEntity": {
+      "name": "Millionaire Resilience LLC",
+      "ein": "41-3789881",
+      "state": "New Mexico",
+      "type": "LLC"
+    },
+    "subsidiaries": [
+      {
+        "name": "Gladiator Holdings LLC",
+        "state": "New Mexico",
+        "type": "LLC",
+        "role": "Debtor / SPV"
+      },
+      {
+        "name": "SLAPS Holdings LLC",
+        "state": "New Mexico",
+        "type": "LLC",
+        "role": "IP Licensor / SPV"
+      }
+    ]
+  }
+}

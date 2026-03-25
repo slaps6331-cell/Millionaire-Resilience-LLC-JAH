@@ -1,0 +1,48 @@
+{
+  "story-mainnet": {
+    "contracts": {},
+    "timestamp": "",
+    "deployer": "",
+    "transactionHash": "",
+    "blockNumber": "",
+    "storyscanUrl": "https://www.storyscan.io"
+  },
+  "base-mainnet": {
+    "contracts": {},
+    "timestamp": "",
+    "deployer": "",
+    "transactionHash": "",
+    "blockNumber": "",
+    "basescanUrl": "https://basescan.org"
+  },
+  "ipfs-documents": {
+    "ucc1-filing": "bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a",
+    "ucc1-auxiliary": "bafybeidkp74w2idrwkg2qey66uepfaes5ekonxjqt62uztyxawii7yye7y",
+    "gladiator-cert-of-org": "bafybeiba2j4g34bizjjm26qznc2pf4upgotffrcwjtkw6lj3qa6squrzpu",
+    "gladiator-notice-of-filing": "bafkreifbikc26xs2cu2mvsghzlrginwm6icqotdp4ntsvq3sn6h4flrhhm",
+    "mr-articles-of-incorporation": "bafkreifxiesrze736sxhvsa5op64q6f3ddvv3rismnvd75wi3yfqilu4py",
+    "mr-ein-letter": "bafkreihz5zpp33pimzckaey64mht2vezlbzngoxe46urrfctzqvjvsdboe",
+    "slaps-articles": "bafkreic3n6bdf25tobljqbjxzvzkbch6s7xkqq5yehmyt3zju4de7ey52u",
+    "slaps-ein-letter": "bafkreifnuwchbvbolmhbgionvsltdi3edzasfqytd4zzqlvu42m5m4jhei",
+    "rbw-ein-letter": "bafkreid77fuxwqtwyku5syp3dswmy75rymvxh6v3tf7rfrzqbrizoutxtu",
+    "nm-sos-receipt": "bafkreigjsqx6d47sgqwkjxgtt3qrjnoz3hdth4hqk7qnxflqog2ikjs2kq",
+    "beneficial-owner-id": "bafkreie5spkgxxhmafdqylwyfplx37jqhcjrs3es3neasgcnynzgkg5mzi",
+    "patentsight-portfolio": "bafkreibxqnmhir5iifpboxdv5ndltm5vnbplso4ndtcuzfnanykudrwdbu",
+    "patentsight-mr": "bafkreihls2yoi265uxzmcmh7wzk2ytyo5yvopmb4jib4blw4nptlchivqm",
+    "patentsight-slaps": "bafkreiflmhdsflvv53e24mo2woafdgecpkvfljcbm5heafnzdxzbj5ct4i",
+    "iplytics-sep-declaration": "bafkreiej7wfskl53hxo4j47g55bxjkyyulihovjjtpjvtf264kfoddxc5i"
+  },
+  "verification": {
+    "storyscan-verified": false,
+    "basescan-verified": false,
+    "story-protocol-registered": false,
+    "morpho-validated": false
+  },
+  "hashes": {
+    "deployment": {},
+    "verification": {},
+    "attestation": {},
+    "valuation": {},
+    "document": {}
+  }
+}
