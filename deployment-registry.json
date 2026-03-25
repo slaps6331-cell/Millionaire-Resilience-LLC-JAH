@@ -36,7 +36,9 @@
     "storyscan-verified": false,
     "basescan-verified": false,
     "story-protocol-registered": false,
-    "morpho-validated": false
+    "morpho-validated": false,
+    "last-verified": "2026-03-25T00:55:04Z",
+    "run-id": "23519602906"
   },
   "hashes": {
     "deployment": {},
