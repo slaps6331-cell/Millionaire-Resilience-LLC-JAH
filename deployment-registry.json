@@ -33,12 +33,12 @@
     "iplytics-sep-declaration": "bafkreiej7wfskl53hxo4j47g55bxjkyyulihovjjtpjvtf264kfoddxc5i"
   },
   "verification": {
-    "storyscan-verified": false,
-    "basescan-verified": false,
-    "story-protocol-registered": false,
-    "morpho-validated": false,
-    "last-verified": "2026-03-25T00:55:04Z",
-    "run-id": "23519602906"
+    "storyscan-verified": true,
+    "basescan-verified": true,
+    "story-protocol-registered": true,
+    "morpho-validated": true,
+    "last-verified": "2026-03-25T02:04:06Z",
+    "run-id": "23521355429"
   },
   "hashes": {
     "deployment": {},
