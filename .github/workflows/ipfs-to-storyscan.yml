@@ -57,13 +57,22 @@ on:
 
   workflow_dispatch:
     inputs:
+      networks:
+        description: "Target networks for deployment"
+        required: false
+        default: "both"
+        type: choice
+        options:
+          - both
+          - story
+          - base
       deploy:
-        description: "Deploy contracts to Story Protocol mainnet"
+        description: "Deploy contracts to selected network(s)"
         required: true
         default: false
         type: boolean
       verify:
-        description: "Verify contracts on StoryScan after deployment"
+        description: "Verify contracts on StoryScan / Basescan after deployment"
         required: true
         default: true
         type: boolean
@@ -260,12 +269,14 @@ jobs:
     needs: build-abi-proof
     permissions:
       contents: read
-    # Deploy on push to main OR when workflow_dispatch with deploy=true and dry_run=false.
+    # Deploy on push to main (both networks) OR when workflow_dispatch with deploy=true,
+    # dry_run=false, and networks is 'story' or 'both' (the default).
     if: >-
       (github.event_name == 'push') ||
       (github.event_name == 'workflow_dispatch' &&
        inputs.deploy == true &&
-       inputs.dry_run != true)
+       inputs.dry_run != true &&
+       inputs.networks != 'base')
     environment: story-mainnet
     steps:
       - name: Checkout repository
@@ -411,15 +422,175 @@ jobs:
           " >> "$GITHUB_STEP_SUMMARY"
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Job 4 — Pin ABI proof to Pinata and register IPA metadata on Story Protocol
+# Job 4 — Deploy & verify all contracts on Base L2 (Basescan)
+# ─────────────────────────────────────────────────────────────────────────────
+  deploy-and-verify-base:
+    name: Deploy & Verify on Base L2 (Chain 8453)
+    runs-on: ubuntu-latest
+    needs: build-abi-proof
+    permissions:
+      contents: read
+    # Deploy on push to main (both networks) OR when workflow_dispatch with deploy=true,
+    # dry_run=false, and networks is 'base' or 'both' (the default).
+    if: >-
+      (github.event_name == 'push') ||
+      (github.event_name == 'workflow_dispatch' &&
+       inputs.deploy == true &&
+       inputs.dry_run != true &&
+       inputs.networks != 'story')
+    environment: base-mainnet
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Download compiled artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: abi-proof-${{ github.sha }}
+          path: .
+
+      - name: Deploy all contracts to Base L2
+        env:
+          DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+          ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
+          BASE_RPC_URL: ${{ secrets.BASE_RPC_URL || 'https://mainnet.base.org' }}
+          ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+          PINATA_JWT: ${{ secrets.PINATA_JWT }}
+          PINATA_API_KEY: ${{ secrets.PINATA_API_KEY }}
+          PINATA_SECRET_API_KEY: ${{ secrets.PINATA_SECRET_API_KEY }}
+          PINATA_GATEWAY_TOKEN: ${{ secrets.PINATA_GATEWAY_TOKEN }}
+          PINATA_GATEWAY_NAME: ${{ vars.PINATA_GATEWAY_NAME }}
+          COINBASE_API_KEY_NAME: ${{ secrets.COINBASE_API_KEY_NAME }}
+          COINBASE_API_KEY_PRIVATE_KEY: ${{ secrets.COINBASE_API_KEY_PRIVATE_KEY }}
+        run: npm run contracts:deploy:base
+
+      - name: Verify source code on Basescan
+        if: github.event_name == 'push' || inputs.verify
+        env:
+          DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+          ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
+          BASE_RPC_URL: ${{ secrets.BASE_RPC_URL || 'https://mainnet.base.org' }}
+          ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+        run: npm run contracts:verify:base
+
+      - name: Generate valuation attestation hashes
+        run: npm run contracts:attestation-hashes
+
+      - name: Post-deployment orchestration (Morpho market setup / UCC-1 recording)
+        env:
+          DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+          ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
+          BASE_RPC_URL: ${{ secrets.BASE_RPC_URL || 'https://mainnet.base.org' }}
+          UCC1_FILING_HASH: "bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a"
+          UCC1_AUXILIARY_DOCS: "bafybeidkp74w2idrwkg2qey66uepfaes5ekonxjqt62uztyxawii7yye7y"
+          UCC1_FILING_NUMBER: ${{ vars.UCC1_FILING_NUMBER || '2024-NM-UCC-0001' }}
+          UCC1_JURISDICTION: "New Mexico Secretary of State"
+          THIRDWEB_WALLET_ADDRESS: ${{ vars.THIRDWEB_WALLET_ADDRESS || '0xCD67f7e86A1397aBc33C473c58662BEB83b7a667' }}
+          COINBASE_WALLET_ADDRESS: ${{ vars.COINBASE_WALLET_ADDRESS || '0xdc2afcd0a97c1e878fdd64497806e52cc530f02a' }}
+          COINBASE_API_KEY_NAME: ${{ secrets.COINBASE_API_KEY_NAME }}
+          COINBASE_API_KEY_PRIVATE_KEY: ${{ secrets.COINBASE_API_KEY_PRIVATE_KEY }}
+          THIRDWEB_CLIENT_ID: ${{ secrets.THIRDWEB_CLIENT_ID }}
+          THIRDWEB_SECRET_KEY: ${{ secrets.THIRDWEB_SECRET_KEY }}
+          PINATA_JWT: ${{ secrets.PINATA_JWT }}
+          PINATA_API_KEY: ${{ secrets.PINATA_API_KEY }}
+          PINATA_SECRET_API_KEY: ${{ secrets.PINATA_SECRET_API_KEY }}
+          PINATA_GATEWAY_TOKEN: ${{ secrets.PINATA_GATEWAY_TOKEN }}
+          PINATA_GATEWAY_NAME: ${{ vars.PINATA_GATEWAY_NAME }}
+          IPFS_GLADIATOR_CERT_CID: ${{ vars.IPFS_GLADIATOR_CERT_CID || 'bafybeiba2j4g34bizjjm26qznc2pf4upgotffrcwjtkw6lj3qa6squrzpu' }}
+          IPFS_GLADIATOR_NOTICE_CID: ${{ vars.IPFS_GLADIATOR_NOTICE_CID || 'bafkreifbikc26xs2cu2mvsghzlrginwm6icqotdp4ntsvq3sn6h4flrhhm' }}
+          IPFS_MR_ARTICLES_CID: ${{ vars.IPFS_MR_ARTICLES_CID || 'bafkreifxiesrze736sxhvsa5op64q6f3ddvv3rismnvd75wi3yfqilu4py' }}
+          IPFS_MR_EIN_LETTER_CID: ${{ vars.IPFS_MR_EIN_LETTER_CID || 'bafkreihz5zpp33pimzckaey64mht2vezlbzngoxe46urrfctzqvjvsdboe' }}
+          IPFS_SLAPS_ARTICLES_CID: ${{ vars.IPFS_SLAPS_ARTICLES_CID || 'bafkreic3n6bdf25tobljqbjxzvzkbch6s7xkqq5yehmyt3zju4de7ey52u' }}
+          IPFS_SLAPS_EIN_LETTER_CID: ${{ vars.IPFS_SLAPS_EIN_LETTER_CID || 'bafkreifnuwchbvbolmhbgionvsltdi3edzasfqytd4zzqlvu42m5m4jhei' }}
+          IPFS_RBW_EIN_LETTER_CID: ${{ vars.IPFS_RBW_EIN_LETTER_CID || 'bafkreid77fuxwqtwyku5syp3dswmy75rymvxh6v3tf7rfrzqbrizoutxtu' }}
+          IPFS_NM_SOS_RECEIPT_CID: ${{ vars.IPFS_NM_SOS_RECEIPT_CID || 'bafkreigjsqx6d47sgqwkjxgtt3qrjnoz3hdth4hqk7qnxflqog2ikjs2kq' }}
+          IPFS_BENEFICIAL_OWNER_ID_CID: ${{ vars.IPFS_BENEFICIAL_OWNER_ID_CID || 'bafkreie5spkgxxhmafdqylwyfplx37jqhcjrs3es3neasgcnynzgkg5mzi' }}
+          IPFS_PATENTSIGHT_PORTFOLIO_CID: ${{ vars.IPFS_PATENTSIGHT_PORTFOLIO_CID || 'bafkreibxqnmhir5iifpboxdv5ndltm5vnbplso4ndtcuzfnanykudrwdbu' }}
+          IPFS_PATENTSIGHT_MR_CID: ${{ vars.IPFS_PATENTSIGHT_MR_CID || 'bafkreihls2yoi265uxzmcmh7wzk2ytyo5yvopmb4jib4blw4nptlchivqm' }}
+          IPFS_PATENTSIGHT_SLAPS_CID: ${{ vars.IPFS_PATENTSIGHT_SLAPS_CID || 'bafkreiflmhdsflvv53e24mo2woafdgecpkvfljcbm5heafnzdxzbj5ct4i' }}
+          IPFS_IPLYTICS_DECLARATION_CID: ${{ vars.IPFS_IPLYTICS_DECLARATION_CID || 'bafkreiej7wfskl53hxo4j47g55bxjkyyulihovjjtpjvtf264kfoddxc5i' }}
+          MORPHO_BLUE: ${{ vars.MORPHO_BLUE || '0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb' }}
+          BASE_USDC: ${{ vars.BASE_USDC || '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913' }}
+          BTC_LOAN_AMOUNT: ${{ vars.BTC_LOAN_AMOUNT || '5000000000000' }}
+          ETH_LOAN_AMOUNT: ${{ vars.ETH_LOAN_AMOUNT || '1000000000000' }}
+          BTC_LOAN_APR: ${{ vars.BTC_LOAN_APR || '400' }}
+          ETH_LOAN_APR: ${{ vars.ETH_LOAN_APR || '600' }}
+          MORPHO_LLTV: ${{ vars.MORPHO_LLTV || '860000000000000000' }}
+        run: npm run contracts:orchestrate:base
+
+      - name: Upload deployment artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployment-base-basescan-${{ github.run_number }}
+          path: |
+            deployment-config.base.json
+            registration-attestation.base.json
+            valuation-attestation.json
+            yield-summary.json
+          if-no-files-found: warn
+          retention-days: 90
+
+      - name: Base L2 deployment summary
+        if: always()
+        run: |
+          echo "## Base L2 Deployment & Basescan Verification" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Contract | Address | Basescan |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|----------|---------|----------|" >> "$GITHUB_STEP_SUMMARY"
+          node -e "
+            const fs = require('fs');
+            if (!fs.existsSync('deployment-config.base.json')) {
+              console.log('_deployment-config.base.json not found_');
+              process.exit(0);
+            }
+            const cfg = JSON.parse(fs.readFileSync('deployment-config.base.json'));
+            Object.entries(cfg.contracts).forEach(([name, addr]) => {
+              const link = '[\`' + addr.slice(0, 10) + '…\`](https://basescan.org/address/' + addr + ')';
+              const vLink = '[verify](https://basescan.org/address/' + addr + '#code)';
+              console.log('| ' + name + ' | ' + link + ' | ' + vLink + ' |');
+            });
+          " >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "### Orchestration" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          node -e "
+            const fs = require('fs');
+            if (!fs.existsSync('registration-attestation.base.json')) {
+              console.log('_registration-attestation.base.json not found_');
+              process.exit(0);
+            }
+            const att = JSON.parse(fs.readFileSync('registration-attestation.base.json'));
+            console.log('**Status:** ' + att.status);
+            console.log('');
+            console.log('| Step | Tx Hash |');
+            console.log('|------|---------|');
+            for (const [key, val] of Object.entries(att.transactions || {})) {
+              const hash = val.txHash
+                ? '[\`' + val.txHash.slice(0, 12) + '…\`](https://basescan.org/tx/' + val.txHash + ')'
+                : (val.skipped ? '_skipped_' : '_failed_');
+              console.log('| ' + key + ' | ' + hash + ' |');
+            }
+          " >> "$GITHUB_STEP_SUMMARY"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Job 5 — Pin ABI proof to Pinata and register IPA metadata on Story Protocol
 # ─────────────────────────────────────────────────────────────────────────────
   pin-and-register-proof:
     name: Pin ABI Proof to Pinata & Register on Story Protocol
     runs-on: ubuntu-latest
-    needs: [build-abi-proof, fetch-ipfs-docs]
-    # always() ensures this job runs even if fetch-ipfs-docs was skipped
-    # (via skip_ipfs_fetch=true).  On push events inputs.dry_run is undefined;
-    # inputs.dry_run != true correctly evaluates to true in that case.
+    needs: [build-abi-proof, fetch-ipfs-docs, deploy-and-verify-story, deploy-and-verify-base]
+    # always() ensures this job runs even if fetch-ipfs-docs or a deploy job was skipped.
+    # On push events inputs.dry_run is undefined; inputs.dry_run != true evaluates to true.
     if: >-
       always() &&
       needs.build-abi-proof.result == 'success' &&
@@ -511,7 +682,7 @@ jobs:
           " >> "$GITHUB_STEP_SUMMARY"
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Job 5 — Dry-run summary (compile + export only, no on-chain transactions)
+# Job 6 — Dry-run summary (compile + export only, no on-chain transactions)
 # ─────────────────────────────────────────────────────────────────────────────
   dry-run-summary:
     name: Dry Run — Compile & Export Only
@@ -529,6 +700,219 @@ jobs:
           echo "" >> "$GITHUB_STEP_SUMMARY"
           echo "IPFS document manifest built from Pinata gateway (15 CIDs)." >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "To deploy to Story Protocol mainnet and verify on StoryScan, re-run with:" >> "$GITHUB_STEP_SUMMARY"
+          echo "To deploy to Story Protocol (StoryScan) and Base L2 (Basescan), re-run with:" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Networks:** both" >> "$GITHUB_STEP_SUMMARY"
           echo "- **Deploy contracts:** true" >> "$GITHUB_STEP_SUMMARY"
           echo "- **Dry run:** false" >> "$GITHUB_STEP_SUMMARY"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Job 7 — Deployment hash summary
+# Lists all valuation hashes, attestation hashes, and transaction hashes
+# produced by the Story Protocol and Base L2 deployments.
+# ─────────────────────────────────────────────────────────────────────────────
+  deployment-hash-summary:
+    name: "Deployment Hash Summary — Valuation · Attestation · Tx Hashes"
+    runs-on: ubuntu-latest
+    needs: [deploy-and-verify-story, deploy-and-verify-base, pin-and-register-proof]
+    # Run after all deployment jobs regardless of which network(s) were targeted.
+    # Skip on dry-run dispatches.
+    if: >-
+      always() &&
+      (needs.deploy-and-verify-story.result == 'success' ||
+       needs.deploy-and-verify-story.result == 'skipped') &&
+      (needs.deploy-and-verify-base.result == 'success' ||
+       needs.deploy-and-verify-base.result == 'skipped') &&
+      inputs.dry_run != true
+    permissions: {}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download Story Protocol deployment artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: deployment-story-storyscan-${{ github.run_number }}
+          path: artifacts/story
+        continue-on-error: true
+
+      - name: Download Base L2 deployment artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: deployment-base-basescan-${{ github.run_number }}
+          path: artifacts/base
+        continue-on-error: true
+
+      - name: Download Pinata pin records
+        uses: actions/download-artifact@v4
+        with:
+          name: pin-records-${{ github.run_number }}
+          path: artifacts/pins
+        continue-on-error: true
+
+      - name: Emit full deployment hash summary
+        run: |
+          node -e "
+            const fs = require('fs');
+
+            function tryRead(p) {
+              try { return JSON.parse(fs.readFileSync(p, 'utf8')); } catch { return null; }
+            }
+
+            const out = [];
+            const push = (l) => out.push(l);
+
+            // ── Valuation & Attestation hashes ────────────────────────────────
+            const va = tryRead('artifacts/story/valuation-attestation.json')
+                    || tryRead('artifacts/base/valuation-attestation.json')
+                    || tryRead('valuation-attestation.json');
+
+            if (va) {
+              push('## 🔐 Attestation Type Identifiers');
+              push('');
+              push('| Type | Hash |');
+              push('|------|------|');
+              for (const [k, v] of Object.entries(va.attestationTypeIdentifiers || {})) {
+                push('| ' + k + ' | \`' + v + '\` |');
+              }
+
+              push('');
+              push('## 💰 IP Valuation Hashes');
+              push('');
+              push('| Asset | Present Value (USD) | Valuation Data Hash |');
+              push('|-------|--------------------:|---------------------|');
+              const ipv = va.ipValuationHashes || {};
+              if (ipv.millionaireResilience) {
+                const mr = ipv.millionaireResilience;
+                push('| Millionaire Resilience | \$' + mr.presentValue_USD.toLocaleString() + ' | \`' + mr.valuationDataHash + '\` |');
+              }
+              if (ipv.slapsStreaming) {
+                const ss = ipv.slapsStreaming;
+                push('| SLAPS Streaming | \$' + ss.presentValue_USD.toLocaleString() + ' | \`' + ss.valuationDataHash + '\` |');
+              }
+
+              push('');
+              push('## 📄 UCC-1 Filing Hashes');
+              push('');
+              const ucc = va.ucc1FilingHashes || {};
+              push('| Field | Value |');
+              push('|-------|-------|');
+              if (ucc.filingNumber) push('| Filing Number | \`' + ucc.filingNumber + '\` |');
+              if (ucc.ipfsCid)      push('| IPFS CID | \`' + ucc.ipfsCid + '\` |');
+              if (ucc.ucc1FilingHash32) push('| UCC-1 Filing Hash (bytes32) | \`' + ucc.ucc1FilingHash32 + '\` |');
+              if (ucc.ucc1DataHash)     push('| UCC-1 Data Hash | \`' + ucc.ucc1DataHash + '\` |');
+
+              push('');
+              push('## 🏢 Corporate Document Hashes');
+              push('');
+              const corp = va.corporateDocumentHashes || {};
+              push('| Document | Hash |');
+              push('|----------|------|');
+              if (corp.certificateOfOrganization) push('| Certificate of Organization | \`' + corp.certificateOfOrganization + '\` |');
+              if (corp.noticeOfFilingApproval)     push('| Notice of Filing Approval | \`' + corp.noticeOfFilingApproval + '\` |');
+              if (corp.combinedCorpDataHash)        push('| Combined Corp Data Hash | \`' + corp.combinedCorpDataHash + '\` |');
+
+              push('');
+              push('## 🏗 Orchestration Contract Hashes');
+              push('');
+              const orch = va.orchestrationContractHashes || {};
+              push('| Contract | Hash |');
+              push('|----------|------|');
+              for (const [k, v] of Object.entries(orch)) {
+                if (k === 'note') continue;
+                push('| ' + k + ' | \`' + v + '\` |');
+              }
+
+              push('');
+              push('## 🔒 Hermetic Seal Hash');
+              push('');
+              push('\`' + (va.hermeticSealHash || 'N/A') + '\`');
+            }
+
+            // ── Story Protocol (StoryScan) transaction hashes ─────────────────
+            const storyDeployment = tryRead('artifacts/story/deployment-config.story.json');
+            const txFile = tryRead('tx-hashes.json');
+            if (txFile && txFile.storyScan) {
+              push('');
+              push('## 📡 Story Protocol (StoryScan) Transaction Hashes');
+              push('');
+              push('| Contract | Tx Hash | Network | Status |');
+              push('|----------|---------|---------|--------|');
+              for (const [name, info] of Object.entries(txFile.storyScan.transactions || {})) {
+                const hash = info.txHash
+                  ? '[\`' + info.txHash.slice(0, 14) + '…\`](https://www.storyscan.io/tx/' + info.txHash + ')'
+                  : '_pending_';
+                push('| ' + name + ' | ' + hash + ' | Chain 1514 | ' + (info.status || 'pending') + ' |');
+              }
+              if (storyDeployment && storyDeployment.contracts) {
+                push('');
+                push('_Live deployment addresses (from deployment-config.story.json):_');
+                push('');
+                push('| Contract | Address |');
+                push('|----------|---------|');
+                for (const [name, addr] of Object.entries(storyDeployment.contracts)) {
+                  push('| ' + name + ' | [\`' + addr + '\`](https://www.storyscan.io/address/' + addr + ') |');
+                }
+              }
+            }
+
+            // ── Base L2 (Basescan) transaction hashes ─────────────────────────
+            const baseDeployment = tryRead('artifacts/base/deployment-config.base.json');
+            if (txFile && txFile.etherscan) {
+              push('');
+              push('## 📡 Base L2 (Basescan) Transaction Hashes');
+              push('');
+              push('| Contract | Tx Hash | Network | Status |');
+              push('|----------|---------|---------|--------|');
+              for (const [name, info] of Object.entries(txFile.etherscan.transactions || {})) {
+                const hash = info.txHash
+                  ? '[\`' + info.txHash.slice(0, 14) + '…\`](https://basescan.org/tx/' + info.txHash + ')'
+                  : '_pending_';
+                push('| ' + name + ' | ' + hash + ' | Chain 8453 | ' + (info.status || 'pending') + ' |');
+              }
+              if (baseDeployment && baseDeployment.contracts) {
+                push('');
+                push('_Live deployment addresses (from deployment-config.base.json):_');
+                push('');
+                push('| Contract | Address |');
+                push('|----------|---------|');
+                for (const [name, addr] of Object.entries(baseDeployment.contracts)) {
+                  push('| ' + name + ' | [\`' + addr + '\`](https://basescan.org/address/' + addr + ') |');
+                }
+              }
+            }
+
+            // ── Pinata IPFS ABI proof CID ──────────────────────────────────────
+            const pin = tryRead('artifacts/pins/abi-proof-pin.json');
+            if (pin) {
+              push('');
+              push('## 📌 Pinata IPFS ABI Proof');
+              push('');
+              push('| Field | Value |');
+              push('|-------|-------|');
+              push('| CID | \`' + pin.cid + '\` |');
+              push('| Gateway URL | [' + pin.url + '](' + pin.url + ') |');
+              push('| Pinned At | ' + pin.pinnedAt + ' |');
+            }
+
+            // ── UCC-1 & auxiliary document IPFS CIDs ──────────────────────────
+            push('');
+            push('## 📎 IPFS Document CIDs (UCC-1 Filing & Auxiliary Docs)');
+            push('');
+            push('| Document | IPFS CID | Gateway URL |');
+            push('|----------|----------|-------------|');
+            push('| UCC-1 Filing (NM SOS) | \`bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a\` | [ipfs.io](https://ipfs.io/ipfs/bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a) |');
+            push('| UCC-1 Auxiliary Docs | \`bafybeidkp74w2idrwkg2qey66uepfaes5ekonxjqt62uztyxawii7yye7y\` | [ipfs.io](https://ipfs.io/ipfs/bafybeidkp74w2idrwkg2qey66uepfaes5ekonxjqt62uztyxawii7yye7y) |');
+            push('| Gladiator Holdings Cert | \`bafybeiba2j4g34bizjjm26qznc2pf4upgotffrcwjtkw6lj3qa6squrzpu\` | [ipfs.io](https://ipfs.io/ipfs/bafybeiba2j4g34bizjjm26qznc2pf4upgotffrcwjtkw6lj3qa6squrzpu) |');
+            push('| Gladiator Holdings Notice | \`bafkreifbikc26xs2cu2mvsghzlrginwm6icqotdp4ntsvq3sn6h4flrhhm\` | [ipfs.io](https://ipfs.io/ipfs/bafkreifbikc26xs2cu2mvsghzlrginwm6icqotdp4ntsvq3sn6h4flrhhm) |');
+            push('| MR Articles of Incorporation | \`bafkreifxiesrze736sxhvsa5op64q6f3ddvv3rismnvd75wi3yfqilu4py\` | [ipfs.io](https://ipfs.io/ipfs/bafkreifxiesrze736sxhvsa5op64q6f3ddvv3rismnvd75wi3yfqilu4py) |');
+            push('| MR IRS EIN Letter | \`bafkreihz5zpp33pimzckaey64mht2vezlbzngoxe46urrfctzqvjvsdboe\` | [ipfs.io](https://ipfs.io/ipfs/bafkreihz5zpp33pimzckaey64mht2vezlbzngoxe46urrfctzqvjvsdboe) |');
+            push('| SLAPS Articles | \`bafkreic3n6bdf25tobljqbjxzvzkbch6s7xkqq5yehmyt3zju4de7ey52u\` | [ipfs.io](https://ipfs.io/ipfs/bafkreic3n6bdf25tobljqbjxzvzkbch6s7xkqq5yehmyt3zju4de7ey52u) |');
+            push('| SLAPS IRS EIN Letter | \`bafkreifnuwchbvbolmhbgionvsltdi3edzasfqytd4zzqlvu42m5m4jhei\` | [ipfs.io](https://ipfs.io/ipfs/bafkreifnuwchbvbolmhbgionvsltdi3edzasfqytd4zzqlvu42m5m4jhei) |');
+            push('| RBW IRS EIN Letter | \`bafkreid77fuxwqtwyku5syp3dswmy75rymvxh6v3tf7rfrzqbrizoutxtu\` | [ipfs.io](https://ipfs.io/ipfs/bafkreid77fuxwqtwyku5syp3dswmy75rymvxh6v3tf7rfrzqbrizoutxtu) |');
+
+            const summary = out.join('\n');
+            if (process.env.GITHUB_STEP_SUMMARY) {
+              fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, summary + '\n');
+            }
+            console.log(summary);
+          "

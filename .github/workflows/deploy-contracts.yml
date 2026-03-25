@@ -233,6 +233,47 @@ jobs:
             console.log('');
             console.log('**SAS registered:** ' + rs.sasRegistered + ' | **SOS registered:** ' + rs.sosRegistered);
           " >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "## Valuation & Attestation Hashes (Story)" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          node -e "
+            const fs = require('fs');
+            if (!fs.existsSync('valuation-attestation.json')) {
+              console.log('_valuation-attestation.json not found._');
+              process.exit(0);
+            }
+            const va = JSON.parse(fs.readFileSync('valuation-attestation.json'));
+            console.log('### Attestation Type Identifiers');
+            console.log('');
+            console.log('| Type | Hash |');
+            console.log('|------|------|');
+            for (const [k, v] of Object.entries(va.attestationTypeIdentifiers || {})) {
+              console.log('| ' + k + ' | \`' + v + '\` |');
+            }
+            console.log('');
+            console.log('### IP Valuation Hashes');
+            console.log('');
+            console.log('| Asset | Present Value (USD) | Valuation Hash |');
+            console.log('|-------|--------------------:|----------------|');
+            const ipv = va.ipValuationHashes || {};
+            if (ipv.millionaireResilience) {
+              const mr = ipv.millionaireResilience;
+              console.log('| Millionaire Resilience | \$' + mr.presentValue_USD.toLocaleString() + ' | \`' + mr.valuationDataHash + '\` |');
+            }
+            if (ipv.slapsStreaming) {
+              const ss = ipv.slapsStreaming;
+              console.log('| SLAPS Streaming | \$' + ss.presentValue_USD.toLocaleString() + ' | \`' + ss.valuationDataHash + '\` |');
+            }
+            console.log('');
+            console.log('### UCC-1 Filing Hash');
+            console.log('');
+            const ucc = va.ucc1FilingHashes || {};
+            console.log('| Field | Value |');
+            console.log('|-------|-------|');
+            if (ucc.ipfsCid)          console.log('| IPFS CID | \`' + ucc.ipfsCid + '\` |');
+            if (ucc.ucc1FilingHash32) console.log('| UCC-1 Filing Hash (bytes32) | \`' + ucc.ucc1FilingHash32 + '\` |');
+            if (ucc.ucc1DataHash)     console.log('| UCC-1 Data Hash | \`' + ucc.ucc1DataHash + '\` |');
+          " >> "$GITHUB_STEP_SUMMARY"
 
   deploy-base:
     name: Deploy to Base L2 (Chain 8453)
@@ -389,6 +430,47 @@ jobs:
             const rs = att.registryStatus || {};
             console.log('');
             console.log('**SAS registered:** ' + rs.sasRegistered + ' | **SOS registered:** ' + rs.sosRegistered);
+          " >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "## Valuation & Attestation Hashes (Base)" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          node -e "
+            const fs = require('fs');
+            if (!fs.existsSync('valuation-attestation.json')) {
+              console.log('_valuation-attestation.json not found._');
+              process.exit(0);
+            }
+            const va = JSON.parse(fs.readFileSync('valuation-attestation.json'));
+            console.log('### Attestation Type Identifiers');
+            console.log('');
+            console.log('| Type | Hash |');
+            console.log('|------|------|');
+            for (const [k, v] of Object.entries(va.attestationTypeIdentifiers || {})) {
+              console.log('| ' + k + ' | \`' + v + '\` |');
+            }
+            console.log('');
+            console.log('### IP Valuation Hashes');
+            console.log('');
+            console.log('| Asset | Present Value (USD) | Valuation Hash |');
+            console.log('|-------|--------------------:|----------------|');
+            const ipv = va.ipValuationHashes || {};
+            if (ipv.millionaireResilience) {
+              const mr = ipv.millionaireResilience;
+              console.log('| Millionaire Resilience | \$' + mr.presentValue_USD.toLocaleString() + ' | \`' + mr.valuationDataHash + '\` |');
+            }
+            if (ipv.slapsStreaming) {
+              const ss = ipv.slapsStreaming;
+              console.log('| SLAPS Streaming | \$' + ss.presentValue_USD.toLocaleString() + ' | \`' + ss.valuationDataHash + '\` |');
+            }
+            console.log('');
+            console.log('### UCC-1 Filing Hash');
+            console.log('');
+            const ucc = va.ucc1FilingHashes || {};
+            console.log('| Field | Value |');
+            console.log('|-------|-------|');
+            if (ucc.ipfsCid)          console.log('| IPFS CID | \`' + ucc.ipfsCid + '\` |');
+            if (ucc.ucc1FilingHash32) console.log('| UCC-1 Filing Hash (bytes32) | \`' + ucc.ucc1FilingHash32 + '\` |');
+            if (ucc.ucc1DataHash)     console.log('| UCC-1 Data Hash | \`' + ucc.ucc1DataHash + '\` |');
           " >> "$GITHUB_STEP_SUMMARY"
 
   deploy-mainnet:
