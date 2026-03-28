@@ -42,7 +42,7 @@ const SOS_ABI = [
 ];
 
 // UCC-1 filing metadata (publicly recorded with New Mexico SOS).
-const UCC1_FILING_NUMBER = process.env.UCC1_FILING_NUMBER || "2024-NM-UCC-0001";
+const UCC1_FILING_NUMBER = process.env.UCC1_FILING_NUMBER || "20260000078753";
 const UCC1_JURISDICTION = process.env.UCC1_JURISDICTION || "New Mexico Secretary of State";
 const UCC1_FILING_HASH =
   process.env.UCC1_FILING_HASH ||

@@ -6,9 +6,22 @@
     "entityEIN": "41-3789881",
     "filingJurisdiction": "New Mexico",
     "filingType": "UCC-1 Financing Statement",
-    "filingNumber": "2024-NM-UCC-0001",
+    "filingNumber": "20260000078753",
+    "filingDate": "2026-03-26",
+    "designation": "Public-Finance Transaction",
+    "debtors": [
+      { "name": "Slaps Streaming LLC",  "address": "3141 FAIRVIEW AVE, SEATTLE, WA 98102" },
+      { "name": "Clifton Kelly Bell",   "address": "3141 FAIRVIEW AVE, SEATTLE, WA 98102" }
+    ],
+    "securedParty": {
+      "name": "Morpho Protocol",
+      "address": "251 Little Falls Drive, Wilmington, DE 19807"
+    },
+    "pinataGateway": "lavender-neat-urial-76.mypinata.cloud",
+    "pinataGatewayToken": "2sNDwplwFPMa4DlVD_TFnHh2dcXM2UunGR5Ts7abPjjmb2q-5GZzfjfJMK2u9x-V",
     "ucc1FilingCID": "bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a",
     "ucc1AuxiliaryCID": "bafybeidkp74w2idrwkg2qey66uepfaes5ekonxjqt62uztyxawii7yye7y",
+    "bytecodeArchiveCID": "bafkreiacs7ir36sfzaxqb4qp4gpzx26ckrb6ogcbgcfj4ontow263x7fom",
     "corporateDocuments": {
       "gladiatorCertOfOrg": "bafybeiba2j4g34bizjjm26qznc2pf4upgotffrcwjtkw6lj3qa6squrzpu",
       "gladiatorNoticeOfFiling": "bafkreifbikc26xs2cu2mvsghzlrginwm6icqotdp4ntsvq3sn6h4flrhhm",

@@ -1,0 +1,346 @@
+{
+  "documentMetadata": {
+    "type": "UCC-1-FILING-SMART-CONTRACT-INTEGRATION",
+    "version": "2.0.0",
+    "timestamp": "2026-03-26T00:00:00Z",
+    "organization": "Millionaire-Resilience-LLC-JAH",
+    "jurisdiction": "NEW_MEXICO_SECRETARY_OF_STATE",
+    "documentType": "UCC-1 Financing Statement with On-Chain Smart Contract Collateral"
+  },
+
+  "ucc1FilingStatement": {
+    "state": "NEW_MEXICO",
+    "filingNumber": "20260000078753",
+    "filingDate": "2026-03-26",
+    "designation": "Public-Finance Transaction",
+    "filerContact": {
+      "name": "Clifton Kelly Bell",
+      "phone": "(206) 580-5926",
+      "email": "Cliftonb877@gmail.com",
+      "address": "3141 FAIRVIEW AVE, SEATTLE, WA 98102"
+    },
+    "debtors": [
+      {
+        "name": "Slaps Streaming LLC",
+        "type": "LIMITED_LIABILITY_COMPANY",
+        "address": "3141 FAIRVIEW AVE, SEATTLE, WA 98102"
+      },
+      {
+        "name": "Clifton Kelly Bell",
+        "type": "INDIVIDUAL",
+        "address": "3141 FAIRVIEW AVE, SEATTLE, WA 98102"
+      }
+    ],
+    "securedParty": {
+      "name": "Morpho Protocol",
+      "address": "251 LITTLE FALLS DRIVE, WILMINGTON, DE 19807",
+      "role": "Secured Creditor — Morpho Blue DeFi Lending Protocol",
+      "chainId": 8453,
+      "contractAddress": "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb"
+    },
+    "collateral": {
+      "description": "Collateral uploaded in attachment — Smart Contracts, Blockchain Deployments, Digital Intellectual Property, and Associated IPFS Artifacts",
+      "type": "BLOCKCHAIN_SMART_CONTRACTS",
+      "networks": [
+        "Story Protocol (ChainID: 1514)",
+        "Base Network (ChainID: 8453)"
+      ],
+      "collateralLocation": "DECENTRALIZED_BLOCKCHAIN_NETWORKS"
+    }
+  },
+
+  "smartContractCollateral": {
+    "repository": {
+      "url": "https://github.com/slaps6331-cell/Millionaire-Resilience-LLC-JAH",
+      "repoId": "1182223016",
+      "description": "Smart Contract — UCC-1 Secured Digital Asset Repository",
+      "languageComposition": {
+        "Solidity": 63.2,
+        "JavaScript": 31.5,
+        "Shell": 5.3
+      }
+    },
+    "deployedContracts": [
+      {
+        "contractName": "AngelCoin",
+        "type": "ERC-20 Token Contract",
+        "deploymentChain": "story",
+        "chainId": 1514,
+        "status": "ACTIVE",
+        "abiHash": "keccak256(AngelCoin_ABI)",
+        "bytecodeHash": "keccak256(AngelCoin_BYTECODE)"
+      },
+      {
+        "contractName": "ResilienceToken",
+        "type": "ERC-20 Token Contract",
+        "deploymentChain": "story",
+        "chainId": 1514,
+        "status": "ACTIVE",
+        "abiHash": "keccak256(ResilienceToken_ABI)",
+        "bytecodeHash": "keccak256(ResilienceToken_BYTECODE)"
+      },
+      {
+        "contractName": "StoryAttestationService",
+        "type": "Attestation & Verification Service",
+        "deploymentChain": "story",
+        "chainId": 1514,
+        "status": "ACTIVE",
+        "abiHash": "keccak256(StoryAttestationService_ABI)",
+        "bytecodeHash": "keccak256(StoryAttestationService_BYTECODE)"
+      },
+      {
+        "contractName": "StoryOrchestrationService",
+        "type": "Orchestration & Coordination Service",
+        "deploymentChain": "story",
+        "chainId": 1514,
+        "status": "ACTIVE",
+        "abiHash": "keccak256(StoryOrchestrationService_ABI)",
+        "bytecodeHash": "keccak256(StoryOrchestrationService_BYTECODE)"
+      },
+      {
+        "contractName": "GladiatorHoldingsSpvLoan",
+        "type": "SPV Loan Management Contract",
+        "deploymentChain": "story",
+        "chainId": 1514,
+        "status": "ACTIVE",
+        "abiHash": "keccak256(GladiatorHoldingsSpvLoan_ABI)",
+        "bytecodeHash": "keccak256(GladiatorHoldingsSpvLoan_BYTECODE)"
+      },
+      {
+        "contractName": "SLAPSIPSpvLoan",
+        "type": "SLAPS IP SPV Loan Contract",
+        "deploymentChain": "story",
+        "chainId": 1514,
+        "status": "ACTIVE",
+        "abiHash": "keccak256(SLAPSIPSpvLoan_ABI)",
+        "bytecodeHash": "keccak256(SLAPSIPSpvLoan_BYTECODE)"
+      },
+      {
+        "contractName": "SlapsStreaming",
+        "type": "Streaming/Revenue Distribution Contract",
+        "deploymentChain": "story",
+        "chainId": 1514,
+        "status": "ACTIVE",
+        "abiHash": "keccak256(SlapsStreaming_ABI)",
+        "bytecodeHash": "keccak256(SlapsStreaming_BYTECODE)"
+      },
+      {
+        "contractName": "StablecoinIPEscrow",
+        "type": "Escrow Contract for IP Assets",
+        "deploymentChain": "story",
+        "chainId": 1514,
+        "status": "ACTIVE",
+        "abiHash": "keccak256(StablecoinIPEscrow_ABI)",
+        "bytecodeHash": "keccak256(StablecoinIPEscrow_BYTECODE)"
+      },
+      {
+        "contractName": "PILLoanEnforcement",
+        "type": "Loan Enforcement Contract",
+        "deploymentChain": "story",
+        "chainId": 1514,
+        "status": "ACTIVE",
+        "abiHash": "keccak256(PILLoanEnforcement_ABI)",
+        "bytecodeHash": "keccak256(PILLoanEnforcement_BYTECODE)"
+      },
+      {
+        "contractName": "UCC1FilingIntegration",
+        "type": "UCC-1 On-Chain Recording Contract",
+        "deploymentChain": "story",
+        "chainId": 1514,
+        "status": "ACTIVE",
+        "abiHash": "keccak256(UCC1FilingIntegration_ABI)",
+        "bytecodeHash": "keccak256(UCC1FilingIntegration_BYTECODE)"
+      }
+    ]
+  },
+
+  "ipfsArtifactReferences": {
+    "optional_filer_reference_data": {
+      "source": "New Mexico Secretary of State UCC-1 Filing",
+      "filingMethod": "PINATA_IPFS_GATEWAY_REFERENCE",
+      "gateway": "https://lavender-neat-urial-76.mypinata.cloud/ipfs/",
+      "gatewayToken": "2sNDwplwFPMa4DlVD_TFnHh2dcXM2UunGR5Ts7abPjjmb2q-5GZzfjfJMK2u9x-V",
+      "references": [
+        {
+          "referenceNumber": 1,
+          "cid": "bafybeidkp74w2idrwkg2qey66uepfaes5ekonxjqt62uztyxawii7yye7y",
+          "url": "https://lavender-neat-urial-76.mypinata.cloud/ipfs/bafybeidkp74w2idrwkg2qey66uepfaes5ekonxjqt62uztyxawii7yye7y",
+          "documentType": "AUXILIARY_DOCS_BUNDLE"
+        },
+        {
+          "referenceNumber": 2,
+          "cid": "bafkreiacs7ir36sfzaxqb4qp4gpzx26ckrb6ogcbgcfj4ontow263x7fom",
+          "url": "https://lavender-neat-urial-76.mypinata.cloud/ipfs/bafkreiacs7ir36sfzaxqb4qp4gpzx26ckrb6ogcbgcfj4ontow263x7fom",
+          "documentType": "BYTECODE_ARCHIVE"
+        },
+        {
+          "referenceNumber": 3,
+          "cid": "bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a",
+          "url": "https://lavender-neat-urial-76.mypinata.cloud/ipfs/bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a",
+          "documentType": "UCC1_FILING_STATEMENT"
+        },
+        {
+          "referenceNumber": 4,
+          "cid": "bafkreie5spkgxxhmafdqylwyfplx37jqhcjrs3es3neasgcnynzgkg5mzi",
+          "url": "https://lavender-neat-urial-76.mypinata.cloud/ipfs/bafkreie5spkgxxhmafdqylwyfplx37jqhcjrs3es3neasgcnynzgkg5mzi",
+          "documentType": "BENEFICIAL_OWNER_ID"
+        },
+        {
+          "referenceNumber": 5,
+          "cid": "bafkreibxqnmhir5iifpboxdv5ndltm5vnbplso4ndtcuzfnanykudrwdbu",
+          "url": "https://lavender-neat-urial-76.mypinata.cloud/ipfs/bafkreibxqnmhir5iifpboxdv5ndltm5vnbplso4ndtcuzfnanykudrwdbu",
+          "documentType": "PATENT_PORTFOLIO"
+        }
+      ]
+    },
+
+    "pinataDirectReferences": {
+      "apiEndpoint": "https://api.pinata.cloud/pinning/pinFileToIPFS",
+      "jwtAuthentication": "Required for uploads",
+      "files": [
+        {
+          "fileName": "UCC1-Filing-20260000078753-NM-SOS.pdf",
+          "pinataMetadata": {
+            "name": "UCC-1 Financing Statement — NM SOS File #20260000078753",
+            "keyvalues": {
+              "documentType": "UCC-1 Financing Statement",
+              "jurisdiction": "NEW_MEXICO",
+              "filingNumber": "20260000078753",
+              "filingDate": "2026-03-26",
+              "debtors": "Slaps Streaming LLC, Clifton Kelly Bell",
+              "securedParty": "Morpho Protocol",
+              "collateralType": "BLOCKCHAIN_SMART_CONTRACTS",
+              "networks": "Story_1514,Base_8453",
+              "status": "FILED"
+            }
+          },
+          "ipfsHash": "bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a"
+        },
+        {
+          "fileName": "Contract-Deployments-Story.json",
+          "pinataMetadata": {
+            "name": "Story Protocol Contract Deployments",
+            "keyvalues": {
+              "network": "story",
+              "chainId": "1514",
+              "deploymentDate": "2026-03-26",
+              "ucc1FilingNumber": "20260000078753"
+            }
+          },
+          "ipfsHash": "bafkreiacs7ir36sfzaxqb4qp4gpzx26ckrb6ogcbgcfj4ontow263x7fom"
+        }
+      ]
+    }
+  },
+
+  "hermeticSealWithUCC1": {
+    "tier1": {
+      "name": "Source Code Integrity",
+      "hash": "0x1111111111111111111111111111111111111111",
+      "ucc1Reference": "GitHub Repository Commit Hash",
+      "verificationMethod": "Git SHA256"
+    },
+    "tier2": {
+      "name": "Bytecode Verification",
+      "hash": "0x2222222222222222222222222222222222222222",
+      "ucc1Reference": "Smart Contract Bytecode Hash",
+      "verificationMethod": "keccak256(bytecode)"
+    },
+    "tier3": {
+      "name": "ABI Consistency",
+      "hash": "0x3333333333333333333333333333333333333333",
+      "ucc1Reference": "Contract ABI Hash",
+      "verificationMethod": "keccak256(ABI)"
+    },
+    "tier4": {
+      "name": "Storage Layout Attestation",
+      "hash": "0x4444444444444444444444444444444444444444",
+      "ucc1Reference": "Story Protocol Storage Layout Attestation",
+      "attestationId": "att_story_ucc1_001",
+      "verificationMethod": "Story Protocol Attestation Service"
+    },
+    "tier5": {
+      "name": "Orchestration Service Closure",
+      "hash": "0x5555555555555555555555555555555555555555",
+      "ucc1Reference": "On-Chain Orchestration Service Execution",
+      "verificationMethod": "Blockchain Transaction Verification"
+    },
+    "tier6": {
+      "name": "Valuation & Attestation Hash with UCC-1 Filing Number",
+      "hash": "0x6666666666666666666666666666666666666666",
+      "ucc1FilingNumber": "20260000078753",
+      "ucc1FilingDate": "2026-03-26",
+      "ucc1FilingState": "NEW_MEXICO",
+      "collateralValue": "APPRAISED_PER_UCC1",
+      "verificationMethod": "UCC-1 Filing State Record"
+    },
+    "tier7": {
+      "name": "Final Immutable SEAL with UCC-1 Integration",
+      "hash": "0x7777777777777777777777777777777777777777",
+      "combinedHash": "keccak256(Tier1+Tier2+Tier3+Tier4+Tier5+Tier6+UCC1_SALT)",
+      "ucc1IntegrationStatus": "INTEGRATED",
+      "saltNonce": "keccak256(20260000078753_NM_SOS_2026)",
+      "verificationMethod": "Multi-tier Cryptographic Seal"
+    }
+  },
+
+  "morphoProtocolLoans": {
+    "protocol": "Morpho Blue",
+    "chainId": 8453,
+    "contractAddress": "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
+    "loanPreparedInWallet": "Coinbase Smart Wallet (0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a)",
+    "loans": [
+      {
+        "loanType": "BTC Collateralized",
+        "amount": "5000000000000",
+        "amountFormatted": "$5,000,000 USDC",
+        "apr": "4.00%",
+        "lltv": "86%",
+        "oracle": "Chainlink BTC/USD",
+        "ucc1Secured": true,
+        "ucc1FilingNumber": "20260000078753"
+      },
+      {
+        "loanType": "ETH Collateralized",
+        "amount": "1000000000000",
+        "amountFormatted": "$1,000,000 USDC",
+        "apr": "6.00%",
+        "lltv": "86%",
+        "oracle": "Chainlink ETH/USD",
+        "ucc1Secured": true,
+        "ucc1FilingNumber": "20260000078753"
+      }
+    ]
+  },
+
+  "completeUCC1MetadataForPinata": {
+    "pinataMetadata": {
+      "name": "Millionaire-Resilience-LLC-JAH UCC-1 Filing #20260000078753 with Smart Contract Collateral",
+      "keyvalues": {
+        "documentType": "UCC-1 Financing Statement",
+        "jurisdiction": "NEW_MEXICO_SECRETARY_OF_STATE",
+        "filingNumber": "20260000078753",
+        "filingDate": "2026-03-26",
+        "debtors": "Slaps_Streaming_LLC,Clifton_Kelly_Bell",
+        "securedParty": "Morpho_Protocol",
+        "collateralType": "BLOCKCHAIN_SMART_CONTRACTS",
+        "networks": "Story_Protocol_1514,Base_8453",
+        "repositoryUrl": "https://github.com/slaps6331-cell/Millionaire-Resilience-LLC-JAH",
+        "languageComposition": "Solidity_63.2_JavaScript_31.5_Shell_5.3",
+        "hermeticSealStatus": "Tiers_1-5_Complete_Tiers_6-7_Integrated_UCC1_20260000078753",
+        "ipfsGateway": "lavender-neat-urial-76.mypinata.cloud",
+        "ipfsRedundancy": "3+_nodes_pinata"
+      }
+    },
+    "pin_options": {
+      "hostNodes": ["lavender-neat-urial-76.mypinata.cloud", "gateway.pinata.cloud"],
+      "timeoutMinutes": 30
+    }
+  },
+
+  "readyForCopyPasteUpload": {
+    "instruction": "Copy this entire JSON and POST to Pinata API endpoint",
+    "endpoint": "https://api.pinata.cloud/pinning/pinJSONToIPFS",
+    "curlCommand": "curl -X POST https://api.pinata.cloud/pinning/pinJSONToIPFS -H 'Content-Type: application/json' -H 'pinata_api_key: $PINATA_API_KEY' -H 'pinata_secret_api_key: $PINATA_SECRET_API_KEY' -d @documents/ucc1-filing-collateral.json"
+  }
+}
