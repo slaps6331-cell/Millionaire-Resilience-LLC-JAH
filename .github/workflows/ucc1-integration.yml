@@ -1,0 +1,381 @@
+name: UCC-1 Filing On-Chain Integration
+
+on:
+  # Trigger when the UCC-1 filing document or integration contract changes.
+  push:
+    branches:
+      - main
+    paths:
+      - "contracts/UCC1FilingIntegration.sol"
+      - "documents/ucc1-filing-collateral.json"
+      - "scripts/record-ucc1-filing.cjs"
+
+  # Manual dispatch with network and dry-run options.
+  workflow_dispatch:
+    inputs:
+      network:
+        description: "Target network"
+        required: true
+        default: "story"
+        type: choice
+        options:
+          - story
+          - base
+          - both
+      dry_run:
+        description: "Dry run (compile + validate only, do not deploy)"
+        required: false
+        default: false
+        type: boolean
+      skip_pinata:
+        description: "Skip Pinata IPFS upload"
+        required: false
+        default: false
+        type: boolean
+
+concurrency:
+  group: ucc1-integration-${{ github.event.inputs.network || 'story' }}
+  cancel-in-progress: false
+
+jobs:
+  # ── 1. Compile and validate the UCC1FilingIntegration contract ─────────────
+  compile:
+    name: Compile UCC1FilingIntegration
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      artifacts-key: ${{ steps.artifacts.outputs.key }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Compile contracts
+        run: npm run contracts:compile
+
+      - name: Validate UCC1FilingIntegration artifact
+        run: |
+          ARTIFACT="artifacts/contracts/UCC1FilingIntegration.sol/UCC1FilingIntegration.json"
+          if [[ ! -f "$ARTIFACT" ]]; then
+            echo "::error::UCC1FilingIntegration artifact not found after compile"
+            exit 1
+          fi
+          SIZE=$(node -e "
+            const a = require('./$ARTIFACT');
+            const b = a.deployedBytecode.replace('0x','');
+            console.log(Math.floor(b.length/2));
+          ")
+          echo "✅ Bytecode size: ${SIZE} bytes (limit: 24576)"
+          if [[ "$SIZE" -gt 24576 ]]; then
+            echo "::error::UCC1FilingIntegration bytecode exceeds 24576-byte EVM limit (${SIZE} bytes)"
+            exit 1
+          fi
+
+      - name: Set artifacts key
+        id: artifacts
+        run: echo "key=artifacts-${{ github.sha }}" >> "$GITHUB_OUTPUT"
+
+      - name: Upload compiled artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifacts-${{ github.sha }}
+          path: artifacts/
+          retention-days: 30
+
+  # ── 2. Pin UCC-1 collateral document to Pinata IPFS ───────────────────────
+  pin-ucc1-document:
+    name: Pin UCC-1 Collateral Document to Pinata
+    runs-on: ubuntu-latest
+    needs: compile
+    if: ${{ !inputs.dry_run && !inputs.skip_pinata }}
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Validate Pinata credentials
+        env:
+          PINATA_JWT: ${{ secrets.PINATA_JWT }}
+        run: |
+          if [[ -z "$PINATA_JWT" ]]; then
+            echo "::warning::PINATA_JWT not set — Pinata upload will be skipped"
+          else
+            echo "✅ Pinata credentials present"
+          fi
+
+      - name: Pin UCC-1 collateral document
+        id: pin
+        env:
+          PINATA_JWT: ${{ secrets.PINATA_JWT }}
+          PINATA_API_KEY: ${{ secrets.PINATA_API_KEY }}
+          PINATA_SECRET_API_KEY: ${{ secrets.PINATA_SECRET_API_KEY }}
+          PINATA_GATEWAY_NAME: ${{ vars.PINATA_GATEWAY_NAME || 'lavender-neat-urial-76' }}
+          PINATA_GATEWAY_TOKEN: ${{ secrets.PINATA_GATEWAY_TOKEN }}
+          UCC1_FILING_NUMBER: "20260000078753"
+        run: |
+          if [[ -z "$PINATA_JWT" && -z "$PINATA_API_KEY" ]]; then
+            echo "No Pinata credentials — skipping upload"
+            exit 0
+          fi
+
+          PAYLOAD=$(cat documents/ucc1-filing-collateral.json)
+          GATEWAY="${PINATA_GATEWAY_NAME:-gateway.pinata.cloud}"
+
+          AUTH_HEADER=""
+          if [[ -n "$PINATA_JWT" ]]; then
+            AUTH_HEADER="-H 'Authorization: Bearer $PINATA_JWT'"
+          else
+            AUTH_HEADER="-H 'pinata_api_key: $PINATA_API_KEY' -H 'pinata_secret_api_key: $PINATA_SECRET_API_KEY'"
+          fi
+
+          RESPONSE=$(curl -s -X POST "https://api.pinata.cloud/pinning/pinJSONToIPFS" \
+            -H "Content-Type: application/json" \
+            $(if [[ -n "$PINATA_JWT" ]]; then echo "-H 'Authorization: Bearer $PINATA_JWT'"; else echo "-H 'pinata_api_key: $PINATA_API_KEY' -H 'pinata_secret_api_key: $PINATA_SECRET_API_KEY'"; fi) \
+            -d "{
+              \"pinataContent\": $PAYLOAD,
+              \"pinataMetadata\": {
+                \"name\": \"UCC1-Filing-20260000078753-NM-SOS\",
+                \"keyvalues\": {
+                  \"filingNumber\": \"20260000078753\",
+                  \"filingDate\": \"2026-03-26\",
+                  \"jurisdiction\": \"NEW_MEXICO_SECRETARY_OF_STATE\",
+                  \"securedParty\": \"Morpho Protocol\"
+                }
+              }
+            }" || echo '{"error":"curl failed"}')
+
+          CID=$(echo "$RESPONSE" | node -e "
+            let d=''; process.stdin.on('data',c=>d+=c).on('end',()=>{
+              try{ const j=JSON.parse(d); console.log(j.IpfsHash||''); }catch(e){ console.log(''); }
+            });
+          ")
+
+          if [[ -n "$CID" ]]; then
+            echo "✅ Pinned UCC-1 collateral document: $CID"
+            echo "   https://${GATEWAY}.mypinata.cloud/ipfs/${CID}"
+            echo "ucc1_collateral_cid=$CID" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning::Pinata upload did not return a CID — response: $RESPONSE"
+          fi
+
+      - name: Update deployment-registry.json
+        if: steps.pin.outputs.ucc1_collateral_cid != ''
+        run: |
+          CID="${{ steps.pin.outputs.ucc1_collateral_cid }}"
+          node -e "
+            const fs = require('fs');
+            const reg = JSON.parse(fs.readFileSync('deployment-registry.json', 'utf8'));
+            reg['ipfs-documents'] = reg['ipfs-documents'] || {};
+            reg['ipfs-documents']['ucc1-filing-collateral'] = '$CID';
+            reg['ipfs-documents']['ucc1-filing-number'] = '20260000078753';
+            reg['ipfs-documents']['last-synced'] = new Date().toISOString();
+            fs.writeFileSync('deployment-registry.json', JSON.stringify(reg, null, 2));
+            console.log('Registry updated: ucc1-filing-collateral =', '$CID');
+          "
+
+      - name: Commit updated registry
+        uses: EndBug/add-and-commit@v9
+        with:
+          add: "deployment-registry.json"
+          message: "chore: record UCC-1 filing #20260000078753 CID in registry [skip ci]"
+          default_author: github_actions
+
+  # ── 3. Deploy UCC1FilingIntegration to Story Protocol ─────────────────────
+  record-on-story:
+    name: Record UCC-1 on Story Protocol (Chain 1514)
+    runs-on: ubuntu-latest
+    needs: compile
+    if: |
+      !inputs.dry_run &&
+      (github.event_name == 'push' ||
+       inputs.network == 'story' ||
+       inputs.network == 'both')
+    environment: story-mainnet
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Download compiled artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: artifacts-${{ github.sha }}
+          path: artifacts/
+
+      - name: Record UCC-1 filing on Story Protocol
+        env:
+          DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+          STORY_RPC_URL: ${{ secrets.ALCHEMY_API_KEY && format('https://story-mainnet.g.alchemy.com/v2/{0}', secrets.ALCHEMY_API_KEY) || secrets.STORY_RPC_URL || 'https://mainnet.storyrpc.io' }}
+          PINATA_JWT: ${{ secrets.PINATA_JWT }}
+          PINATA_API_KEY: ${{ secrets.PINATA_API_KEY }}
+          PINATA_SECRET_API_KEY: ${{ secrets.PINATA_SECRET_API_KEY }}
+          PINATA_GATEWAY_NAME: ${{ vars.PINATA_GATEWAY_NAME || 'lavender-neat-urial-76' }}
+          PINATA_GATEWAY_TOKEN: ${{ secrets.PINATA_GATEWAY_TOKEN }}
+          UCC1_FILING_NUMBER: "20260000078753"
+          UCC1_JURISDICTION: "New Mexico Secretary of State"
+        run: npm run contracts:record-ucc1:story
+
+      - name: Verify UCC1FilingIntegration on StoryScan
+        env:
+          DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+          STORY_RPC_URL: ${{ secrets.ALCHEMY_API_KEY && format('https://story-mainnet.g.alchemy.com/v2/{0}', secrets.ALCHEMY_API_KEY) || secrets.STORY_RPC_URL || 'https://mainnet.storyrpc.io' }}
+          STORYSCAN_API_KEY: ${{ secrets.STORYSCAN_API_KEY }}
+        run: npm run contracts:verify:story
+
+      - name: Upload attestation artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ucc1-attestation-story-${{ github.sha }}
+          path: registration-attestation.ucc1.story.json
+          retention-days: 90
+
+      - name: Commit attestation record
+        uses: EndBug/add-and-commit@v9
+        with:
+          add: |
+            registration-attestation.ucc1.story.json
+            deployment-config.story.json
+          message: "chore: record UCC-1 #20260000078753 on Story Protocol [skip ci]"
+          default_author: github_actions
+
+  # ── 4. Deploy UCC1FilingIntegration to Base Network ───────────────────────
+  record-on-base:
+    name: Record UCC-1 on Base Network (Chain 8453)
+    runs-on: ubuntu-latest
+    needs: compile
+    if: |
+      !inputs.dry_run &&
+      (inputs.network == 'base' || inputs.network == 'both')
+    environment: base-mainnet
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Download compiled artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: artifacts-${{ github.sha }}
+          path: artifacts/
+
+      - name: Record UCC-1 filing on Base Network
+        env:
+          DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+          BASE_RPC_URL: ${{ secrets.ALCHEMY_API_KEY && format('https://base-mainnet.g.alchemy.com/v2/{0}', secrets.ALCHEMY_API_KEY) || secrets.BASE_RPC_URL || 'https://mainnet.base.org' }}
+          PINATA_JWT: ${{ secrets.PINATA_JWT }}
+          PINATA_API_KEY: ${{ secrets.PINATA_API_KEY }}
+          PINATA_SECRET_API_KEY: ${{ secrets.PINATA_SECRET_API_KEY }}
+          PINATA_GATEWAY_NAME: ${{ vars.PINATA_GATEWAY_NAME || 'lavender-neat-urial-76' }}
+          PINATA_GATEWAY_TOKEN: ${{ secrets.PINATA_GATEWAY_TOKEN }}
+          UCC1_FILING_NUMBER: "20260000078753"
+          UCC1_JURISDICTION: "New Mexico Secretary of State"
+          MORPHO_BLUE: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb"
+          BASE_USDC: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
+        run: npm run contracts:record-ucc1:base
+
+      - name: Verify UCC1FilingIntegration on Basescan
+        env:
+          DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+          BASE_RPC_URL: ${{ secrets.ALCHEMY_API_KEY && format('https://base-mainnet.g.alchemy.com/v2/{0}', secrets.ALCHEMY_API_KEY) || secrets.BASE_RPC_URL || 'https://mainnet.base.org' }}
+          ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+        run: npm run contracts:verify:base
+
+      - name: Upload attestation artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ucc1-attestation-base-${{ github.sha }}
+          path: registration-attestation.ucc1.base.json
+          retention-days: 90
+
+      - name: Commit attestation record
+        uses: EndBug/add-and-commit@v9
+        with:
+          add: |
+            registration-attestation.ucc1.base.json
+            deployment-config.base.json
+          message: "chore: record UCC-1 #20260000078753 on Base Network [skip ci]"
+          default_author: github_actions
+
+  # ── 5. Dry-run summary ─────────────────────────────────────────────────────
+  dry-run-summary:
+    name: Dry Run Summary
+    runs-on: ubuntu-latest
+    needs: compile
+    if: ${{ inputs.dry_run }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Print dry-run summary
+        run: |
+          echo "============================================================"
+          echo "DRY RUN — UCC-1 Filing On-Chain Integration"
+          echo "============================================================"
+          echo ""
+          echo "UCC-1 Filing Details (New Mexico Secretary of State):"
+          echo "  File #:        20260000078753"
+          echo "  Date Filed:    2026-03-26"
+          echo "  Debtors:       Slaps Streaming LLC | Clifton Kelly Bell"
+          echo "  Secured Party: Morpho Protocol"
+          echo "  Designation:   Public-Finance Transaction"
+          echo ""
+          echo "Target Network:  ${{ inputs.network }}"
+          echo ""
+          echo "Pinata IPFS Gateway:"
+          echo "  Gateway:       lavender-neat-urial-76.mypinata.cloud"
+          echo "  CID [1]:       bafybeidkp74w2idrwkg2qey66uepfaes5ekonxjqt62uztyxawii7yye7y"
+          echo "  CID [2]:       bafkreiacs7ir36sfzaxqb4qp4gpzx26ckrb6ogcbgcfj4ontow263x7fom"
+          echo "  CID [3]:       bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a"
+          echo "  CID [4]:       bafkreie5spkgxxhmafdqylwyfplx37jqhcjrs3es3neasgcnynzgkg5mzi"
+          echo "  CID [5]:       bafkreibxqnmhir5iifpboxdv5ndltm5vnbplso4ndtcuzfnanykudrwdbu"
+          echo ""
+          echo "Contracts (would be deployed/updated):"
+          echo "  UCC1FilingIntegration.sol → Story Protocol (1514) + Base (8453)"
+          echo ""
+          echo "Morpho Protocol Loans (Coinbase Wallet):"
+          echo "  Loan 1: \$5M USDC (BTC collateral, 4% APR, 86% LLTV)"
+          echo "  Loan 2: \$1M USDC (ETH collateral, 6% APR, 86% LLTV)"
+          echo "  Wallet: 0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a"
+          echo ""
+          echo "  ✅ Compile passed — ready for deployment"
+          echo "  ⏭  Set dry_run=false to execute on-chain recording"
+          echo "============================================================"

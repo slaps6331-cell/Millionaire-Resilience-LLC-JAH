@@ -61,7 +61,7 @@ async function main() {
   };
 
   // ── 1. StoryAttestationService ──────────────────────────────────────
-  console.log("[1/11] StoryAttestationService");
+  console.log("[1/12] StoryAttestationService");
   const StoryAttestationService = await ethers.getContractFactory(
     "StoryAttestationService"
   );
@@ -72,7 +72,7 @@ async function main() {
   deploymentConfig.contracts.StoryAttestationService = sasAddress;
 
   // ── 2. StoryOrchestrationService ────────────────────────────────────
-  console.log("[2/11] StoryOrchestrationService");
+  console.log("[2/12] StoryOrchestrationService");
   const StoryOrchestrationService = await ethers.getContractFactory(
     "StoryOrchestrationService"
   );
@@ -83,7 +83,7 @@ async function main() {
   deploymentConfig.contracts.StoryOrchestrationService = sosAddress;
 
   // ── 3. StoryAttestationBridge ────────────────────────────────────────
-  console.log("[3/11] StoryAttestationBridge");
+  console.log("[3/12] StoryAttestationBridge");
   const StoryAttestationBridge = await ethers.getContractFactory(
     "StoryAttestationBridge"
   );
@@ -94,7 +94,7 @@ async function main() {
   deploymentConfig.contracts.StoryAttestationBridge = sabAddress;
 
   // ── 4. SLAPSIPSpvLoan ───────────────────────────────────────────────
-  console.log("[4/11] SLAPSIPSpvLoan");
+  console.log("[4/12] SLAPSIPSpvLoan");
   const SLAPSIPSpvLoan = await ethers.getContractFactory("SLAPSIPSpvLoan");
   const { address: slapsLoanAddress } = await deployContract(
     "SLAPSIPSpvLoan",
@@ -103,7 +103,7 @@ async function main() {
   deploymentConfig.contracts.SLAPSIPSpvLoan = slapsLoanAddress;
 
   // ── 5. GladiatorHoldingsSpvLoan ─────────────────────────────────────
-  console.log("[5/11] GladiatorHoldingsSpvLoan");
+  console.log("[5/12] GladiatorHoldingsSpvLoan");
   const GladiatorHoldingsSpvLoan = await ethers.getContractFactory(
     "GladiatorHoldingsSpvLoan"
   );
@@ -114,7 +114,7 @@ async function main() {
   deploymentConfig.contracts.GladiatorHoldingsSpvLoan = gladLoanAddress;
 
   // ── 6. PILLoanEnforcement ───────────────────────────────────────────
-  console.log("[6/11] PILLoanEnforcement");
+  console.log("[6/12] PILLoanEnforcement");
   const PILLoanEnforcement = await ethers.getContractFactory(
     "PILLoanEnforcement"
   );
@@ -125,7 +125,7 @@ async function main() {
   deploymentConfig.contracts.PILLoanEnforcement = pilAddress;
 
   // ── 7. StablecoinIPEscrow ───────────────────────────────────────────
-  console.log("[7/11] StablecoinIPEscrow");
+  console.log("[7/12] StablecoinIPEscrow");
   const StablecoinIPEscrow = await ethers.getContractFactory(
     "StablecoinIPEscrow"
   );
@@ -136,7 +136,7 @@ async function main() {
   deploymentConfig.contracts.StablecoinIPEscrow = escrowAddress;
 
   // ── 8. AngelCoin ────────────────────────────────────────────────────
-  console.log("[8/11] AngelCoin (ANGEL)");
+  console.log("[8/12] AngelCoin (ANGEL)");
   const AngelCoin = await ethers.getContractFactory("AngelCoin");
   const { address: angelAddress } = await deployContract(
     "AngelCoin",
@@ -145,7 +145,7 @@ async function main() {
   deploymentConfig.contracts.AngelCoin = angelAddress;
 
   // ── 9. ResilienceToken ──────────────────────────────────────────────
-  console.log("[9/11] ResilienceToken (RSIL)");
+  console.log("[9/12] ResilienceToken (RSIL)");
   const ResilienceToken = await ethers.getContractFactory("ResilienceToken");
   const { address: rsilAddress } = await deployContract(
     "ResilienceToken",
@@ -154,7 +154,7 @@ async function main() {
   deploymentConfig.contracts.ResilienceToken = rsilAddress;
 
   // ── 10. SlapsStreaming ───────────────────────────────────────────────
-  console.log("[10/11] SlapsStreaming");
+  console.log("[10/12] SlapsStreaming");
   const SlapsStreaming = await ethers.getContractFactory("SlapsStreaming");
   const { address: streamingAddress } = await deployContract(
     "SlapsStreaming",
@@ -163,10 +163,21 @@ async function main() {
   deploymentConfig.contracts.SlapsStreaming = streamingAddress;
 
   // ── 11. SlapsSPV ────────────────────────────────────────────────────
-  console.log("[11/11] SlapsSPV");
+  console.log("[11/12] SlapsSPV");
   const SlapsSPV = await ethers.getContractFactory("SlapsSPV");
   const { address: spvAddress } = await deployContract("SlapsSPV", SlapsSPV);
   deploymentConfig.contracts.SlapsSPV = spvAddress;
+
+  // ── 12. UCC1FilingIntegration ────────────────────────────────────────
+  console.log("[12/12] UCC1FilingIntegration");
+  const UCC1FilingIntegration = await ethers.getContractFactory(
+    "UCC1FilingIntegration"
+  );
+  const { address: ucc1Address } = await deployContract(
+    "UCC1FilingIntegration",
+    UCC1FilingIntegration
+  );
+  deploymentConfig.contracts.UCC1FilingIntegration = ucc1Address;
 
   // ── Save results ─────────────────────────────────────────────────────
   const outputFile = `deployment-config.${hre.network.name}.json`;

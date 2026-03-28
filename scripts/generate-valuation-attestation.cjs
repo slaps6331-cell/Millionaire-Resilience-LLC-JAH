@@ -44,7 +44,7 @@ const MORPHO_BLUE = "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb";
 const BASE_USDC = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
 
 // UCC-1 filing data (publicly recorded with New Mexico SOS)
-const UCC1_FILING_NUMBER   = "2024-NM-UCC-0001";
+const UCC1_FILING_NUMBER   = "20260000078753";
 const UCC1_JURISDICTION    = "New Mexico Secretary of State";
 const UCC1_FILING_CID      = "bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a";
 const UCC1_DEBTOR          = "0x597856e93f19877a399f686D2F43b298e2268618"; // MR owner / Gladiator Holdings

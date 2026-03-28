@@ -28,7 +28,9 @@
     "contracts:register-metadata": "node scripts/register-ip-metadata.cjs",
     "contracts:export-abi-proof": "node scripts/export-abi-proof.cjs",
     "contracts:build-ipfs-manifest": "node scripts/build-ipfs-manifest.cjs",
-    "contracts:pin-to-pinata": "node scripts/pin-to-pinata.cjs"
+    "contracts:pin-to-pinata": "node scripts/pin-to-pinata.cjs",
+    "contracts:record-ucc1:story": "npx hardhat run scripts/record-ucc1-filing.cjs --network story",
+    "contracts:record-ucc1:base": "npx hardhat run scripts/record-ucc1-filing.cjs --network base"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
