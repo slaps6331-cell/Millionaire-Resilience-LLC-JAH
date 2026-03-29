@@ -42,15 +42,7 @@ const BASE_CHAIN_ID  = 8453;
 const MR_OWNER       = "0x597856e93f19877a399f686D2F43b298e2268618";
 const COINBASE_WALLET = "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a";
 const THIRDWEB_WALLET = "0xCD67f7e86A1397aBc33C473c58662BEB83b7a667";
-const MR_IPID         = "0x98971c660ac20880b60F86Cc3113eBd979eb3aAE";
-
 const MORPHO_BLUE     = "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb";
-const BASE_USDC       = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
-
-// Story Protocol module addresses (chain 1514)
-const STORY_REGISTRY   = "0x1a9d0d28a0422F26D31Be72Edc6f13ea4371E11B";
-const STORY_LICENSING  = "0xd81fd78f557b457b4350cB95D20b547bFEb4D857";
-const STORY_ROYALTY    = "0xcc8b9f0c9dC370ED1F41D95f74C9F72E08f24C90";
 
 // UCC-1 IPFS CID
 const UCC1_CID = "bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a";
@@ -144,45 +136,6 @@ STORY_CONTRACTS.forEach((name, idx) => {
     status:      "pending",
   };
 });
-
-// IP registration tx (registerIpAsset call — nonce follows last deploy)
-const ipRegNonce = STORY_CONTRACTS.length;
-const ipRegTxHash = ethers.keccak256(
-  ethers.AbiCoder.defaultAbiCoder().encode(
-    ["address", "string", "uint256", "uint256"],
-    [MR_OWNER, "registerIpAsset_MR", STORY_CHAIN_ID, ipRegNonce]
-  )
-);
-storyScanHashes["registerIpAsset_MR"] = {
-  txHash:      ipRegTxHash,
-  nonce:       ipRegNonce,
-  chainId:     STORY_CHAIN_ID,
-  network:     "Story Protocol Mainnet",
-  ipId:        MR_IPID,
-  tokenId:     15192,
-  explorerUrl: explorerUrl(STORYSCAN_BASE, ipRegTxHash),
-  note:        "IP asset registration call — Story Protocol IP Registry",
-  status:      "pending",
-};
-
-// PIL license terms binding tx
-const pilNonce = ipRegNonce + 1;
-const pilTxHash = ethers.keccak256(
-  ethers.AbiCoder.defaultAbiCoder().encode(
-    ["address", "string", "uint256", "uint256"],
-    [MR_OWNER, "bindPILTerms_MR", STORY_CHAIN_ID, pilNonce]
-  )
-);
-storyScanHashes["bindPILTerms_MR"] = {
-  txHash:      pilTxHash,
-  nonce:       pilNonce,
-  chainId:     STORY_CHAIN_ID,
-  network:     "Story Protocol Mainnet",
-  licenseTypes: ["PIL-PER (1%)", "PIL-COM (5%)", "PIL-ENT (12%)"],
-  explorerUrl: explorerUrl(STORYSCAN_BASE, pilTxHash),
-  note:        "PIL license terms binding call — Story Protocol Licensing Module",
-  status:      "pending",
-};
 
 // ── Build Basescan hash table ─────────────────────────────────────────────
 

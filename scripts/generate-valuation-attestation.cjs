@@ -34,7 +34,8 @@ const fs = require("fs");
 // ── Known constants (mirrors StoryAttestationService.sol) ─────────────────
 
 const STORY_CHAIN_ID = 1514n;
-const MR_IPID = "0x98971c660ac20880b60F86Cc3113eBd979eb3aAE";
+// MR IP asset address — not yet registered; ZeroAddress used as deterministic stand-in.
+const MR_IPID = ethers.ZeroAddress;
 // SLAPS derivative IPID on Story Protocol — not yet assigned; will be populated
 // after Story Protocol IP registration is completed.  ZeroAddress is used as a
 // deterministic stand-in so the commitment hash is computable today.
@@ -281,7 +282,7 @@ const attestation = {
       methodology:         MR_VALUATION.methodology,
       status:              "PROTECTED",
       valuationDataHash:   ipValuationDataHash(MR_IPID, MR_VALUATION),
-      note: "dataHash computed without block.timestamp — final on-chain hash will differ by timestamp only",
+      note: "ipAsset uses ZeroAddress placeholder — update to actual IP asset address once assigned. dataHash computed without block.timestamp — final on-chain hash will differ by timestamp only",
     },
     slapsStreaming: {
       ipAsset:             SLAPS_IPID,
@@ -337,14 +338,9 @@ const attestation = {
   // ── Hermetic Seal Pipeline Hash ───────────────────────────────────────
   hermeticSealHash,
 
-  // ── Known Story Protocol Addresses ───────────────────────────────────
+  // ── Known Story Protocol Chain Info ──────────────────────────────────
   storyProtocolAddresses: {
     chainId: 1514,
-    registryAddress:   "0x1a9d0d28a0422F26D31Be72Edc6f13ea4371E11B",
-    licensingModule:   "0xd81fd78f557b457b4350cB95D20b547bFEb4D857",
-    royaltyModule:     "0xcc8b9f0c9dC370ED1F41D95f74C9F72E08f24C90",
-    mrIpId:            MR_IPID,
-    mrTokenId:         15192,
     mrOwner:           "0x597856e93f19877a399f686D2F43b298e2268618",
     coinbaseWallet:    COINBASE_WALLET,
   },
@@ -406,8 +402,7 @@ const yieldSummary = {
   },
 
   pilRevenueRepaymentEngine: {
-    description: "100% of PIL licensing revenue routed to loan repayment via Story Protocol Royalty Module",
-    royaltyModule: "0xcc8b9f0c9dC370ED1F41D95f74C9F72E08f24C90",
+    description: "100% of licensing revenue routed to loan repayment",
     paymentDestination: COINBASE_WALLET,
     licenseRevenue: {
       "PIL-PER (1% royalty)":   { annualRevenue_USD: PIL_PER_ANNUAL },
@@ -418,7 +413,7 @@ const yieldSummary = {
     monthlyRevenue_USD:         MONTHLY_PIL,
     monthlySurplusAfterPayments_USD: MONTHLY_SURPLUS,
     allocationPct:              "100% to loan repayment until fully paid off",
-    postPayoff:                 "After full payoff, PIL revenue flows directly to owner wallet",
+    postPayoff:                 "After full payoff, licensing revenue flows directly to owner wallet",
   },
 
   netYieldToLender: {
@@ -454,7 +449,7 @@ console.log(`  noticeOfFilingApproval     ${DOCUMENT_HASHES.noticeOfFilingApprov
 console.log(`  combinedCorpDataHash       ${corpDataHash}`);
 console.log();
 console.log("IP valuation commitment hashes:");
-console.log(`  MR  (PROTECTED, $95M)      ${ipValuationDataHash(MR_IPID, MR_VALUATION)}`);
+console.log(`  MR  (PROTECTED, $95M)      ${ipValuationDataHash(MR_IPID, MR_VALUATION)}  [ipAsset=ZeroAddress placeholder]`);
 console.log(`  SLAPS (AT_RISK,  $75M)     ${ipValuationDataHash(SLAPS_IPID, SLAPS_VALUATION)}`);
 console.log();
 console.log("UCC-1 filing hashes:");
