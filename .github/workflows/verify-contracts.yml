@@ -78,17 +78,13 @@ jobs:
             echo "deployment-registry.json not found."
           fi
 
-      - name: Validate Story Protocol IP registration
+      - name: Validate Story Protocol network connection
         env:
           STORY_RPC_URL: ${{ vars.STORY_RPC_URL || 'https://mainnet.storyrpc.io' }}
           ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
-          STORY_PROTOCOL_REGISTRY: ${{ vars.STORY_PROTOCOL_REGISTRY || '0x1a9d0d28a0422F26D31Be72Edc6f13ea4371E11B' }}
-          MR_PARENT_IPID: ${{ vars.MR_PARENT_IPID }}
         run: |
-          echo "=== Story Protocol IP Registration Check ==="
-          echo "Registry: ${STORY_PROTOCOL_REGISTRY}"
-          echo "Parent IPID: ${MR_PARENT_IPID:-not set}"
-          echo "Explorer: https://www.storyscan.io/address/${STORY_PROTOCOL_REGISTRY}"
+          echo "=== Story Protocol Network Check ==="
+          echo "Explorer: https://www.storyscan.io"
 
   verify-base:
     name: Verify on Basescan (Chain 8453)

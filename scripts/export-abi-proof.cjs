@@ -18,11 +18,6 @@
  *
  * Environment variables (all optional — fall back to defaults from .env.example):
  *   PINATA_GATEWAY_NAME          — Pinata dedicated gateway subdomain
- *   STORY_PROTOCOL_REGISTRY      — Story Protocol IP Registry address
- *   STORY_LICENSING_MODULE       — Story Protocol Licensing Module address
- *   STORY_ROYALTY_MODULE         — Story Protocol Royalty Module address
- *   MR_PARENT_IPID               — MR parent IP asset ID (Story Protocol)
- *   MR_TOKEN_ID                  — MR parent token ID
  *   UCC1_FILING_HASH             — Pinata IPFS CID of the UCC-1 filing
  *   IPFS_GLADIATOR_CERT_CID      — Pinata CID for Gladiator cert
  *   IPFS_GLADIATOR_NOTICE_CID    — Pinata CID for Gladiator notice
@@ -93,16 +88,6 @@ const DOCUMENT_CIDS = {
   patentsightMR:           process.env.IPFS_PATENTSIGHT_MR_CID      || "bafkreihls2yoi265uxzmcmh7wzk2ytyo5yvopmb4jib4blw4nptlchivqm",
   patentsightSLAPS:        process.env.IPFS_PATENTSIGHT_SLAPS_CID   || "bafkreiflmhdsflvv53e24mo2woafdgecpkvfljcbm5heafnzdxzbj5ct4i",
   iplyticsDeclaration:     process.env.IPFS_IPLYTICS_DECLARATION_CID || "bafkreiej7wfskl53hxo4j47g55bxjkyyulihovjjtpjvtf264kfoddxc5i",
-};
-
-// ── Story Protocol addresses ──────────────────────────────────────────────
-
-const STORY_ADDRESSES = {
-  registry:  process.env.STORY_PROTOCOL_REGISTRY || "0x1a9d0d28a0422F26D31Be72Edc6f13ea4371E11B",
-  licensing: process.env.STORY_LICENSING_MODULE  || "0xd81fd78f557b457b4350cB95D20b547bFEb4D857",
-  royalty:   process.env.STORY_ROYALTY_MODULE    || "0xCC8b9f0c9Dc370Ed1F41d95F74C9f72E08f24C90",
-  mrIpId:    process.env.MR_PARENT_IPID          || "0x98971c660ac20880b60F86Cc3113eBd979eb3aAE",
-  mrTokenId: process.env.MR_TOKEN_ID             || "15192",
 };
 
 // ── Helpers ───────────────────────────────────────────────────────────────
@@ -237,7 +222,6 @@ const proof = {
     network:       "Story Protocol Mainnet",
     explorer:      STORYSCAN_BASE,
     explorerApi:   `${STORYSCAN_BASE}/api`,
-    ...STORY_ADDRESSES,
   },
 
   compilationConfig: {
