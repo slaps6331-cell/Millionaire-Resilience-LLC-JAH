@@ -18,13 +18,12 @@ import "@openzeppelin/contracts/utils/Pausable.sol";
  * @title SlapsSPV
  * @author Millionaire Resilience LLC
  * @notice Special Purpose Vehicle (SPV) for Slaps Streaming Platform
- * @dev Tokenized investment vehicle for music IP royalty rights
+ * @dev Tokenized investment vehicle for music IP revenue rights
  * 
  * This SPV structure allows:
  * - Fractional ownership of Slaps platform revenue
- * - IP royalty distribution to token holders
+ * - IP revenue distribution to token holders
  * - Regulatory-compliant investment structure
- * - Story Protocol IP registration for SPV assets
  */
 contract SlapsSPV is ERC20, ERC20Burnable, AccessControl, ReentrancyGuard, Pausable {
     
@@ -32,9 +31,6 @@ contract SlapsSPV is ERC20, ERC20Burnable, AccessControl, ReentrancyGuard, Pausa
     bytes32 public constant MANAGER_ROLE = keccak256("MANAGER_ROLE");
     bytes32 public constant INVESTOR_ROLE = keccak256("INVESTOR_ROLE");
     bytes32 public constant AUDITOR_ROLE = keccak256("AUDITOR_ROLE");
-
-    // Story Protocol Integration
-    address public constant STORY_PROTOCOL_IPID = 0x98971c660ac20880b60F86Cc3113eBd979eb3aAE;
     
     // SPV Configuration
     string public spvName;
@@ -71,9 +67,8 @@ contract SlapsSPV is ERC20, ERC20Burnable, AccessControl, ReentrancyGuard, Pausa
     struct IPAsset {
         uint256 id;
         string name;
-        string storyProtocolIPID;
         uint256 valuationUSD;
-        uint256 royaltyShare; // basis points
+        uint256 revenueShare; // basis points
         bool isActive;
     }
     
@@ -86,7 +81,7 @@ contract SlapsSPV is ERC20, ERC20Burnable, AccessControl, ReentrancyGuard, Pausa
         uint256 amount;
         uint256 timestamp;
         uint256 totalShares;
-        string source; // "ROYALTIES", "SALE", "DIVIDEND"
+        string source; // "REVENUE", "SALE", "DIVIDEND"
     }
     
     Distribution[] public distributions;
@@ -95,14 +90,14 @@ contract SlapsSPV is ERC20, ERC20Burnable, AccessControl, ReentrancyGuard, Pausa
     event InvestmentReceived(address indexed investor, uint256 amount, uint256 shares);
     event DistributionMade(uint256 indexed distributionId, uint256 amount, string source);
     event DistributionClaimed(address indexed investor, uint256 amount);
-    event IPAssetLinked(uint256 indexed assetId, string name, string storyProtocolIPID);
+    event IPAssetLinked(uint256 indexed assetId, string name);
     event FundingCompleted(uint256 totalRaised);
     event InvestorAccredited(address indexed investor);
     event LockupPeriodUpdated(uint256 newPeriod);
 
     constructor() ERC20("Slaps SPV Token", "SLAP-SPV") {
         spvName = "Slaps Streaming LLC SPV";
-        spvPurpose = "IP-backed stablecoin lending with PIL licensing revenue allocation";
+        spvPurpose = "IP-backed stablecoin lending with revenue allocation";
         targetRaise = 1_000_000 * 1e18;
         minimumInvestment = 10_000 * 1e18;
         maximumInvestment = 100_000 * 1e18;
@@ -240,25 +235,23 @@ contract SlapsSPV is ERC20, ERC20Burnable, AccessControl, ReentrancyGuard, Pausa
      */
     function linkIPAsset(
         string calldata name,
-        string calldata storyProtocolIPID,
         uint256 valuationUSD,
-        uint256 royaltyShare
+        uint256 revenueShare
     ) external onlyRole(MANAGER_ROLE) returns (uint256) {
         require(bytes(name).length > 0, "Name required");
-        require(royaltyShare <= 10000, "Royalty share cannot exceed 100%");
+        require(revenueShare <= 10000, "Revenue share cannot exceed 100%");
 
         ipAssetCount++;
         
         ipAssets[ipAssetCount] = IPAsset({
             id: ipAssetCount,
             name: name,
-            storyProtocolIPID: storyProtocolIPID,
             valuationUSD: valuationUSD,
-            royaltyShare: royaltyShare,
+            revenueShare: revenueShare,
             isActive: true
         });
 
-        emit IPAssetLinked(ipAssetCount, name, storyProtocolIPID);
+        emit IPAssetLinked(ipAssetCount, name);
         return ipAssetCount;
     }
 

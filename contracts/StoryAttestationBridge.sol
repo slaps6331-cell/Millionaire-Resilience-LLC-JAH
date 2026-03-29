@@ -32,9 +32,7 @@ contract StoryAttestationBridge is Ownable {
     // Story Protocol Mainnet (Chain ID: 1514)
     uint256 public constant STORY_CHAIN_ID = 1514;
     
-    // Millionaire Resilience Primary IPID
-    address public constant MR_IPID = 0x98971c660ac20880b60F86Cc3113eBd979eb3aAE;
-    uint256 public constant MR_TOKEN_ID = 15192;
+    // Millionaire Resilience IP Owner wallet
     address public constant MR_OWNER = 0x597856e93f19877a399f686D2F43b298e2268618;
     
     // ============ ATTESTATION TYPES ============
@@ -183,7 +181,7 @@ contract StoryAttestationBridge is Ownable {
         attestationId = _createAttestation(
             ATT_UCC1_BRIDGE,
             ipAssetId,
-            MR_TOKEN_ID,
+            0,
             filingHash,
             metadataURI
         );
@@ -316,7 +314,7 @@ contract StoryAttestationBridge is Ownable {
         return _createAttestation(
             ATT_COLLATERAL,
             ipAssetId,
-            MR_TOKEN_ID,
+            0,
             pledgeHash,
             metadataURI
         );
@@ -376,7 +374,7 @@ contract StoryAttestationBridge is Ownable {
         attestationId = _createAttestation(
             ATT_VALUATION,
             ipAssetId,
-            MR_TOKEN_ID,
+            0,
             valuationHash,
             metadataURI
         );
@@ -505,15 +503,13 @@ contract StoryAttestationBridge is Ownable {
     }
     
     /**
-     * @notice Get Millionaire Resilience IP info
+     * @notice Get Millionaire Resilience IP owner info
      */
-    function getMillionaireResilienceIP() external pure returns (
-        address ipid,
-        uint256 tokenId,
+    function getMillionaireResilienceInfo() external pure returns (
         address owner,
         uint256 chainId
     ) {
-        return (MR_IPID, MR_TOKEN_ID, MR_OWNER, STORY_CHAIN_ID);
+        return (MR_OWNER, STORY_CHAIN_ID);
     }
     
     // ============ ADMIN FUNCTIONS ============

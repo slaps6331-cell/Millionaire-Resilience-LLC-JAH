@@ -17,33 +17,14 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
  * @title PILLoanEnforcement
  * @author Millionaire Resilience LLC
  * @notice PIL-based loan enforcement contract similar to a SAFE note
- * @dev Implements automatic IP transfer to lenders upon default via Story Protocol
+ * @dev Implements automatic IP transfer to lenders upon default
  * 
  * UCC-1 INTEGRATION:
  * This smart contract bridges the UCC-1 financing statement with on-chain IP tokens.
  * Upon default, intellectual property is automatically transferred to the lender,
  * enforcing the security interest filed under the Uniform Commercial Code.
- * 
- * STORY PROTOCOL INTEGRATION:
- * - Connects to Story Protocol IP Asset Registry
- * - Uses PIL (Programmable IP License) for licensing terms
- * - Leverages Story Attestation Service for valuation certification
  */
 contract PILLoanEnforcement is Ownable, ReentrancyGuard {
-    
-    // ============ STORY PROTOCOL ADDRESSES ============
-    
-    // Story Protocol Mainnet (Chain ID: 1514)
-    address public constant STORY_PROTOCOL_REGISTRY = 0x1a9d0d28a0422F26D31Be72Edc6f13ea4371E11B;
-    address public constant STORY_LICENSING_MODULE = 0xd81fd78f557b457b4350cB95D20b547bFEb4D857;
-    address public constant STORY_ROYALTY_MODULE = 0xCC8b9f0c9Dc370Ed1F41d95F74C9f72E08f24C90;
-    
-    // Millionaire Resilience IP Asset
-    address public constant MR_IPID = 0x98971c660ac20880b60F86Cc3113eBd979eb3aAE;
-    uint256 public constant MR_TOKEN_ID = 15192;
-    
-    // Millionaire Resilience Coinbase Wallet
-    address public constant MR_COINBASE_WALLET = 0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a;
     
     // ============ STABLECOIN ADDRESSES ============
     
@@ -526,33 +507,7 @@ contract PILLoanEnforcement is Ownable, ReentrancyGuard {
     function _executeIPTransfer(uint256 loanId) internal {
         Loan storage loan = loans[loanId];
         
-        // Transfer IP NFT to lender via Story Protocol
-        // Note: In production, this would call Story Protocol's transfer functions
-        (bool success,) = STORY_PROTOCOL_REGISTRY.call(
-            abi.encodeWithSignature(
-                "transferIP(address,address,uint256)",
-                loan.borrower,
-                loan.lender,
-                loan.ipTokenId
-            )
-        );
-        
-        // If direct transfer fails, record for manual execution
-        if (!success) {
-            // Emit event for off-chain execution
-            emit IPTransferredToLender(
-                loanId,
-                loan.ipAssetId,
-                loan.ipTokenId,
-                loan.lender
-            );
-        }
-        
-        // Update loan status
         loan.status = LoanStatus.Liquidated;
-        
-        // Reassign licensing rights to lender
-        _reassignLicensingRights(loanId);
         
         emit IPTransferredToLender(
             loanId,
@@ -560,34 +515,6 @@ contract PILLoanEnforcement is Ownable, ReentrancyGuard {
             loan.ipTokenId,
             loan.lender
         );
-    }
-    
-    /**
-     * @notice Reassign all licensing rights to lender
-     */
-    function _reassignLicensingRights(uint256 loanId) internal {
-        Loan storage loan = loans[loanId];
-        
-        // Call Story Protocol Licensing Module to transfer rights
-        (bool success,) = STORY_LICENSING_MODULE.call(
-            abi.encodeWithSignature(
-                "transferLicenseOwnership(address,address)",
-                loan.ipAssetId,
-                loan.lender
-            )
-        );
-        
-        // Call Royalty Module to redirect royalties
-        if (success) {
-            (bool royaltySuccess,) = STORY_ROYALTY_MODULE.call(
-                abi.encodeWithSignature(
-                    "setRoyaltyReceiver(address,address)",
-                    loan.ipAssetId,
-                    loan.lender
-                )
-            );
-            require(royaltySuccess, "Royalty redirect failed");
-        }
     }
     
     // ============ PIL LICENSE FUNCTIONS ============

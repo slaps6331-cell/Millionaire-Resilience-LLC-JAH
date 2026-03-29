@@ -18,43 +18,24 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 /**
  * @title SLAPSIPSpvLoan
  * @author Millionaire Resilience LLC
- * @notice SLAPS IP Special Purpose Vehicle for Stablecoin Loans with PIL Licensing Revenue
- * @dev Implements IP-backed stablecoin lending with automatic licensing revenue routing
+ * @notice SLAPS IP Special Purpose Vehicle for Stablecoin Loans with Revenue Allocation
+ * @dev Implements IP-backed stablecoin lending with automatic revenue routing
  * 
  * KEY FEATURES:
- * - 100% of PIL licensing revenues routed to loan repayment as PRIMARY source
- * - Automatic IP transfer to lender upon default via PIL scroll contract
- * - Story Protocol integration for IP registration and attestation
+ * - 100% of revenues routed to loan repayment as PRIMARY source
+ * - Automatic IP transfer to lender upon default
  * - PatentSight+ analytics integration for competitive scoring
  * - IPlytics AI integration for SEP/FRAND compliance
  * - Resilience Blockchain Whetstone integration for code IP extraction
  * 
  * UCC-1 INTEGRATION:
  * This smart contract bridges the UCC-1 financing statement with on-chain IP tokens.
- * All licensing revenues are perfected as PRIMARY collateral for loan repayment.
- * 
- * STORY PROTOCOL ADDRESSES (Chain 1514):
- * - Registry: 0x1a9d0d28a0422F26D31Be72Edc6f13ea4371E11B
- * - Licensing: 0xd81fd78f557b457b4350cB95D20b547bFEb4D857
- * - Royalty: 0xCC8b9f0c9Dc370Ed1F41d95F74C9f72E08f24C90
+ * All revenues are perfected as PRIMARY collateral for loan repayment.
  */
 contract SLAPSIPSpvLoan is ERC20, Ownable, ReentrancyGuard {
     using SafeERC20 for IERC20;
     
-    // ============ STORY PROTOCOL ADDRESSES ============
-    
-    // Story Protocol Mainnet (Chain ID: 1514)
-    address public constant STORY_PROTOCOL_REGISTRY = 0x1a9d0d28a0422F26D31Be72Edc6f13ea4371E11B;
-    address public constant STORY_LICENSING_MODULE = 0xd81fd78f557b457b4350cB95D20b547bFEb4D857;
-    address public constant STORY_ROYALTY_MODULE = 0xCC8b9f0c9Dc370Ed1F41d95F74C9f72E08f24C90;
-    
-    // Millionaire Resilience Parent IP Asset
-    address public constant MR_PARENT_IPID = 0x98971c660ac20880b60F86Cc3113eBd979eb3aAE;
-    uint256 public constant MR_PARENT_TOKEN_ID = 15192;
-    
-    // SLAPS Derivative IP Asset (to be set on deployment)
-    address public slapsIpId;
-    uint256 public slapsTokenId;
+    // ============ CONSTANTS ============
     
     // Millionaire Resilience Coinbase Wallet
     address public constant MR_COINBASE_WALLET = 0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a;
@@ -435,6 +416,8 @@ contract SLAPSIPSpvLoan is ERC20, Ownable, ReentrancyGuard {
      * @param termMonths Loan term in months
      * @param ucc1FilingHash Hash of the UCC-1 financing statement
      * @param patentSightScore PatentSight+ PAI score (0-100)
+     * @param ipAssetId IP asset address linked to this loan
+     * @param ipTokenId IP asset NFT token ID
      */
     function createLoan(
         address borrower,
@@ -444,7 +427,9 @@ contract SLAPSIPSpvLoan is ERC20, Ownable, ReentrancyGuard {
         uint256 interestRate,
         uint256 termMonths,
         bytes32 ucc1FilingHash,
-        uint256 patentSightScore
+        uint256 patentSightScore,
+        address ipAssetId,
+        uint256 ipTokenId
     ) external nonReentrant returns (uint256 loanId) {
         require(borrower != address(0), "Invalid borrower");
         require(lender != address(0), "Invalid lender");
@@ -476,8 +461,8 @@ contract SLAPSIPSpvLoan is ERC20, Ownable, ReentrancyGuard {
         loan.originationDate = block.timestamp;
         loan.maturityDate = maturityDate;
         loan.lastPaymentDate = block.timestamp;
-        loan.ipAssetId = slapsIpId;
-        loan.ipTokenId = slapsTokenId;
+        loan.ipAssetId = ipAssetId;
+        loan.ipTokenId = ipTokenId;
         loan.ucc1FilingHash = ucc1FilingHash;
         loan.status = LoanStatus.Active;
         loan.nextPaymentIndex = 0;
@@ -493,7 +478,7 @@ contract SLAPSIPSpvLoan is ERC20, Ownable, ReentrancyGuard {
         // Track borrower loans
         borrowerLoans[borrower].push(loanId);
         
-        emit LoanCreated(loanId, borrower, lender, principal, slapsIpId, patentSightScore);
+        emit LoanCreated(loanId, borrower, lender, principal, ipAssetId, patentSightScore);
         emit UCC1Filed(ucc1FilingHash, borrower, lender, loanId);
         
         return loanId;
@@ -755,70 +740,22 @@ contract SLAPSIPSpvLoan is ERC20, Ownable, ReentrancyGuard {
     
     /**
      * @notice Execute automatic IP transfer to lender upon default
-     * @dev CRITICAL: This enforces the UCC-1 security interest on-chain
+     * @dev CRITICAL: This enforces the UCC-1 security interest on-chain.
+     *      Emits an event for off-chain execution of the transfer.
      */
     function _executeIPTransfer(uint256 loanId) internal {
         Loan storage loan = loans[loanId];
         
-        // Transfer IP NFT to lender via Story Protocol
-        (bool success,) = STORY_PROTOCOL_REGISTRY.call(
-            abi.encodeWithSignature(
-                "transferIP(address,address,uint256)",
-                loan.borrower,
-                loan.lender,
-                loan.ipTokenId
-            )
-        );
-        
-        // If direct transfer fails, record for off-chain execution
-        if (!success) {
-            emit IPTransferredToLender(
-                loanId,
-                loan.ipAssetId,
-                loan.ipTokenId,
-                loan.lender
-            );
-        }
-        
         // Update loan status
         loan.status = LoanStatus.Liquidated;
         
-        // Reassign licensing rights to lender
-        _reassignLicensingRights(loanId);
-        
+        // Emit event for off-chain execution of IP transfer
         emit IPTransferredToLender(
             loanId,
             loan.ipAssetId,
             loan.ipTokenId,
             loan.lender
         );
-    }
-    
-    /**
-     * @notice Reassign all licensing rights to lender
-     */
-    function _reassignLicensingRights(uint256 loanId) internal {
-        Loan storage loan = loans[loanId];
-        
-        // Call Story Protocol Licensing Module to transfer rights
-        (bool licensingSuccess,) = STORY_LICENSING_MODULE.call(
-            abi.encodeWithSignature(
-                "transferLicenseOwnership(address,address)",
-                loan.ipAssetId,
-                loan.lender
-            )
-        );
-        require(licensingSuccess, "License transfer failed");
-        
-        // Call Royalty Module to redirect royalties
-        (bool royaltySuccess,) = STORY_ROYALTY_MODULE.call(
-            abi.encodeWithSignature(
-                "setRoyaltyReceiver(address,address)",
-                loan.ipAssetId,
-                loan.lender
-            )
-        );
-        require(royaltySuccess, "Royalty redirect failed");
     }
     
     // ============ VIEW FUNCTIONS ============
@@ -879,14 +816,6 @@ contract SLAPSIPSpvLoan is ERC20, Ownable, ReentrancyGuard {
     }
     
     // ============ ADMIN FUNCTIONS ============
-    
-    /**
-     * @notice Set SLAPS IP asset details
-     */
-    function setSlapsIP(address _ipId, uint256 _tokenId) external onlyOwner {
-        slapsIpId = _ipId;
-        slapsTokenId = _tokenId;
-    }
     
     /**
      * @notice Update minimum PatentSight score
@@ -1077,16 +1006,19 @@ contract SLAPSIPSpvLoan is ERC20, Ownable, ReentrancyGuard {
     /**
      * @notice Request valuation attestation from Story Attestation Service
      * @dev Emits event for off-chain Story Attestation Service to process
+     * @param ipId IP asset address to attest
      * @param valuationHash keccak256 hash of valuation JSON
      * @param presentValue Present value in USD (6 decimals)
      */
     function requestStoryValuationAttestation(
+        address ipId,
         bytes32 valuationHash,
         uint256 presentValue
     ) external onlyOwner {
         require(valuationHash != bytes32(0), "Invalid valuation hash");
+        require(ipId != address(0), "Invalid IP asset address");
         storyAttestationMetaHash = valuationHash;
-        emit StoryAttestationRequested(MR_PARENT_IPID, valuationHash, presentValue);
+        emit StoryAttestationRequested(ipId, valuationHash, presentValue);
     }
     
     /**
