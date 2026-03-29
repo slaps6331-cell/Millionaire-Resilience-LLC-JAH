@@ -30,9 +30,6 @@ import "@openzeppelin/contracts/utils/Pausable.sol";
 contract StablecoinIPEscrow is Ownable, ReentrancyGuard, Pausable {
     using SafeERC20 for IERC20;
 
-    // Story Protocol Integration
-    address public constant STORY_PROTOCOL_IPID = 0x98971c660ac20880b60F86Cc3113eBd979eb3aAE;
-    
     // Millionaire Resilience Coinbase Wallet
     address public constant MR_COINBASE_WALLET = 0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a;
     
@@ -81,7 +78,6 @@ contract StablecoinIPEscrow is Ownable, ReentrancyGuard, Pausable {
     struct IPAssetEscrow {
         address nftContract;
         uint256 tokenId;
-        string storyProtocolIPID;
         uint256 appraisedValue;
         bytes32 documentHash;
         bool isReleased;
@@ -126,8 +122,7 @@ contract StablecoinIPEscrow is Ownable, ReentrancyGuard, Pausable {
     event IPAssetEscrowed(
         uint256 indexed loanId,
         address nftContract,
-        uint256 tokenId,
-        string storyProtocolIPID
+        uint256 tokenId
     );
     event LoanRepayment(uint256 indexed loanId, uint256 amount, uint256 remaining);
     event LoanLiquidated(uint256 indexed loanId, address liquidator, uint256 collateralSeized);
@@ -173,7 +168,6 @@ contract StablecoinIPEscrow is Ownable, ReentrancyGuard, Pausable {
      * @param termDays Loan term in days
      * @param nftContract Address of IP NFT contract
      * @param tokenId Token ID of IP NFT to escrow
-     * @param storyProtocolIPID Story Protocol IP ID for verification
      * @param appraisedValue Appraised value of the IP asset in USD
      * @param documentHash Hash of legal documents (MLA, UCC-1)
      */
@@ -183,7 +177,6 @@ contract StablecoinIPEscrow is Ownable, ReentrancyGuard, Pausable {
         uint256 termDays,
         address nftContract,
         uint256 tokenId,
-        string calldata storyProtocolIPID,
         uint256 appraisedValue,
         bytes32 documentHash
     ) external validStablecoin(stablecoin) whenNotPaused nonReentrant returns (uint256) {
@@ -221,7 +214,6 @@ contract StablecoinIPEscrow is Ownable, ReentrancyGuard, Pausable {
             ipEscrow: IPAssetEscrow({
                 nftContract: nftContract,
                 tokenId: tokenId,
-                storyProtocolIPID: storyProtocolIPID,
                 appraisedValue: appraisedValue,
                 documentHash: documentHash,
                 isReleased: false
@@ -243,7 +235,7 @@ contract StablecoinIPEscrow is Ownable, ReentrancyGuard, Pausable {
         IERC20(stablecoin).safeTransfer(msg.sender, disbursement);
 
         emit LoanOriginated(newLoanId, msg.sender, stablecoin, loanAmount, interestRate);
-        emit IPAssetEscrowed(newLoanId, nftContract, tokenId, storyProtocolIPID);
+        emit IPAssetEscrowed(newLoanId, nftContract, tokenId);
 
         return newLoanId;
     }
@@ -677,7 +669,6 @@ contract StablecoinIPEscrow is Ownable, ReentrancyGuard, Pausable {
     function getIPEscrowDetails(uint256 loanId) external view returns (
         address nftContract,
         uint256 tokenId,
-        string memory storyProtocolIPID,
         uint256 appraisedValue,
         bytes32 documentHash,
         bool isReleased
@@ -686,7 +677,6 @@ contract StablecoinIPEscrow is Ownable, ReentrancyGuard, Pausable {
         return (
             escrow.nftContract,
             escrow.tokenId,
-            escrow.storyProtocolIPID,
             escrow.appraisedValue,
             escrow.documentHash,
             escrow.isReleased

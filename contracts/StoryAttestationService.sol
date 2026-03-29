@@ -56,12 +56,6 @@ contract StoryAttestationService is Ownable, ReentrancyGuard {
     uint256 public constant STORY_CHAIN_ID = 1514;
     uint256 public constant BASE_CHAIN_ID = 8453;
 
-    address public constant STORY_REGISTRY = 0x1a9d0d28a0422F26D31Be72Edc6f13ea4371E11B;
-    address public constant STORY_LICENSING = 0xd81fd78f557b457b4350cB95D20b547bFEb4D857;
-    address public constant STORY_ROYALTY = 0xCC8b9f0c9Dc370Ed1F41d95F74C9f72E08f24C90;
-
-    address public constant MR_IPID = 0x98971c660ac20880b60F86Cc3113eBd979eb3aAE;
-    uint256 public constant MR_TOKEN_ID = 15192;
     address public constant MR_OWNER = 0x597856e93f19877a399f686D2F43b298e2268618;
     address public constant COINBASE_WALLET = 0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a;
 
@@ -326,7 +320,7 @@ contract StoryAttestationService is Ownable, ReentrancyGuard {
     error PatentSightScoreTooLow();
     error InvalidFilingHash();
     error InvalidDebtor();
-    error MRIPIsProtected();
+    error InvalidIPAsset();
     error MustAllocateFull();
     error InvalidPaymentDestination();
     error InvalidMorphoMarketId();
@@ -422,8 +416,8 @@ contract StoryAttestationService is Ownable, ReentrancyGuard {
 
         attestationId = _createAttestation(
             ATT_CORPORATE_VERIFICATION,
-            MR_IPID,
-            MR_TOKEN_ID,
+            address(0),
+            0,
             dataHash,
             metadataURI,
             STORY_CHAIN_ID,
@@ -476,7 +470,7 @@ contract StoryAttestationService is Ownable, ReentrancyGuard {
         attestationId = _createAttestation(
             ATT_IP_VALUATION,
             ipAssetId,
-            MR_TOKEN_ID,
+            0,
             dataHash,
             metadataURI,
             STORY_CHAIN_ID,
@@ -528,7 +522,7 @@ contract StoryAttestationService is Ownable, ReentrancyGuard {
         attestationId = _createAttestation(
             ATT_UCC1_BRIDGE,
             ipAssetId,
-            MR_TOKEN_ID,
+            0,
             dataHash,
             metadataURI,
             STORY_CHAIN_ID,
@@ -550,7 +544,7 @@ contract StoryAttestationService is Ownable, ReentrancyGuard {
         uint256 collateralValue,
         string calldata metadataURI
     ) external onlyAuthorizedAttestor returns (bytes32 attestationId) {
-        if (ipAssetId == MR_IPID) revert MRIPIsProtected();
+        if (ipAssetId == address(0)) revert InvalidIPAsset();
 
         bytes32 dataHash = keccak256(abi.encodePacked(
             ipAssetId, lender, loanAmount, collateralType, collateralValue
@@ -559,7 +553,7 @@ contract StoryAttestationService is Ownable, ReentrancyGuard {
         attestationId = _createAttestation(
             ATT_LOAN_COLLATERAL,
             ipAssetId,
-            MR_TOKEN_ID,
+            0,
             dataHash,
             metadataURI,
             STORY_CHAIN_ID,
@@ -592,7 +586,7 @@ contract StoryAttestationService is Ownable, ReentrancyGuard {
         attestationId = _createAttestation(
             ATT_REVENUE_ESCROW,
             ipAssetId,
-            MR_TOKEN_ID,
+            0,
             dataHash,
             metadataURI,
             STORY_CHAIN_ID,
@@ -637,8 +631,8 @@ contract StoryAttestationService is Ownable, ReentrancyGuard {
 
         attestationId = _createAttestation(
             ATT_MORPHO_MARKET,
-            MR_IPID,
-            MR_TOKEN_ID,
+            address(0),
+            0,
             dataHash,
             metadataURI,
             1,
@@ -687,7 +681,7 @@ contract StoryAttestationService is Ownable, ReentrancyGuard {
         attestationId = _createAttestation(
             ATT_SPV_SEGREGATION,
             ipAssetId,
-            MR_TOKEN_ID,
+            0,
             dataHash,
             metadataURI,
             STORY_CHAIN_ID,

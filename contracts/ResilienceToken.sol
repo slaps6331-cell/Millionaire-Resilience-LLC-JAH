@@ -46,11 +46,6 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
  * - 5-Year Projection: $85,000,000
  * - 10-Year Projection: $250,000,000
  *
- * STORY PROTOCOL INTEGRATION:
- * - Parent IPID: 0x98971c660ac20880b60F86Cc3113eBd979eb3aAE (Token ID: 15192)
- * - Registry: 0x1a9d0d28a0422F26D31Be72Edc6f13ea4371E11B
- * - Chain: 1514
- *
  * COLLATERAL STATUS: PROTECTED (under Millionaire Resilience LLC)
  */
 contract ResilienceToken is ERC20, ERC20Burnable, Ownable, ReentrancyGuard {
@@ -70,9 +65,6 @@ contract ResilienceToken is ERC20, ERC20Burnable, Ownable, ReentrancyGuard {
     uint256 public constant IP_VALUATION_5YR = 85_000_000;
     uint256 public constant IP_VALUATION_10YR = 250_000_000;
 
-    address public constant STORY_PROTOCOL_REGISTRY = 0x1a9d0d28a0422F26D31Be72Edc6f13ea4371E11B;
-    address public constant MR_IPID = 0x98971c660ac20880b60F86Cc3113eBd979eb3aAE;
-    uint256 public constant MR_TOKEN_ID = 15192;
     address public constant COINBASE_WALLET = 0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a;
 
     bool public constant COLLATERAL_STATUS_PROTECTED = true;

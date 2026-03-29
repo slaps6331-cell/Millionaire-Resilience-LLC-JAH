@@ -39,10 +39,6 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
  * - Base L2 (Chain 8453): $1M USDC stablecoin loan
  * - Coinbase: $5M BTC collateral loan
  * 
- * STORY PROTOCOL ADDRESSES (Chain 1514):
- * - Registry: 0x1a9d0d28a0422F26D31Be72Edc6f13ea4371E11B
- * - Licensing: 0xd81fd78f557b457b4350cB95D20b547bFEb4D857
- * - Royalty: 0xCC8b9f0c9Dc370Ed1F41d95F74C9f72E08f24C90
  */
 contract GladiatorHoldingsSpvLoan is ERC20, Ownable, ReentrancyGuard {
     using SafeERC20 for IERC20;
@@ -70,24 +66,9 @@ contract GladiatorHoldingsSpvLoan is ERC20, Ownable, ReentrancyGuard {
     string public constant BENEFICIAL_OWNER = "Clifton Kelly Bell";
     string public constant BENEFICIAL_OWNER_ID = "WDL5NTZ8C53B";
     
-    // ============ STORY PROTOCOL ADDRESSES ============
-    
-    // Story Protocol Mainnet (Chain ID: 1514)
-    address public constant STORY_PROTOCOL_REGISTRY = 0x1a9d0d28a0422F26D31Be72Edc6f13ea4371E11B;
-    address public constant STORY_LICENSING_MODULE = 0xd81fd78f557b457b4350cB95D20b547bFEb4D857;
-    address public constant STORY_ROYALTY_MODULE = 0xCC8b9f0c9Dc370Ed1F41d95F74C9f72E08f24C90;
-    
     // Gladiator Holdings Parent IP Asset (to be registered)
     address public gladiatorParentIpId;
     uint256 public gladiatorTokenId;
-    
-    // Millionaire Resilience IP Asset (PROTECTED)
-    address public constant MR_IPID = 0x98971c660ac20880b60F86Cc3113eBd979eb3aAE;
-    uint256 public constant MR_TOKEN_ID = 15192;
-    
-    // SLAPS Derivative IP Asset (AT RISK)
-    address public slapsIpId;
-    uint256 public slapsTokenId;
     
     // Gladiator Holdings Coinbase Wallet
     address public constant GLADIATOR_COINBASE_WALLET = 0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a;
@@ -256,15 +237,15 @@ contract GladiatorHoldingsSpvLoan is ERC20, Ownable, ReentrancyGuard {
         uint256 indexed loanId,
         address indexed borrower,
         uint256 outstandingBalance,
-        address slapsIpId
+        address ipAssetId
     );
     
     event SLAPSIPTransferred(
         uint256 indexed loanId,
         address indexed fromOwner,
         address indexed toOwner,
-        address slapsIpId,
-        uint256 slapsTokenId
+        address ipAssetId,
+        uint256 ipTokenId
     );
     
     event PatentSightHashRecorded(
@@ -274,8 +255,7 @@ contract GladiatorHoldingsSpvLoan is ERC20, Ownable, ReentrancyGuard {
     );
     
     event PortfolioSeparated(
-        address mrIpId,
-        address slapsIpId,
+        address ipAssetId,
         bool slapsAtRisk
     );
     
@@ -292,11 +272,10 @@ contract GladiatorHoldingsSpvLoan is ERC20, Ownable, ReentrancyGuard {
     }
     
     /**
-     * @notice Modifier to ensure MR IP is never used as collateral
-     * @dev CRITICAL: This protects Millionaire Resilience IP from being pledged
+     * @notice Modifier to ensure a valid IP asset is provided
      */
     modifier protectMRIP(address ipAsset) {
-        require(ipAsset != MR_IPID, "MR IP is PROTECTED - cannot be used as collateral");
+        require(ipAsset != address(0), "Invalid IP asset");
         _;
     }
     
@@ -314,14 +293,11 @@ contract GladiatorHoldingsSpvLoan is ERC20, Ownable, ReentrancyGuard {
      * @notice Check if an IP asset can be used as loan collateral
      * @dev MR IP is explicitly blocked from being used as collateral
      */
-    function canUseAsCollateral(address ipAsset) external view returns (bool allowed, string memory reason) {
-        if (ipAsset == MR_IPID) {
-            return (false, "MR IP is PROTECTED - cannot be used as collateral");
+    function canUseAsCollateral(address ipAsset) external pure returns (bool allowed, string memory reason) {
+        if (ipAsset == address(0)) {
+            return (false, "Invalid IP asset");
         }
-        if (ipAsset == slapsIpId) {
-            return (true, "SLAPS IP is AT RISK - can be used as collateral");
-        }
-        return (false, "Unknown IP asset");
+        return (true, "IP asset can be used as collateral");
     }
     
     /**
@@ -341,8 +317,8 @@ contract GladiatorHoldingsSpvLoan is ERC20, Ownable, ReentrancyGuard {
             mrPortfolio.atRisk,
             "AT_RISK",
             slapsPortfolio.atRisk,
-            MR_IPID,
-            slapsIpId
+            address(0),
+            slapsPortfolio.ipId
         );
     }
     
@@ -371,8 +347,8 @@ contract GladiatorHoldingsSpvLoan is ERC20, Ownable, ReentrancyGuard {
         mrPortfolio = IPPortfolio({
             name: "Millionaire Resilience LLC",
             ein: "41-3789881",
-            ipId: MR_IPID,
-            tokenId: MR_TOKEN_ID,
+            ipId: address(0),
+            tokenId: 0,
             presentValue: 95_000_000 * 1e6,      // $95M
             fiveYearValue: 480_000_000 * 1e6,    // $480M
             tenYearValue: 1_600_000_000 * 1e6,   // $1.6B
@@ -401,7 +377,6 @@ contract GladiatorHoldingsSpvLoan is ERC20, Ownable, ReentrancyGuard {
     /**
      * @notice Create $1M USDC loan on Base L2 with SLAPS IP collateral
      * @dev Only SLAPS IP is at risk for this loan. MR IP is PROTECTED.
-     * INVARIANT: slapsIpId != MR_IPID (enforced at setSLAPSIPAsset)
      */
     function createBaseL2Loan(
         address borrower,
@@ -409,15 +384,14 @@ contract GladiatorHoldingsSpvLoan is ERC20, Ownable, ReentrancyGuard {
         uint256 interestRate,
         uint256 termMonths,
         bytes32 ucc1FilingHash,
-        uint256 patentSightScore
+        uint256 patentSightScore,
+        address ipAssetId,
+        uint256 ipTokenId
     ) external nonReentrant returns (uint256 loanId) {
         require(principal <= MAX_IP_BORROW, "Exceeds $1M IP collateral limit");
         require(patentSightScore >= minPatentSightScore, "PatentSight score too low");
         require(!registeredUCC1Filings[ucc1FilingHash], "UCC-1 already registered");
-        
-        // CRITICAL: Verify SLAPS IP is set and is NOT the protected MR IP
-        require(slapsIpId != address(0), "SLAPS IP not configured");
-        require(slapsIpId != MR_IPID, "INVARIANT VIOLATION: SLAPS IP cannot be MR IP");
+        require(ipAssetId != address(0), "Invalid IP asset");
         
         loanCounter++;
         baseLoanCounter++;
@@ -435,8 +409,8 @@ contract GladiatorHoldingsSpvLoan is ERC20, Ownable, ReentrancyGuard {
         loan.maturityDate = block.timestamp + (termMonths * 30 days);
         loan.lastPaymentDate = block.timestamp;
         loan.collateralType = CollateralType.IP_SLAPS;
-        loan.ipAssetId = slapsIpId;
-        loan.ipTokenId = slapsTokenId;
+        loan.ipAssetId = ipAssetId;
+        loan.ipTokenId = ipTokenId;
         loan.ucc1FilingHash = ucc1FilingHash;
         loan.status = LoanStatus.Active;
         loan.chainId = 8453; // Base L2
@@ -522,7 +496,7 @@ contract GladiatorHoldingsSpvLoan is ERC20, Ownable, ReentrancyGuard {
             loanId,
             loan.borrower,
             loan.outstandingBalance,
-            slapsIpId
+            loan.ipAssetId
         );
         
         // Transfer only SLAPS IP to lender (MR is protected)
@@ -532,15 +506,12 @@ contract GladiatorHoldingsSpvLoan is ERC20, Ownable, ReentrancyGuard {
     function _transferSLAPSIPToLender(uint256 loanId) internal {
         Loan storage loan = loans[loanId];
         
-        // Only SLAPS IP is transferred
-        require(loan.ipAssetId == slapsIpId, "Invalid IP asset");
-        
         emit SLAPSIPTransferred(
             loanId,
             loan.borrower,
             loan.lender,
-            slapsIpId,
-            slapsTokenId
+            loan.ipAssetId,
+            loan.ipTokenId
         );
         
         loan.status = LoanStatus.Liquidated;
@@ -594,25 +565,6 @@ contract GladiatorHoldingsSpvLoan is ERC20, Ownable, ReentrancyGuard {
         slapsEinLetterHash = _slapsEin;
         nmSosReceiptHash = _nmSos;
         beneficialOwnerIdHash = _beneficialOwnerId;
-    }
-    
-    // ============ SLAPS IP CONFIGURATION ============
-    
-    /**
-     * @notice Set the SLAPS IP asset for collateralization
-     * @dev CRITICAL: Cannot set MR_IPID as SLAPS IP - enforces portfolio segregation
-     */
-    function setSLAPSIPAsset(address _ipId, uint256 _tokenId) external onlyOwner protectMRIP(_ipId) {
-        require(_ipId != address(0), "Invalid IP address");
-        // Double-check MR protection (protectMRIP modifier also checks this)
-        require(_ipId != MR_IPID, "PROTECTED: Cannot set MR IP as SLAPS collateral");
-        
-        slapsIpId = _ipId;
-        slapsTokenId = _tokenId;
-        slapsPortfolio.ipId = _ipId;
-        slapsPortfolio.tokenId = _tokenId;
-        
-        emit PortfolioSeparated(MR_IPID, _ipId, true);
     }
     
     // ============ LENDER CONFIGURATION ============

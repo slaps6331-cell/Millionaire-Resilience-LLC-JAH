@@ -26,9 +26,6 @@ import "@openzeppelin/contracts/utils/Pausable.sol";
 contract SlapsStreaming is ERC721, ERC721URIStorage, Ownable, ReentrancyGuard, Pausable {
     using SafeERC20 for IERC20;
 
-    // Story Protocol Integration
-    address public constant STORY_PROTOCOL_IPID = 0x98971c660ac20880b60F86Cc3113eBd979eb3aAE;
-    
     uint256 private _trackIdCounter;
     uint256 private _artistIdCounter;
     uint256 private _playlistIdCounter;
@@ -55,7 +52,6 @@ contract SlapsStreaming is ERC721, ERC721URIStorage, Ownable, ReentrancyGuard, P
         uint256 uploadTimestamp;
         bool isActive;
         bool isExplicit;
-        string storyProtocolIPID;
         bytes32 contentHash;
     }
 
@@ -115,7 +111,6 @@ contract SlapsStreaming is ERC721, ERC721URIStorage, Ownable, ReentrancyGuard, P
     event ArtistFollowed(address indexed artist, address indexed follower);
     event PlaylistCreated(uint256 indexed playlistId, address indexed creator, string name);
     event TrackAddedToPlaylist(uint256 indexed playlistId, uint256 indexed trackId);
-    event IPRegistered(uint256 indexed trackId, string storyProtocolIPID);
 
     constructor() ERC721("SlapsStreaming", "SLAP") Ownable(msg.sender) {}
 
@@ -186,8 +181,7 @@ contract SlapsStreaming is ERC721, ERC721URIStorage, Ownable, ReentrancyGuard, P
         string calldata ipfsHash,
         string calldata metadataURI,
         uint256 durationSeconds,
-        bool isExplicit,
-        string calldata storyProtocolIPID
+        bool isExplicit
     ) external onlyArtist whenNotPaused returns (uint256) {
         require(bytes(title).length > 0, "Title required");
         require(bytes(ipfsHash).length > 0, "IPFS hash required");
@@ -210,7 +204,6 @@ contract SlapsStreaming is ERC721, ERC721URIStorage, Ownable, ReentrancyGuard, P
             uploadTimestamp: block.timestamp,
             isActive: true,
             isExplicit: isExplicit,
-            storyProtocolIPID: storyProtocolIPID,
             contentHash: contentHash
         });
 
@@ -222,10 +215,6 @@ contract SlapsStreaming is ERC721, ERC721URIStorage, Ownable, ReentrancyGuard, P
         _setTokenURI(newTrackId, metadataURI);
 
         emit TrackUploaded(newTrackId, msg.sender, title, ipfsHash);
-        
-        if (bytes(storyProtocolIPID).length > 0) {
-            emit IPRegistered(newTrackId, storyProtocolIPID);
-        }
 
         return newTrackId;
     }
