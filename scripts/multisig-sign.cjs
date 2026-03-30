@@ -105,6 +105,8 @@ async function createMultiSigTransaction() {
     txData,
     ucc1Reference: process.env.UCC1_FILING_HASH ||
       "bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a",
+    ucc1FinancingStatement: process.env.UCC1_FINANCING_STATEMENT_CID ||
+      "bafkreidomwlsf5wabkvhvf63jq424t65mffhnftd4t6spnmhh5t64jn2bu",
     timestamp: new Date().toISOString(),
   };
 

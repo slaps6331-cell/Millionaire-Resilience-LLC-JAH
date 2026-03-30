@@ -198,6 +198,7 @@ jobs:
           THIRDWEB_WALLET_ADDRESS: ${{ vars.THIRDWEB_WALLET_ADDRESS || '0xCD67f7e86A1397aBc33C473c58662BEB83b7a667' }}
           COINBASE_WALLET_ADDRESS: ${{ vars.COINBASE_WALLET_ADDRESS || '0xdc2afcd0a97c1e878fdd64497806e52cc530f02a' }}
           UCC1_FILING_HASH: "bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a"
+          UCC1_FINANCING_STATEMENT_CID: ${{ vars.UCC1_FINANCING_STATEMENT_CID || 'bafkreidomwlsf5wabkvhvf63jq424t65mffhnftd4t6spnmhh5t64jn2bu' }}
           GAS_PRICE_GWEI: "50"
         run: npm run contracts:multisig
 

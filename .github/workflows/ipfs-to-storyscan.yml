@@ -119,6 +119,7 @@ jobs:
           PINATA_GATEWAY_NAME: ${{ vars.PINATA_GATEWAY_NAME }}
           UCC1_FILING_HASH: "bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a"
           UCC1_AUXILIARY_DOCS: "bafybeidkp74w2idrwkg2qey66uepfaes5ekonxjqt62uztyxawii7yye7y"
+          UCC1_FINANCING_STATEMENT_CID: ${{ vars.UCC1_FINANCING_STATEMENT_CID || 'bafkreidomwlsf5wabkvhvf63jq424t65mffhnftd4t6spnmhh5t64jn2bu' }}
           IPFS_GLADIATOR_CERT_CID: ${{ vars.IPFS_GLADIATOR_CERT_CID || 'bafybeiba2j4g34bizjjm26qznc2pf4upgotffrcwjtkw6lj3qa6squrzpu' }}
           IPFS_GLADIATOR_NOTICE_CID: ${{ vars.IPFS_GLADIATOR_NOTICE_CID || 'bafkreifbikc26xs2cu2mvsghzlrginwm6icqotdp4ntsvq3sn6h4flrhhm' }}
           IPFS_MR_ARTICLES_CID: ${{ vars.IPFS_MR_ARTICLES_CID || 'bafkreifxiesrze736sxhvsa5op64q6f3ddvv3rismnvd75wi3yfqilu4py' }}
@@ -202,6 +203,7 @@ jobs:
           PINATA_GATEWAY_TOKEN: ${{ secrets.PINATA_GATEWAY_TOKEN }}
           UCC1_FILING_HASH: "bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a"
           UCC1_AUXILIARY_DOCS: "bafybeidkp74w2idrwkg2qey66uepfaes5ekonxjqt62uztyxawii7yye7y"
+          UCC1_FINANCING_STATEMENT_CID: ${{ vars.UCC1_FINANCING_STATEMENT_CID || 'bafkreidomwlsf5wabkvhvf63jq424t65mffhnftd4t6spnmhh5t64jn2bu' }}
           IPFS_GLADIATOR_CERT_CID: ${{ vars.IPFS_GLADIATOR_CERT_CID || 'bafybeiba2j4g34bizjjm26qznc2pf4upgotffrcwjtkw6lj3qa6squrzpu' }}
           IPFS_GLADIATOR_NOTICE_CID: ${{ vars.IPFS_GLADIATOR_NOTICE_CID || 'bafkreifbikc26xs2cu2mvsghzlrginwm6icqotdp4ntsvq3sn6h4flrhhm' }}
           IPFS_MR_ARTICLES_CID: ${{ vars.IPFS_MR_ARTICLES_CID || 'bafkreifxiesrze736sxhvsa5op64q6f3ddvv3rismnvd75wi3yfqilu4py' }}
@@ -323,6 +325,7 @@ jobs:
           ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
           UCC1_FILING_HASH: "bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a"
           UCC1_AUXILIARY_DOCS: "bafybeidkp74w2idrwkg2qey66uepfaes5ekonxjqt62uztyxawii7yye7y"
+          UCC1_FINANCING_STATEMENT_CID: ${{ vars.UCC1_FINANCING_STATEMENT_CID || 'bafkreidomwlsf5wabkvhvf63jq424t65mffhnftd4t6spnmhh5t64jn2bu' }}
           UCC1_FILING_NUMBER: ${{ vars.UCC1_FILING_NUMBER || '20260000078753' }}
           UCC1_JURISDICTION: "New Mexico Secretary of State"
           THIRDWEB_WALLET_ADDRESS: ${{ vars.THIRDWEB_WALLET_ADDRESS || '0xCD67f7e86A1397aBc33C473c58662BEB83b7a667' }}
@@ -477,6 +480,7 @@ jobs:
           BASE_RPC_URL: ${{ secrets.BASE_RPC_URL || 'https://mainnet.base.org' }}
           UCC1_FILING_HASH: "bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a"
           UCC1_AUXILIARY_DOCS: "bafybeidkp74w2idrwkg2qey66uepfaes5ekonxjqt62uztyxawii7yye7y"
+          UCC1_FINANCING_STATEMENT_CID: ${{ vars.UCC1_FINANCING_STATEMENT_CID || 'bafkreidomwlsf5wabkvhvf63jq424t65mffhnftd4t6spnmhh5t64jn2bu' }}
           UCC1_FILING_NUMBER: ${{ vars.UCC1_FILING_NUMBER || '20260000078753' }}
           UCC1_JURISDICTION: "New Mexico Secretary of State"
           THIRDWEB_WALLET_ADDRESS: ${{ vars.THIRDWEB_WALLET_ADDRESS || '0xCD67f7e86A1397aBc33C473c58662BEB83b7a667' }}

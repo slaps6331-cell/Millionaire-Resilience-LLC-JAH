@@ -25,9 +25,10 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
  *   CIDs:
  *     [1] bafybeidkp74w2idrwkg2qey66uepfaes5ekonxjqt62uztyxawii7yye7y  (auxiliary docs)
  *     [2] bafkreiacs7ir36sfzaxqb4qp4gpzx26ckrb6ogcbgcfj4ontow263x7fom  (bytecode archive)
- *     [3] bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a  (UCC-1 statement)
- *     [4] bafkreie5spkgxxhmafdqylwyfplx37jqhcjrs3es3neasgcnynzgkg5mzi  (beneficial owner ID)
- *     [5] bafkreibxqnmhir5iifpboxdv5ndltm5vnbplso4ndtcuzfnanykudrwdbu  (patent portfolio)
+ *     [3] bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a  (UCC-1 filing record)
+ *     [4] bafkreidomwlsf5wabkvhvf63jq424t65mffhnftd4t6spnmhh5t64jn2bu  (UCC-1 financing statement)
+ *     [5] bafkreie5spkgxxhmafdqylwyfplx37jqhcjrs3es3neasgcnynzgkg5mzi  (beneficial owner ID)
+ *     [6] bafkreibxqnmhir5iifpboxdv5ndltm5vnbplso4ndtcuzfnanykudrwdbu  (patent portfolio)
  */
 contract UCC1FilingIntegration is Ownable, ReentrancyGuard {
 
@@ -48,8 +49,11 @@ contract UCC1FilingIntegration is Ownable, ReentrancyGuard {
     string public constant SECURED_ADDRESS  = "251 Little Falls Drive, Wilmington, DE 19807";
 
     // Pinata IPFS gateway (Optional Filer Reference Data)
-    string public constant PINATA_GATEWAY   = "lavender-neat-urial-76.mypinata.cloud";
-    string public constant UCC1_IPFS_CID    = "bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a";
+    string public constant PINATA_GATEWAY              = "lavender-neat-urial-76.mypinata.cloud";
+    // Original UCC-1 filing record pinned at NM SOS filing time
+    string public constant UCC1_IPFS_CID               = "bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a";
+    // UCC-1 Financing Statement document (Pinata IPFS pin)
+    string public constant UCC1_FINANCING_STATEMENT_CID = "bafkreidomwlsf5wabkvhvf63jq424t65mffhnftd4t6spnmhh5t64jn2bu";
 
     // ============ COLLATERAL NETWORKS ============
 
@@ -212,7 +216,7 @@ contract UCC1FilingIntegration is Ownable, ReentrancyGuard {
     }
 
     /**
-     * @notice Returns the IPFS gateway URL for the UCC-1 filing document.
+     * @notice Returns the IPFS gateway URL for the UCC-1 filing record.
      */
     function getFilingIPFSUrl() external pure returns (string memory) {
         return string(
@@ -221,6 +225,20 @@ contract UCC1FilingIntegration is Ownable, ReentrancyGuard {
                 PINATA_GATEWAY,
                 "/ipfs/",
                 UCC1_IPFS_CID
+            )
+        );
+    }
+
+    /**
+     * @notice Returns the IPFS gateway URL for the UCC-1 Financing Statement document.
+     */
+    function getFinancingStatementIPFSUrl() external pure returns (string memory) {
+        return string(
+            abi.encodePacked(
+                "https://",
+                PINATA_GATEWAY,
+                "/ipfs/",
+                UCC1_FINANCING_STATEMENT_CID
             )
         );
     }

@@ -43,7 +43,8 @@ const OUTPUT_FILE = path.join(__dirname, "..", "ipfs-document-manifest.json");
 
 // All CID variables in dependency order (matches .env.example)
 const CIDS = {
-  ucc1Filing:           process.env.UCC1_FILING_HASH             || "bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a",
+  ucc1Filing:              process.env.UCC1_FILING_HASH             || "bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a",
+  ucc1FinancingStatement:  process.env.UCC1_FINANCING_STATEMENT_CID || "bafkreidomwlsf5wabkvhvf63jq424t65mffhnftd4t6spnmhh5t64jn2bu",
   ucc1AuxDocs:          process.env.UCC1_AUXILIARY_DOCS          || "bafybeidkp74w2idrwkg2qey66uepfaes5ekonxjqt62uztyxawii7yye7y",
   gladiatorCert:        process.env.IPFS_GLADIATOR_CERT_CID      || "bafybeiba2j4g34bizjjm26qznc2pf4upgotffrcwjtkw6lj3qa6squrzpu",
   gladiatorNotice:      process.env.IPFS_GLADIATOR_NOTICE_CID    || "bafkreifbikc26xs2cu2mvsghzlrginwm6icqotdp4ntsvq3sn6h4flrhhm",

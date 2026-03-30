@@ -21,6 +21,9 @@ const DOCUMENT_TYPE = "UCC-1_FINANCING_STATEMENT";
 const UCC1_CID =
   process.env.UCC1_FILING_HASH ||
   "bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a";
+const UCC1_FINANCING_STATEMENT_CID =
+  process.env.UCC1_FINANCING_STATEMENT_CID ||
+  "bafkreidomwlsf5wabkvhvf63jq424t65mffhnftd4t6spnmhh5t64jn2bu";
 
 // Build the Pinata gateway base URL from env vars so the token is never hardcoded.
 // Set PINATA_GATEWAY_NAME (gateway subdomain) and PINATA_GATEWAY_TOKEN in .env or

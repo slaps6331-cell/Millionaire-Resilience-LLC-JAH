@@ -46,6 +46,7 @@ const MORPHO_BLUE     = "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb";
 
 // UCC-1 IPFS CID
 const UCC1_CID = "bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a";
+const UCC1_FINANCING_STATEMENT_CID = process.env.UCC1_FINANCING_STATEMENT_CID || "bafkreidomwlsf5wabkvhvf63jq424t65mffhnftd4t6spnmhh5t64jn2bu";
 
 // Approximate deployment origin date (2026-02-05)
 const DEPLOY_EPOCH = Math.floor(new Date("2026-02-05T00:00:00Z").getTime() / 1000);

@@ -65,7 +65,9 @@
     "ucc1DataHash": "0x1c411cef914c5657b20ab367a917b0661cfe48dbf5a309359f06795f26c7a6ea",
     "loanAmount_USD": 5000000,
     "primaryCollateral": "Bitcoin (BTC)",
-    "secondaryCollateral": "SLAPS IP Portfolio"
+    "secondaryCollateral": "SLAPS IP Portfolio",
+    "financingStatementCid": "bafkreidomwlsf5wabkvhvf63jq424t65mffhnftd4t6spnmhh5t64jn2bu",
+    "financingStatementUrl": "https://lavender-neat-urial-76.mypinata.cloud/ipfs/bafkreidomwlsf5wabkvhvf63jq424t65mffhnftd4t6spnmhh5t64jn2bu"
   },
   "revenueEscrowHash": {
     "annualRevenue_USD": 3525000,

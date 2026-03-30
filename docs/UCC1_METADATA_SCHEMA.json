@@ -10,8 +10,14 @@
     "filingDate": "2026-03-26",
     "designation": "Public-Finance Transaction",
     "debtors": [
-      { "name": "Slaps Streaming LLC",  "address": "3141 FAIRVIEW AVE, SEATTLE, WA 98102" },
-      { "name": "Clifton Kelly Bell",   "address": "3141 FAIRVIEW AVE, SEATTLE, WA 98102" }
+      {
+        "name": "Slaps Streaming LLC",
+        "address": "3141 FAIRVIEW AVE, SEATTLE, WA 98102"
+      },
+      {
+        "name": "Clifton Kelly Bell",
+        "address": "3141 FAIRVIEW AVE, SEATTLE, WA 98102"
+      }
     ],
     "securedParty": {
       "name": "Morpho Protocol",
@@ -51,9 +57,15 @@
     },
     "registryAddress": "0x77319B4031e6eF1250907aa00018B8B1c67a244b",
     "licensingModuleAddress": "0x04fbd8a2e56dd85CFD5500A4A4DfA955B9f1dE6f",
-    "royaltyModuleAddress": "0xCC8b9f0c9Dc370Ed1F41d95F74C9f72E08f24C90",
+    "royaltyModuleAddress": "0xD2f60c40fEbccf6311f8B47c4f2Ec6b040400086",
     "createdAt": "2026-03-24T00:00:00Z",
-    "tags": ["UCC-1-Financing", "Patent-Portfolio", "SEP-Licensing", "Story-Protocol", "Multi-SPV"]
+    "tags": [
+      "UCC-1-Financing",
+      "Patent-Portfolio",
+      "SEP-Licensing",
+      "Story-Protocol",
+      "Multi-SPV"
+    ]
   },
   "morphoProtocolMarketMetadata": {
     "protocol": "Morpho Blue",
@@ -129,5 +141,7 @@
         "role": "IP Licensor / SPV"
       }
     ]
-  }
+  },
+  "ucc1FinancingStatementCID": "bafkreidomwlsf5wabkvhvf63jq424t65mffhnftd4t6spnmhh5t64jn2bu",
+  "ucc1FinancingStatementUrl": "https://lavender-neat-urial-76.mypinata.cloud/ipfs/bafkreidomwlsf5wabkvhvf63jq424t65mffhnftd4t6spnmhh5t64jn2bu"
 }
