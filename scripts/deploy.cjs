@@ -10,8 +10,8 @@ const ethers = hre.ethers;
  *   - Base L2 (Chain 8453) — verified on Etherscan/Basescan
  *
  * Multi-signature requirement (Morpho Protocol):
- *   - ThirdWeb wallet:  0xCD67f7e86A1397aBc33C473c58662BEB83b7a667
- *   - Coinbase wallet:  0xdc2afcd0a97c1e878fdd64497806e52cc530f02a
+ *   - Story Protocol deployer: 0x597856e93f19877a399f686D2F43b298e2268618
+ *   - Coinbase wallet:         0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a
  *
  * Usage:
  *   npx hardhat run scripts/deploy.cjs --network story
@@ -19,8 +19,8 @@ const ethers = hre.ethers;
  */
 
 const MULTISIG_SIGNERS = {
-  thirdweb: "0xCD67f7e86A1397aBc33C473c58662BEB83b7a667",
-  coinbase: "0xdc2afcd0a97c1e878fdd64497806e52cc530f02a",
+  story:   "0x597856e93f19877a399f686D2F43b298e2268618",
+  coinbase: "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a",
 };
 
 async function deployContract(name, factory, ...args) {

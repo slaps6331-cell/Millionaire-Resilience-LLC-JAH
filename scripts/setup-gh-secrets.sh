@@ -105,7 +105,7 @@ echo ""
 # ── Public Variables ──────────────────────────────────────────────────────────
 
 echo "Setting Repository Variables (public)..."
-set_variable THIRDWEB_WALLET_ADDRESS  "0xCD67f7e86A1397aBc33C473c58662BEB83b7a667"
+set_variable STORY_DEPLOYER_ADDRESS   "0x597856e93f19877a399f686D2F43b298e2268618"
 set_variable COINBASE_WALLET_ADDRESS  "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a"
 set_variable UCC1_FILING_NUMBER       "2024-NM-UCC-0001"
 set_variable STORY_RPC_URL            "https://mainnet.storyrpc.io"

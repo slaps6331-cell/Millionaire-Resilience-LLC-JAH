@@ -101,8 +101,8 @@
     "usdcAddress": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
     "multisigSigners": [
       {
-        "signer": "ThirdWeb",
-        "address": "0xCD67f7e86A1397aBc33C473c58662BEB83b7a667",
+        "signer": "Story",
+        "address": "0x597856e93f19877a399f686D2F43b298e2268618",
         "signingMethod": "EIP-191 personal_sign",
         "purpose": "Approve Morpho market parameters"
       },

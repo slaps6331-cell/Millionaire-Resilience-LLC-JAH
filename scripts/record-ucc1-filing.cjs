@@ -82,9 +82,9 @@ const BASE_PROTOCOL = {
 // ── Multi-sig wallet addresses ────────────────────────────────────────────────
 
 const WALLETS = {
-  MROwner:  "0x597856e93f19877a399f686D2F43b298e2268618",
-  ThirdWeb: "0xCD67f7e86A1397aBc33C473c58662BEB83b7a667",
-  Coinbase: "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a",
+  MROwner:        "0x597856e93f19877a399f686D2F43b298e2268618",
+  StoryDeployer:  "0x597856e93f19877a399f686D2F43b298e2268618",
+  Coinbase:       "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a",
 };
 
 // ── Known collateral contracts (all 12, both networks) ───────────────────────

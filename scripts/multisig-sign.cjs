@@ -6,8 +6,8 @@ require("dotenv").config();
  * Prepares a multi-signature transaction configuration for Morpho Protocol.
  *
  * Morpho Protocol requires 2/2 signatures from:
- *   - ThirdWeb wallet:  0xCD67f7e86A1397aBc33C473c58662BEB83b7a667
- *   - Coinbase wallet:  0xdc2afcd0a97c1e878fdd64497806e52cc530f02a
+ *   - Story Protocol deployer: 0x597856e93f19877a399f686D2F43b298e2268618
+ *   - Coinbase wallet:         0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a
  *
  * This script generates a transaction hash and outputs a JSON file that
  * both signers must sign before the transaction can be executed.
@@ -17,10 +17,10 @@ require("dotenv").config();
  */
 
 const MULTISIG_SIGNERS = {
-  thirdweb: process.env.THIRDWEB_WALLET_ADDRESS ||
-    "0xCD67f7e86A1397aBc33C473c58662BEB83b7a667",
+  story:   process.env.STORY_DEPLOYER_ADDRESS ||
+    "0x597856e93f19877a399f686D2F43b298e2268618",
   coinbase: process.env.COINBASE_WALLET_ADDRESS ||
-    "0xdc2afcd0a97c1e878fdd64497806e52cc530f02a",
+    "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a",
 };
 
 const MORPHO_BLUE = "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb";
@@ -31,8 +31,8 @@ async function createMultiSigTransaction() {
   console.log("Morpho Protocol — Multi-Signature Transaction Setup");
   console.log("=".repeat(60));
   console.log("\nRequired signers (2/2):");
-  console.log(`  1. ThirdWeb: ${MULTISIG_SIGNERS.thirdweb}`);
-  console.log(`  2. Coinbase: ${MULTISIG_SIGNERS.coinbase}`);
+  console.log(`  1. Story deployer: ${MULTISIG_SIGNERS.story}`);
+  console.log(`  2. Coinbase:       ${MULTISIG_SIGNERS.coinbase}`);
   console.log();
 
   // Determine target contract from deployment config if available
@@ -90,8 +90,8 @@ async function createMultiSigTransaction() {
     signers: Object.values(MULTISIG_SIGNERS),
     signatures: [
       {
-        signer: MULTISIG_SIGNERS.thirdweb,
-        label: "ThirdWeb",
+        signer: MULTISIG_SIGNERS.story,
+        label: "Story",
         signature: null,
         verified: false,
       },

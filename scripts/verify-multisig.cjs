@@ -9,14 +9,14 @@
  *   1. Run `node scripts/anchor-signature.cjs` to generate
  *      signature-morpho-config.json with the eip191Hash.
  *   2. Obtain signatures from both wallet holders (see DEPLOYMENT_GUIDE.md §3).
- *   3. Populate the THIRDWEB_SIGNATURE and COINBASE_SIGNATURE environment
+ *   3. Populate the STORY_SIGNATURE and COINBASE_SIGNATURE environment
  *      variables (or pass them on the command line — see usage below).
  *
  * Usage:
  *   # With environment variables:
- *   THIRDWEB_SIGNATURE=0x... COINBASE_SIGNATURE=0x... node scripts/verify-multisig.cjs
+ *   STORY_SIGNATURE=0x... COINBASE_SIGNATURE=0x... node scripts/verify-multisig.cjs
  *
- *   # Or with a .env file containing THIRDWEB_SIGNATURE / COINBASE_SIGNATURE:
+ *   # Or with a .env file containing STORY_SIGNATURE / COINBASE_SIGNATURE:
  *   node scripts/verify-multisig.cjs
  *
  * The script exits with code 0 if both signatures are valid, or 1 if either
@@ -31,7 +31,7 @@ require("dotenv").config();
 
 // ── Expected signer addresses (hardcoded constants from the contracts) ──────
 const EXPECTED_SIGNERS = {
-  thirdweb: "0xCD67f7e86A1397aBc33C473c58662BEB83b7a667",
+  story:   "0x597856e93f19877a399f686D2F43b298e2268618",
   coinbase: "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a",
 };
 
@@ -137,27 +137,27 @@ async function main() {
 
   // ── 2. Resolve signatures ─────────────────────────────────────────────────
   // Priority: env var → signature-morpho-config.json → multisig-transaction.json
-  let thirdwebSig = process.env.THIRDWEB_SIGNATURE || null;
+  let storySig   = process.env.STORY_SIGNATURE || null;
   let coinbaseSig = process.env.COINBASE_SIGNATURE || null;
 
-  if (!thirdwebSig && sigConfig.signatures) {
-    thirdwebSig = sigConfig.signatures.thirdweb || null;
+  if (!storySig && sigConfig.signatures) {
+    storySig = sigConfig.signatures.story || null;
   }
   if (!coinbaseSig && sigConfig.signatures) {
     coinbaseSig = sigConfig.signatures.coinbase || null;
   }
 
   // Fall back to multisig-transaction.json
-  if ((!thirdwebSig || !coinbaseSig) && fs.existsSync(MULTISIG_TX_FILE)) {
+  if ((!storySig || !coinbaseSig) && fs.existsSync(MULTISIG_TX_FILE)) {
     const txFile = JSON.parse(fs.readFileSync(MULTISIG_TX_FILE, "utf8"));
     if (txFile.signatures && Array.isArray(txFile.signatures)) {
       for (const entry of txFile.signatures) {
         if (
-          entry.label === "ThirdWeb" &&
-          !thirdwebSig &&
+          entry.label === "Story" &&
+          !storySig &&
           entry.signature
         ) {
-          thirdwebSig = entry.signature;
+          storySig = entry.signature;
         }
         if (
           entry.label === "Coinbase" &&
@@ -176,11 +176,11 @@ async function main() {
   // the on-chain ecrecover() behaviour exactly.
   const rawHash = sigConfig.signatureHash;
 
-  const thirdwebOk = verifyOne(
-    "ThirdWeb",
-    EXPECTED_SIGNERS.thirdweb,
+  const storyOk = verifyOne(
+    "Story",
+    EXPECTED_SIGNERS.story,
     rawHash,
-    thirdwebSig
+    storySig
   );
   const coinbaseOk = verifyOne(
     "Coinbase",
@@ -191,12 +191,12 @@ async function main() {
 
   // ── 4. Final result ───────────────────────────────────────────────────────
   console.log("=".repeat(60));
-  const bothValid = thirdwebOk && coinbaseOk;
+  const bothValid = storyOk && coinbaseOk;
 
   if (bothValid) {
     console.log("✓ 2/2 signatures verified — ready to submit to Morpho");
   } else {
-    const count = [thirdwebOk, coinbaseOk].filter(Boolean).length;
+    const count = [storyOk, coinbaseOk].filter(Boolean).length;
     console.log(`✗ ${count}/2 signatures verified — cannot proceed`);
     console.log(
       "\nObtain the missing signature(s) and re-run this script."

@@ -19,7 +19,7 @@
  * and increments by one per contract (matching Ethereum's CREATE semantics).
  *
  * Additionally the script generates the multi-sig transaction hash that
- * both the ThirdWeb and Coinbase wallets must sign for Morpho Protocol:
+ * both the Story Protocol deployer and Coinbase wallets must sign for Morpho Protocol:
  *   keccak256(abi.encode(morphoBlue, "0", "0x", nonce, chainId, gasLimit))
  *
  * Outputs:
@@ -41,7 +41,7 @@ const BASE_CHAIN_ID  = 8453;
 
 const MR_OWNER       = "0x597856e93f19877a399f686D2F43b298e2268618";
 const COINBASE_WALLET = "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a";
-const THIRDWEB_WALLET = "0xCD67f7e86A1397aBc33C473c58662BEB83b7a667";
+const STORY_DEPLOYER  = "0x597856e93f19877a399f686D2F43b298e2268618";
 const MORPHO_BLUE     = "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb";
 
 // UCC-1 IPFS CID
@@ -209,7 +209,7 @@ basescanHashes["createMorphoMarket_ETH"] = {
 };
 
 // ── Morpho multi-sig transaction hash ────────────────────────────────────
-// This is the payload that both ThirdWeb and Coinbase wallets sign.
+// This is the payload that both the Story Protocol deployer and Coinbase wallets sign.
 // The nonce here is a monotonic counter (not an on-chain tx nonce).
 
 const multiSigNonce = DEPLOY_EPOCH; // epoch-based for determinism
@@ -219,7 +219,7 @@ const multiSigTxHashStory = morphoMultiSigTxHash(MORPHO_BLUE, multiSigNonce, STO
 const morphoMultiSig = {
   description:       "2-of-2 multi-signature payload for Morpho Protocol authorization",
   requiredSigners: [
-    { label: "ThirdWeb", address: THIRDWEB_WALLET },
+    { label: "Story", address: STORY_DEPLOYER },
     { label: "Coinbase", address: COINBASE_WALLET },
   ],
   signingMethod:     "EIP-191 personal_sign (see DEPLOYMENT_GUIDE.md §3)",
@@ -230,8 +230,8 @@ const morphoMultiSig = {
   walletInstructions: "Run: node scripts/anchor-signature.cjs  then  node scripts/verify-multisig.cjs",
   note:             "Replace with the actual transaction hash returned by the network after broadcast",
   status:           "pending",
-  thirdwebSigned:   false,
-  coinbaseSigned:   false,
+  storySigned:    false,
+  coinbaseSigned: false,
 };
 
 // ── Assemble output record ────────────────────────────────────────────────
@@ -280,7 +280,7 @@ const record = {
     ],
     multiSig: [
       "1. Run:  node scripts/anchor-signature.cjs  (generates signature-morpho-config.json)",
-      "2. ThirdWeb wallet signs the eip191Hash — see documents/multisig-verification-walkthrough.md §2",
+      "2. Story deployer signs the eip191Hash — see documents/multisig-verification-walkthrough.md §2",
       "3. Coinbase wallet signs the eip191Hash   — see documents/multisig-verification-walkthrough.md §3",
       "4. Populate signatures in signature-morpho-config.json",
       "5. Run:  node scripts/verify-multisig.cjs  (verifies both signatures locally)",
@@ -318,7 +318,7 @@ console.log();
 console.log("Morpho Multi-Sig Transaction Hash (2/2 required):");
 console.log(`  Base L2:                            ${multiSigTxHash}`);
 console.log(`  Story Protocol:                     ${multiSigTxHashStory}`);
-console.log(`  Signers: ThirdWeb (${THIRDWEB_WALLET.slice(0, 10)}...) + Coinbase (${COINBASE_WALLET.slice(0, 10)}...)`);
+console.log(`  Signers: Story deployer (${STORY_DEPLOYER.slice(0, 10)}...) + Coinbase (${COINBASE_WALLET.slice(0, 10)}...)`);
 console.log();
 console.log(`Transaction hash registry written to: ${OUTPUT_FILE}`);
 console.log("=".repeat(60));
