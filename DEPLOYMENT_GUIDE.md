@@ -1097,9 +1097,9 @@ bash /tmp/setup-gh-secrets.sh
 | Constant | Address | Network |
 |----------|---------|---------|
 | `MORPHO_BLUE` | `0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb` | Base L2 |
-| `STORY_REGISTRY` | `0x1a9d0d28a0422F26D31Be72Edc6f13ea4371E11B` | Story Protocol |
-| `STORY_LICENSING` | `0xd81fd78f557b457b4350cB95D20b547bFEb4D857` | Story Protocol |
-| `STORY_ROYALTY` | `0xcc8b9f0c9dC370ED1F41D95f74C9F72E08f24C90` | Story Protocol |
+| `STORY_REGISTRY` | `0x77319B4031e6eF1250907aa00018B8B1c67a244b` | Story Protocol |
+| `STORY_LICENSING` | `0x04fbd8a2e56dd85CFD5500A4A4DfA955B9f1dE6f` | Story Protocol |
+| `STORY_ROYALTY` | `0xD2f60c40fEbccf6311f8B47c4f2Ec6b040400086` | Story Protocol |
 | `MR_IPID` | `0x98971c660ac20880b60F86Cc3113eBd979eb3aAE` | Story Protocol |
 | `BASE_USDC` | `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` | Base L2 |
 

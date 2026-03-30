@@ -73,7 +73,7 @@ Set the following in **Settings → Secrets and variables → Actions**:
 | `UCC1_FILING_NUMBER` | `2024-NM-UCC-0001` |
 | `STORY_RPC_URL` | `https://mainnet.storyrpc.io` |
 | `BASE_RPC_URL` | `https://mainnet.base.org` |
-| `STORY_PROTOCOL_REGISTRY` | `0x1a9d0d28a0422F26D31Be72Edc6f13ea4371E11B` |
+| `STORY_PROTOCOL_REGISTRY` | `0x77319B4031e6eF1250907aa00018B8B1c67a244b` |
 | `MORPHO_BLUE` | `0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb` |
 
 ---

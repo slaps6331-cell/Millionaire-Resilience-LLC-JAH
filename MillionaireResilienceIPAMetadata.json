@@ -1,6 +1,6 @@
 {
   "title": "Millionaire Resilience LLC IP Portfolio",
-  "description": "Standard Essential Patent (SEP) portfolio for Millionaire Resilience LLC (EIN: 41-3789881). 42 SEPs with PatentSight+ PAI score 92. Present value $95M USD. Status: PROTECTED — registered UCC-1 Filing Debtor with the New Mexico Secretary of State (Entry 5095898). Parent entity: Gladiator Holdings LLC (NM Entity ID 0008034162). 100% of PIL licensing revenue is routed to loan repayment via the Story Protocol Royalty Module.",
+  "description": "Standard Essential Patent (SEP) portfolio for Millionaire Resilience LLC (EIN: 41-3789881). 42 SEPs with PatentSight+ PAI score 92. Present value $95M USD. Status: PROTECTED \u2014 registered UCC-1 Filing Debtor with the New Mexico Secretary of State (Entry 5095898). Parent entity: Gladiator Holdings LLC (NM Entity ID 0008034162). 100% of PIL licensing revenue is routed to loan repayment via the Story Protocol Royalty Module.",
   "createdAt": "2025-06-27T00:00:00Z",
   "image": "ipfs://bafkreihls2yoi265uxzmcmh7wzk2ytyo5yvopmb4jib4blw4nptlchivqm",
   "imageHash": "0x748cc0dbf1a1a51ff1edfbfab0a79f600b5904a3c5476acaca9adac6c2f5beb3",
@@ -11,7 +11,7 @@
     {
       "name": "Millionaire Resilience LLC",
       "address": "0x597856e93f19877a399f686D2F43b298e2268618",
-      "description": "IP Owner — EIN 41-3789881, New Mexico LLC, UCC-1 Filing Debtor (Entry 5095898)",
+      "description": "IP Owner \u2014 EIN 41-3789881, New Mexico LLC, UCC-1 Filing Debtor (Entry 5095898)",
       "contributionPercent": 100,
       "socialMedia": [
         {
@@ -47,17 +47,17 @@
   },
   "media": [
     {
-      "name": "PatentSight+ Portfolio Report — Millionaire Resilience",
+      "name": "PatentSight+ Portfolio Report \u2014 Millionaire Resilience",
       "url": "ipfs://bafkreihls2yoi265uxzmcmh7wzk2ytyo5yvopmb4jib4blw4nptlchivqm",
       "mimeType": "image/jpeg"
     },
     {
-      "name": "Articles of Organization — Millionaire Resilience LLC",
+      "name": "Articles of Organization \u2014 Millionaire Resilience LLC",
       "url": "ipfs://bafkreifxiesrze736sxhvsa5op64q6f3ddvv3rismnvd75wi3yfqilu4py",
       "mimeType": "application/pdf"
     },
     {
-      "name": "EIN Confirmation Letter — Millionaire Resilience LLC",
+      "name": "EIN Confirmation Letter \u2014 Millionaire Resilience LLC",
       "url": "ipfs://bafkreihz5zpp33pimzckaey64mht2vezlbzngoxe46urrfctzqvjvsdboe",
       "mimeType": "application/pdf"
     },
@@ -72,9 +72,15 @@
     "ipId": "0x98971c660ac20880b60F86Cc3113eBd979eb3aAE",
     "tokenId": 15192,
     "owner": "0x597856e93f19877a399f686D2F43b298e2268618",
-    "registryAddress": "0x1a9d0d28a0422F26D31Be72Edc6f13ea4371E11B",
-    "royaltyModule": "0xcc8b9f0c9dC370ED1F41D95f74C9F72E08f24C90",
-    "licensingModule": "0xd81fd78f557b457b4350cB95D20b547bFEb4D857"
+    "registryAddress": "0x77319B4031e6eF1250907aa00018B8B1c67a244b",
+    "royaltyModule": "0xD2f60c40fEbccf6311f8B47c4f2Ec6b040400086",
+    "licensingModule": "0x04fbd8a2e56dd85CFD5500A4A4DfA955B9f1dE6f",
+    "pilLicenseTemplate": "0x2E896b0b2Fdb7457499B56AAaA4AE55BCB4Cd316",
+    "royaltyPolicyLAP": "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E",
+    "licenseRegistry": "0x529a750E02d8E2f15649c13D69a465286a780e24",
+    "registrationWorkflows": "0xbe39E1C756e921BD25DF86e7AAa31106d1eb0424",
+    "licenseAttachmentWorkflows": "0xcC2E862bCee5B6036Db0de6E06Ae87e524a79fd8",
+    "royaltyWorkflows": "0x9515faE61E0c0447C6AC6dEe5628A2097aFE1890"
   },
   "valuation": {
     "presentValue_USD": 95000000,

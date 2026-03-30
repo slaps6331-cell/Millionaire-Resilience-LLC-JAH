@@ -31,6 +31,15 @@ contract PILLoanEnforcement is Ownable, ReentrancyGuard {
     address public constant USDC = 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48;
     address public constant USDT = 0xdAC17F958D2ee523a2206206994597C13D831ec7;
     address public constant DAI = 0x6B175474E89094C44Da98b954EedeAC495271d0F;
+
+    // ============ STORY PROTOCOL SDK — MAINNET ADDRESSES (Chain 1514) ============
+    // Source: https://docs.story.foundation/developers/deployed-smart-contracts
+    address public constant IP_ASSET_REGISTRY    = 0x77319B4031e6eF1250907aa00018B8B1c67a244b;
+    address public constant LICENSING_MODULE     = 0x04fbd8a2e56dd85CFD5500A4A4DfA955B9f1dE6f;
+    address public constant ROYALTY_MODULE       = 0xD2f60c40fEbccf6311f8B47c4f2Ec6b040400086;
+    address public constant PIL_LICENSE_TEMPLATE = 0x2E896b0b2Fdb7457499B56AAaA4AE55BCB4Cd316;
+    address public constant ROYALTY_POLICY_LAP   = 0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E;
+    address public constant LICENSE_REGISTRY     = 0x529a750E02d8E2f15649c13D69a465286a780e24;
     
     // ============ STRUCTS ============
     

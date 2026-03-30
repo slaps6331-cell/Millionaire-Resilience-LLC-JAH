@@ -110,7 +110,7 @@ set_variable COINBASE_WALLET_ADDRESS  "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02
 set_variable UCC1_FILING_NUMBER       "2024-NM-UCC-0001"
 set_variable STORY_RPC_URL            "https://mainnet.storyrpc.io"
 set_variable BASE_RPC_URL             "https://mainnet.base.org"
-set_variable STORY_PROTOCOL_REGISTRY  "0x1a9d0d28a0422F26D31Be72Edc6f13ea4371E11B"
+set_variable STORY_PROTOCOL_REGISTRY  "0x77319B4031e6eF1250907aa00018B8B1c67a244b" # Story Protocol IPAssetRegistry (mainnet)
 set_variable MORPHO_BLUE              "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb"
 
 if [[ -n "${PINATA_GATEWAY_NAME:-}" ]]; then

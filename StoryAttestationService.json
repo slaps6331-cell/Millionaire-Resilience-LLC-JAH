@@ -73,7 +73,7 @@
         "description": "Attest to PIL licensing revenue escrow for loan repayment",
         "escrowConfiguration": {
           "escrowAgent": "Story Protocol Royalty Module",
-          "royaltyModuleAddress": "0xcc8b9f0c9dC370ED1F41D95f74C9F72E08f24C90",
+          "royaltyModuleAddress": "0xD2f60c40fEbccf6311f8B47c4f2Ec6b040400086",
           "collectionWallet": "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a",
           "allocation": {
             "loanRepayment": 100,
@@ -146,7 +146,7 @@
   "directPILRevenueRouting": {
     "description": "Direct PIL royalty revenue routing to stablecoin IP-backed loan repayment without intermediary",
     "routingMethod": "Story Protocol Royalty Module routes PIL revenue directly to loan repayment",
-    "source": "Story Protocol Royalty Module (0xcc8b9f0c9dC370ED1F41D95f74C9F72E08f24C90)",
+    "source": "Story Protocol Royalty Module (0xD2f60c40fEbccf6311f8B47c4f2Ec6b040400086)",
     "destination": "Coinbase Wallet (0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a)",
     "loanContract": "GladiatorHoldingsSpvLoan.sol",
     "priority": "Stablecoin IP-backed loan satisfaction is first priority until debt is fully paid",

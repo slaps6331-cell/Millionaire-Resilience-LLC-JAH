@@ -34,7 +34,7 @@
       "methodology": "DCF + PatentSight+ PAI",
       "status": "PROTECTED",
       "valuationDataHash": "0x748cc0dbf1a1a51ff1edfbfab0a79f600b5904a3c5476acaca9adac6c2f5beb3",
-      "note": "dataHash computed without block.timestamp — final on-chain hash will differ by timestamp only"
+      "note": "dataHash computed without block.timestamp \u2014 final on-chain hash will differ by timestamp only"
     },
     "slapsStreaming": {
       "ipAsset": "0x0000000000000000000000000000000000000000",
@@ -47,7 +47,7 @@
       "methodology": "DCF + PatentSight+ PAI",
       "status": "AT_RISK (secondary collateral only)",
       "valuationDataHash": "0x49988b157b3375869c3ef3dbe8c3dbbcffb4acf3644495c7c0b27bfe1e122b53",
-      "note": "ipAsset uses ZeroAddress placeholder — update to actual Story Protocol IPID once assigned. dataHash also omits block.timestamp."
+      "note": "ipAsset uses ZeroAddress placeholder \u2014 update to actual Story Protocol IPID once assigned. dataHash also omits block.timestamp."
     },
     "combinedPortfolioValue_USD": 300000000,
     "whetstone_USD": 45000000,
@@ -82,13 +82,20 @@
   "hermeticSealHash": "0xed4bd3b5123971b5bd15fb55b0b57d543518c78b22906b45199bfeec1db7f413",
   "storyProtocolAddresses": {
     "chainId": 1514,
-    "registryAddress": "0x1a9d0d28a0422F26D31Be72Edc6f13ea4371E11B",
-    "licensingModule": "0xd81fd78f557b457b4350cB95D20b547bFEb4D857",
-    "royaltyModule": "0xcc8b9f0c9dC370ED1F41D95f74C9F72E08f24C90",
+    "registryAddress": "0x77319B4031e6eF1250907aa00018B8B1c67a244b",
+    "licensingModule": "0x04fbd8a2e56dd85CFD5500A4A4DfA955B9f1dE6f",
+    "royaltyModule": "0xD2f60c40fEbccf6311f8B47c4f2Ec6b040400086",
     "mrIpId": "0x98971c660ac20880b60F86Cc3113eBd979eb3aAE",
     "mrTokenId": 15192,
     "mrOwner": "0x597856e93f19877a399f686D2F43b298e2268618",
-    "coinbaseWallet": "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a"
+    "coinbaseWallet": "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a",
+    "pilLicenseTemplate": "0x2E896b0b2Fdb7457499B56AAaA4AE55BCB4Cd316",
+    "royaltyPolicyLAP": "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E",
+    "licenseRegistry": "0x529a750E02d8E2f15649c13D69a465286a780e24",
+    "registrationWorkflows": "0xbe39E1C756e921BD25DF86e7AAa31106d1eb0424",
+    "licenseAttachmentWorkflows": "0xcC2E862bCee5B6036Db0de6E06Ae87e524a79fd8",
+    "royaltyWorkflows": "0x9515faE61E0c0447C6AC6dEe5628A2097aFE1890",
+    "derivativeWorkflows": "0x9e2d496f72C547C2C535B167e06ED8729B374a4f"
   },
   "yieldSummaryRef": {
     "weightedAPR_pct": "4.3333%",
