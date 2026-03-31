@@ -105,12 +105,12 @@ echo ""
 # ── Public Variables ──────────────────────────────────────────────────────────
 
 echo "Setting Repository Variables (public)..."
-set_variable THIRDWEB_WALLET_ADDRESS  "0xCD67f7e86A1397aBc33C473c58662BEB83b7a667"
+set_variable STORY_DEPLOYER_ADDRESS   "0x597856e93f19877a399f686D2F43b298e2268618"
 set_variable COINBASE_WALLET_ADDRESS  "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a"
 set_variable UCC1_FILING_NUMBER       "2024-NM-UCC-0001"
 set_variable STORY_RPC_URL            "https://mainnet.storyrpc.io"
 set_variable BASE_RPC_URL             "https://mainnet.base.org"
-set_variable STORY_PROTOCOL_REGISTRY  "0x1a9d0d28a0422F26D31Be72Edc6f13ea4371E11B"
+set_variable STORY_PROTOCOL_REGISTRY  "0x77319B4031e6eF1250907aa00018B8B1c67a244b" # Story Protocol IPAssetRegistry (mainnet)
 set_variable MORPHO_BLUE              "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb"
 
 if [[ -n "${PINATA_GATEWAY_NAME:-}" ]]; then

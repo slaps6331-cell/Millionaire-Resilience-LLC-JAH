@@ -1,5 +1,5 @@
 {
-  "title": "Gladiator Holdings LLC — Multi-SPV IP Portfolio",
+  "title": "Gladiator Holdings LLC \u2014 Multi-SPV IP Portfolio",
   "description": "Parent holding company IP portfolio for Gladiator Holdings LLC (NM Entity ID 0008034162, Entry 5095898). Umbrella for a Multi-SPV IP-Backed Lending structure: Millionaire Resilience LLC ($95M, PROTECTED, UCC-1 Filing Debtor) and SLAPS Streaming LLC ($75M, AT_RISK, secondary collateral). Combined portfolio valuation: $300M. $5M USDC Bitcoin loan via Coinbase is repaid 100% from PIL licensing revenue routed through the Story Protocol Royalty Module.",
   "createdAt": "2025-06-27T00:00:00Z",
   "image": "ipfs://bafybeiba2j4g34bizjjm26qznc2pf4upgotffrcwjtkw6lj3qa6squrzpu",
@@ -11,7 +11,7 @@
     {
       "name": "Gladiator Holdings LLC",
       "address": "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a",
-      "description": "Parent Holding Company — NM Entity ID 0008034162, Entry 5095898, Effective 2025-06-27",
+      "description": "Parent Holding Company \u2014 NM Entity ID 0008034162, Entry 5095898, Effective 2025-06-27",
       "contributionPercent": 100,
       "socialMedia": [
         {
@@ -56,12 +56,12 @@
   },
   "media": [
     {
-      "name": "Certificate of Organization — Gladiator Holdings LLC",
+      "name": "Certificate of Organization \u2014 Gladiator Holdings LLC",
       "url": "ipfs://bafybeiba2j4g34bizjjm26qznc2pf4upgotffrcwjtkw6lj3qa6squrzpu",
       "mimeType": "image/jpeg"
     },
     {
-      "name": "Notice of Filing Approval — NM SOS",
+      "name": "Notice of Filing Approval \u2014 NM SOS",
       "url": "ipfs://bafkreifbikc26xs2cu2mvsghzlrginwm6icqotdp4ntsvq3sn6h4flrhhm",
       "mimeType": "application/pdf"
     },
@@ -71,7 +71,7 @@
       "mimeType": "application/pdf"
     },
     {
-      "name": "UCC-1 Filing — New Mexico Secretary of State",
+      "name": "UCC-1 Filing \u2014 New Mexico Secretary of State",
       "url": "ipfs://bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a",
       "mimeType": "application/pdf"
     },
@@ -81,7 +81,7 @@
       "mimeType": "application/pdf"
     },
     {
-      "name": "Beneficial Owner ID — RBW",
+      "name": "Beneficial Owner ID \u2014 RBW",
       "url": "ipfs://bafkreid77fuxwqtwyku5syp3dswmy75rymvxh6v3tf7rfrzqbrizoutxtu",
       "mimeType": "application/pdf"
     },
@@ -98,10 +98,16 @@
   ],
   "storyProtocol": {
     "chainId": 1514,
-    "registryAddress": "0x1a9d0d28a0422F26D31Be72Edc6f13ea4371E11B",
-    "royaltyModule": "0xcc8b9f0c9dC370ED1F41D95f74C9F72E08f24C90",
-    "licensingModule": "0xd81fd78f557b457b4350cB95D20b547bFEb4D857",
-    "collectionWallet": "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a"
+    "registryAddress": "0x77319B4031e6eF1250907aa00018B8B1c67a244b",
+    "royaltyModule": "0xD2f60c40fEbccf6311f8B47c4f2Ec6b040400086",
+    "licensingModule": "0x04fbd8a2e56dd85CFD5500A4A4DfA955B9f1dE6f",
+    "collectionWallet": "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a",
+    "pilLicenseTemplate": "0x2E896b0b2Fdb7457499B56AAaA4AE55BCB4Cd316",
+    "royaltyPolicyLAP": "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E",
+    "licenseRegistry": "0x529a750E02d8E2f15649c13D69a465286a780e24",
+    "registrationWorkflows": "0xbe39E1C756e921BD25DF86e7AAa31106d1eb0424",
+    "licenseAttachmentWorkflows": "0xcC2E862bCee5B6036Db0de6E06Ae87e524a79fd8",
+    "royaltyWorkflows": "0x9515faE61E0c0447C6AC6dEe5628A2097aFE1890"
   },
   "riskSegregation": {
     "millionaireResilience": {
@@ -144,7 +150,7 @@
   "revenueEscrow": {
     "enabled": true,
     "escrowAgent": "Story Protocol Royalty Module",
-    "royaltyModuleAddress": "0xcc8b9f0c9dC370ED1F41D95f74C9F72E08f24C90",
+    "royaltyModuleAddress": "0xD2f60c40fEbccf6311f8B47c4f2Ec6b040400086",
     "collectionWallet": "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a",
     "allocationPercentage": 100,
     "annualProjectedRevenue": 3525000,
@@ -181,5 +187,7 @@
         "status": "AT_RISK"
       }
     ]
-  }
+  },
+  "ucc1FinancingStatementCID": "bafkreidomwlsf5wabkvhvf63jq424t65mffhnftd4t6spnmhh5t64jn2bu",
+  "ucc1FinancingStatementUrl": "https://lavender-neat-urial-76.mypinata.cloud/ipfs/bafkreidomwlsf5wabkvhvf63jq424t65mffhnftd4t6spnmhh5t64jn2bu"
 }

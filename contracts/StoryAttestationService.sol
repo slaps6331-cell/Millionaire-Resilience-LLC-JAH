@@ -62,6 +62,16 @@ contract StoryAttestationService is Ownable, ReentrancyGuard {
     address public constant MORPHO_BLUE = 0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb;
     address public constant BASE_USDC = 0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913;
 
+    // ============ STORY PROTOCOL SDK — MAINNET ADDRESSES (Chain 1514) ============
+    // Source: https://docs.story.foundation/developers/deployed-smart-contracts
+    address public constant IP_ASSET_REGISTRY      = 0x77319B4031e6eF1250907aa00018B8B1c67a244b;
+    address public constant LICENSING_MODULE       = 0x04fbd8a2e56dd85CFD5500A4A4DfA955B9f1dE6f;
+    address public constant ROYALTY_MODULE         = 0xD2f60c40fEbccf6311f8B47c4f2Ec6b040400086;
+    address public constant PIL_LICENSE_TEMPLATE   = 0x2E896b0b2Fdb7457499B56AAaA4AE55BCB4Cd316;
+    address public constant ROYALTY_POLICY_LAP     = 0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E;
+    address public constant LICENSE_REGISTRY       = 0x529a750E02d8E2f15649c13D69a465286a780e24;
+    address public constant REGISTRATION_WORKFLOWS = 0xbe39E1C756e921BD25DF86e7AAa31106d1eb0424;
+
     // ============ 7 ATTESTATION TYPE IDENTIFIERS ============
 
     bytes32 public constant ATT_CORPORATE_VERIFICATION = keccak256("CORPORATE_VERIFICATION");

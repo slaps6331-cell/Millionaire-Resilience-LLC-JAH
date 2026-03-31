@@ -1,0 +1,588 @@
+name: Pinata IPFS — Replace Contract Metadata (replacePinObject)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# PURPOSE
+#   Compile all 12 smart contracts, export abi-proof.json and
+#   ipfs-document-manifest.json, pin those artifacts to Pinata, then
+#   atomically replace the previous pin using the Pinata Pinning Service API
+#   (PSA) replacePinObject operation:
+#
+#     POST https://api.pinata.cloud/psa/pins/{requestid}
+#
+#   This is a single-call "delete old + add new" shortcut that keeps the
+#   Pinata storage clean — no duplicate "latest build" pins accumulate.
+#
+# WORKFLOW JOBS
+#   1. compile-and-export  — compile contracts, export abi-proof.json &
+#                            ipfs-document-manifest.json, upload as artifact
+#   2. pin-new-artifact    — pin freshly-compiled artifacts via the standard
+#                            Pinata pinFileToIPFS endpoint, surface new CID
+#   3. replace-pin-object  — look up the old pin's requestid via PSA
+#                            GET /psa/pins, then call PSA POST /psa/pins/{id}
+#                            to atomically swap old → new; commit updated
+#                            CID to deployment-registry.json
+#
+# TRIGGERS
+#   • Push to main when contracts/, scripts/export-abi-proof.cjs,
+#     scripts/build-ipfs-manifest.cjs, or this workflow file change
+#   • workflow_dispatch for on-demand runs with optional dry-run mode
+#
+# SECRETS REQUIRED  (Settings → Secrets and variables → Actions → Secrets)
+#   PINATA_JWT                Pinata JWT bearer token (required for all API calls)
+#   PINATA_API_KEY            Pinata v2 API key  (required for PSA list endpoint)
+#   PINATA_SECRET_API_KEY     Pinata v2 secret key
+#   PINATA_GATEWAY_TOKEN      Gateway access token (private gateway; optional)
+#
+# REPOSITORY VARIABLES  (Settings → Secrets and variables → Actions → Variables)
+#   PINATA_GATEWAY_NAME       Pinata gateway subdomain, e.g. lavender-neat-urial-76
+#   UCC1_FILING_NUMBER        NM SOS filing number, e.g. 20260000078753
+#
+# NOTE ON PSA SCOPED KEYS
+#   The replacePinObject endpoint requires either an Admin key OR a scoped
+#   Pinata key with "Pinning Service API" permissions enabled.
+#   Verify at: https://app.pinata.cloud/keys → your key → Permissions.
+# ─────────────────────────────────────────────────────────────────────────────
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "contracts/**"
+      - "scripts/export-abi-proof.cjs"
+      - "scripts/build-ipfs-manifest.cjs"
+      - "scripts/pin-to-pinata.cjs"
+      - ".github/workflows/pinata-replace-metadata.yml"
+
+  workflow_dispatch:
+    inputs:
+      artifact_name:
+        description: "Pinata pin name to locate and replace (exact match)"
+        required: false
+        default: "abi-proof.json"
+        type: string
+      dry_run:
+        description: "Dry run — compile and pin, but skip the PSA replace call"
+        required: false
+        default: false
+        type: boolean
+      replace_manifest:
+        description: "Also replace ipfs-document-manifest pin (in addition to abi-proof)"
+        required: false
+        default: true
+        type: boolean
+
+# Serialise all runs so we never race-condition two concurrent replacePinObject
+# calls against the same requestid.
+concurrency:
+  group: pinata-replace-metadata
+  cancel-in-progress: false
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Job 1 — Compile contracts & export artifacts
+# ─────────────────────────────────────────────────────────────────────────────
+jobs:
+  compile-and-export:
+    name: Compile Contracts & Export Artifacts
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      artifacts-key: ${{ steps.key.outputs.key }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      # Compile all 12 contracts (Solidity 0.8.26, viaIR=true, evmVersion=cancun).
+      # StoryAttestationService.sol uses optimizer runs=1 to stay under 24 576-byte
+      # EVM bytecode limit (~23 500 bytes compiled).
+      - name: Compile all 12 contracts
+        run: npm run contracts:compile
+
+      # Export abi-proof.json — contains ABI + bytecode hashes for all contracts.
+      - name: Export ABI / bytecode proof
+        env:
+          PINATA_GATEWAY_NAME: ${{ vars.PINATA_GATEWAY_NAME }}
+          UCC1_FILING_HASH: "bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a"
+          UCC1_FINANCING_STATEMENT_CID: "bafkreidomwlsf5wabkvhvf63jq424t65mffhnftd4t6spnmhh5t64jn2bu"
+          UCC1_FILING_NUMBER: ${{ vars.UCC1_FILING_NUMBER || '20260000078753' }}
+        run: npm run contracts:export-abi-proof
+
+      # Build ipfs-document-manifest.json — HEAD-checks every known IPFS CID and
+      # records reachability alongside sha256 digests.
+      - name: Build IPFS document manifest
+        env:
+          PINATA_GATEWAY_NAME: ${{ vars.PINATA_GATEWAY_NAME }}
+          PINATA_GATEWAY_TOKEN: ${{ secrets.PINATA_GATEWAY_TOKEN }}
+          UCC1_FILING_HASH: "bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a"
+          UCC1_AUXILIARY_DOCS: "bafybeidkp74w2idrwkg2qey66uepfaes5ekonxjqt62uztyxawii7yye7y"
+          UCC1_FINANCING_STATEMENT_CID: "bafkreidomwlsf5wabkvhvf63jq424t65mffhnftd4t6spnmhh5t64jn2bu"
+          IPFS_GLADIATOR_CERT_CID: ${{ vars.IPFS_GLADIATOR_CERT_CID || 'bafybeiba2j4g34bizjjm26qznc2pf4upgotffrcwjtkw6lj3qa6squrzpu' }}
+          IPFS_GLADIATOR_NOTICE_CID: ${{ vars.IPFS_GLADIATOR_NOTICE_CID || 'bafkreifbikc26xs2cu2mvsghzlrginwm6icqotdp4ntsvq3sn6h4flrhhm' }}
+          IPFS_MR_ARTICLES_CID: ${{ vars.IPFS_MR_ARTICLES_CID || 'bafkreifxiesrze736sxhvsa5op64q6f3ddvv3rismnvd75wi3yfqilu4py' }}
+          IPFS_MR_EIN_LETTER_CID: ${{ vars.IPFS_MR_EIN_LETTER_CID || 'bafkreihz5zpp33pimzckaey64mht2vezlbzngoxe46urrfctzqvjvsdboe' }}
+          IPFS_SLAPS_ARTICLES_CID: ${{ vars.IPFS_SLAPS_ARTICLES_CID || 'bafkreic3n6bdf25tobljqbjxzvzkbch6s7xkqq5yehmyt3zju4de7ey52u' }}
+          IPFS_SLAPS_EIN_LETTER_CID: ${{ vars.IPFS_SLAPS_EIN_LETTER_CID || 'bafkreifnuwchbvbolmhbgionvsltdi3edzasfqytd4zzqlvu42m5m4jhei' }}
+          IPFS_RBW_EIN_LETTER_CID: ${{ vars.IPFS_RBW_EIN_LETTER_CID || 'bafkreid77fuxwqtwyku5syp3dswmy75rymvxh6v3tf7rfrzqbrizoutxtu' }}
+          IPFS_NM_SOS_RECEIPT_CID: ${{ vars.IPFS_NM_SOS_RECEIPT_CID || 'bafkreigjsqx6d47sgqwkjxgtt3qrjnoz3hdth4hqk7qnxflqog2ikjs2kq' }}
+          IPFS_BENEFICIAL_OWNER_ID_CID: ${{ vars.IPFS_BENEFICIAL_OWNER_ID_CID || 'bafkreie5spkgxxhmafdqylwyfplx37jqhcjrs3es3neasgcnynzgkg5mzi' }}
+          IPFS_PATENTSIGHT_PORTFOLIO_CID: ${{ vars.IPFS_PATENTSIGHT_PORTFOLIO_CID || 'bafkreibxqnmhir5iifpboxdv5ndltm5vnbplso4ndtcuzfnanykudrwdbu' }}
+          IPFS_PATENTSIGHT_MR_CID: ${{ vars.IPFS_PATENTSIGHT_MR_CID || 'bafkreihls2yoi265uxzmcmh7wzk2ytyo5yvopmb4jib4blw4nptlchivqm' }}
+          IPFS_PATENTSIGHT_SLAPS_CID: ${{ vars.IPFS_PATENTSIGHT_SLAPS_CID || 'bafkreiflmhdsflvv53e24mo2woafdgecpkvfljcbm5heafnzdxzbj5ct4i' }}
+          IPFS_IPLYTICS_DECLARATION_CID: ${{ vars.IPFS_IPLYTICS_DECLARATION_CID || 'bafkreiej7wfskl53hxo4j47g55bxjkyyulihovjjtpjvtf264kfoddxc5i' }}
+        run: npm run contracts:build-ipfs-manifest
+
+      - name: Set artifact cache key
+        id: key
+        run: echo "key=pinata-replace-${{ github.sha }}" >> "$GITHUB_OUTPUT"
+
+      - name: Upload compiled artifacts for downstream jobs
+        uses: actions/upload-artifact@v4
+        with:
+          name: pinata-replace-${{ github.sha }}
+          path: |
+            abi-proof.json
+            ipfs-document-manifest.json
+          retention-days: 5
+          if-no-files-found: error
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Job 2 — Pin freshly-compiled artifacts to Pinata
+#          (standard pinFileToIPFS — produces a new CID for Job 3 to replace with)
+# ─────────────────────────────────────────────────────────────────────────────
+  pin-new-artifact:
+    name: Pin New Artifact to Pinata
+    runs-on: ubuntu-latest
+    needs: compile-and-export
+    permissions:
+      contents: read
+    outputs:
+      abi_proof_cid:       ${{ steps.pin-abi.outputs.cid }}
+      abi_proof_pin_name:  ${{ steps.pin-abi.outputs.pin_name }}
+      manifest_cid:        ${{ steps.pin-manifest.outputs.cid }}
+      manifest_pin_name:   ${{ steps.pin-manifest.outputs.pin_name }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Download compiled artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.compile-and-export.outputs.artifacts-key }}
+          path: .
+
+      # ── Pin abi-proof.json ───────────────────────────────────────────────
+      # Uses pin-to-pinata.cjs which calls POST /pinning/pinFileToIPFS.
+      # The resulting CID is written to abi-proof-pin.json.
+      - name: Pin abi-proof.json to Pinata
+        if: ${{ !inputs.dry_run }}
+        id: pin-abi
+        env:
+          PINATA_JWT: ${{ secrets.PINATA_JWT }}
+          PINATA_GATEWAY_NAME: ${{ vars.PINATA_GATEWAY_NAME }}
+        run: |
+          PIN_NAME="abi-proof.json"
+          node scripts/pin-to-pinata.cjs abi-proof.json "$PIN_NAME"
+
+          CID=$(node -e "const p=require('./abi-proof-pin.json'); console.log(p.cid);")
+          echo "cid=$CID"         >> "$GITHUB_OUTPUT"
+          echo "pin_name=$PIN_NAME" >> "$GITHUB_OUTPUT"
+
+          echo "### 📌 abi-proof.json — New Pin" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Field | Value |"               >> "$GITHUB_STEP_SUMMARY"
+          echo "|---|---|"                        >> "$GITHUB_STEP_SUMMARY"
+          echo "| CID | \`$CID\` |"              >> "$GITHUB_STEP_SUMMARY"
+          echo "| Pin name | \`$PIN_NAME\` |"    >> "$GITHUB_STEP_SUMMARY"
+          echo "| Run | #${{ github.run_number }} — commit \`${{ github.sha }}\` |" >> "$GITHUB_STEP_SUMMARY"
+
+      # Dry-run branch: read existing CID from abi-proof.json if available,
+      # or emit a placeholder so downstream steps still have an output value.
+      - name: Dry-run — report abi-proof.json (no upload)
+        if: ${{ inputs.dry_run }}
+        id: pin-abi-dry
+        run: |
+          echo "::notice::DRY RUN — abi-proof.json would be pinned here."
+          echo "cid=DRY_RUN_NO_CID"        >> "$GITHUB_OUTPUT"
+          echo "pin_name=abi-proof.json"   >> "$GITHUB_OUTPUT"
+
+      # ── Pin ipfs-document-manifest.json ─────────────────────────────────
+      # Optionally replace the manifest pin as well (controlled by
+      # replace_manifest input; always true on push events).
+      - name: Pin ipfs-document-manifest.json to Pinata
+        if: ${{ !inputs.dry_run && (github.event_name == 'push' || inputs.replace_manifest) }}
+        id: pin-manifest
+        env:
+          PINATA_JWT: ${{ secrets.PINATA_JWT }}
+          PINATA_GATEWAY_NAME: ${{ vars.PINATA_GATEWAY_NAME }}
+        run: |
+          PIN_NAME="ipfs-document-manifest.json"
+          node scripts/pin-to-pinata.cjs ipfs-document-manifest.json "$PIN_NAME"
+
+          CID=$(node -e "const p=require('./ipfs-document-manifest-pin.json'); console.log(p.cid);")
+          echo "cid=$CID"           >> "$GITHUB_OUTPUT"
+          echo "pin_name=$PIN_NAME" >> "$GITHUB_OUTPUT"
+
+          echo "### 📌 ipfs-document-manifest.json — New Pin" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Field | Value |"               >> "$GITHUB_STEP_SUMMARY"
+          echo "|---|---|"                        >> "$GITHUB_STEP_SUMMARY"
+          echo "| CID | \`$CID\` |"              >> "$GITHUB_STEP_SUMMARY"
+          echo "| Pin name | \`$PIN_NAME\` |"    >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Dry-run — report manifest (no upload)
+        if: ${{ inputs.dry_run }}
+        id: pin-manifest-dry
+        run: |
+          echo "::notice::DRY RUN — ipfs-document-manifest.json would be pinned here."
+          echo "cid=DRY_RUN_NO_CID"                    >> "$GITHUB_OUTPUT"
+          echo "pin_name=ipfs-document-manifest.json"   >> "$GITHUB_OUTPUT"
+
+      - name: Upload pin-record files for downstream jobs
+        if: ${{ !inputs.dry_run }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: pin-records-${{ github.run_number }}
+          path: |
+            abi-proof-pin.json
+            ipfs-document-manifest-pin.json
+          retention-days: 30
+          if-no-files-found: warn
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Job 3 — Replace old pin with new CID via Pinata PSA replacePinObject
+#
+# TECHNICAL NOTES
+#   • The PSA replace endpoint is:
+#       POST https://api.pinata.cloud/psa/pins/{requestid}
+#     where {requestid} is the unique pin operation identifier — NOT the CID.
+#
+#   • To find the requestid of the currently-pinned version, the job calls:
+#       GET https://api.pinata.cloud/psa/pins?name=<pin-name>&status=pinned
+#     and reads results[0].requestid from the JSON response.
+#
+#   • The operation is atomic: the old pin is removed only after the new
+#     CID is successfully pinned.  If the new CID is not yet available on
+#     the Pinata nodes, the replace call will be queued ("pinning" status)
+#     and the old pin is kept until replication completes.
+#
+#   • If no existing pin is found (first run), the new CID is treated as
+#     the initial pin and the job records it without calling replace.
+#
+#   • Request ID vs CID:
+#       requestid = "UniqueID" returned by PSA GET/POST — used in the URL
+#       cid       = "bafkrei..." content hash — used in the JSON body
+#
+# ─────────────────────────────────────────────────────────────────────────────
+  replace-pin-object:
+    name: Replace Pin Object via Pinata PSA
+    runs-on: ubuntu-latest
+    needs: [compile-and-export, pin-new-artifact]
+    if: ${{ !inputs.dry_run }}
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download pin-record files
+        uses: actions/download-artifact@v4
+        with:
+          name: pin-records-${{ github.run_number }}
+          path: pin-records/
+        continue-on-error: true
+
+      # ── Replace abi-proof pin ────────────────────────────────────────────
+      - name: Locate existing abi-proof.json requestid via PSA GET
+        id: find-abi-requestid
+        env:
+          PINATA_JWT: ${{ secrets.PINATA_JWT }}
+        run: |
+          PIN_NAME="${{ needs.pin-new-artifact.outputs.abi_proof_pin_name || 'abi-proof.json' }}"
+
+          echo "Looking up existing PSA pin with name: $PIN_NAME"
+
+          # GET /psa/pins?name=<name>&status=pinned
+          # Returns IPFS Pinning Services API spec-compliant JSON:
+          # { "count": N, "results": [{ "requestid": "...", "status": "pinned", "pin": { "cid": "...", "name": "..." } }] }
+          RESPONSE=$(curl -s --max-time 30 \
+            -H "Authorization: Bearer $PINATA_JWT" \
+            "https://api.pinata.cloud/psa/pins?name=$(python3 -c "import urllib.parse,sys; print(urllib.parse.quote(sys.argv[1]))" "$PIN_NAME")&status=pinned")
+
+          echo "PSA GET response: $RESPONSE"
+
+          COUNT=$(echo "$RESPONSE" | python3 -c "import json,sys; d=json.load(sys.stdin); print(d.get('count',0))" 2>/dev/null || echo "0")
+
+          if [[ "$COUNT" -gt "0" ]]; then
+            REQUEST_ID=$(echo "$RESPONSE" | python3 -c "import json,sys; d=json.load(sys.stdin); print(d['results'][0]['requestid'])")
+            OLD_CID=$(echo "$RESPONSE"    | python3 -c "import json,sys; d=json.load(sys.stdin); print(d['results'][0]['pin']['cid'])")
+            echo "Found existing pin:"
+            echo "  requestid : $REQUEST_ID"
+            echo "  old CID   : $OLD_CID"
+            echo "requestid=$REQUEST_ID" >> "$GITHUB_OUTPUT"
+            echo "old_cid=$OLD_CID"      >> "$GITHUB_OUTPUT"
+            echo "found=true"            >> "$GITHUB_OUTPUT"
+          else
+            echo "No existing pin found for '$PIN_NAME' — treating this as the initial pin."
+            echo "found=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Replace abi-proof.json pin via PSA POST /psa/pins/{requestid}
+        if: steps.find-abi-requestid.outputs.found == 'true'
+        id: replace-abi
+        env:
+          PINATA_JWT: ${{ secrets.PINATA_JWT }}
+        run: |
+          REQUEST_ID="${{ steps.find-abi-requestid.outputs.requestid }}"
+          NEW_CID="${{ needs.pin-new-artifact.outputs.abi_proof_cid }}"
+          PIN_NAME="${{ needs.pin-new-artifact.outputs.abi_proof_pin_name || 'abi-proof.json' }}"
+          OLD_CID="${{ steps.find-abi-requestid.outputs.old_cid }}"
+
+          echo "Replacing pin:"
+          echo "  requestid  : $REQUEST_ID"
+          echo "  old CID    : $OLD_CID"
+          echo "  new CID    : $NEW_CID"
+          echo "  pin name   : $PIN_NAME"
+
+          # POST https://api.pinata.cloud/psa/pins/{requestid}
+          # Payload follows IPFS Pinning Services API spec:
+          # {
+          #   "cid":  "<new CID>",
+          #   "name": "<pin name>",
+          #   "meta": { <arbitrary key-value metadata> }
+          # }
+          RESPONSE=$(curl -s --max-time 60 -X POST \
+            "https://api.pinata.cloud/psa/pins/${REQUEST_ID}" \
+            -H "Authorization: Bearer $PINATA_JWT" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"cid\": \"${NEW_CID}\",
+              \"name\": \"${PIN_NAME}\",
+              \"meta\": {
+                \"version\": \"build-${{ github.run_number }}\",
+                \"commitSha\": \"${{ github.sha }}\",
+                \"replacedCid\": \"${OLD_CID}\",
+                \"ucc1FilingNumber\": \"${{ vars.UCC1_FILING_NUMBER || '20260000078753' }}\",
+                \"ucc1FilingDate\": \"2026-03-26\",
+                \"ucc1Jurisdiction\": \"New Mexico Secretary of State\",
+                \"mrIpId\": \"0x98971c660ac20880b60F86Cc3113eBd979eb3aAE\",
+                \"storyChainId\": \"1514\",
+                \"baseChainId\": \"8453\",
+                \"hermeticSealTiers\": \"1-7\",
+                \"repository\": \"${{ github.repository }}\",
+                \"workflow\": \"pinata-replace-metadata\",
+                \"replacedAt\": \"$(date -u '+%Y-%m-%dT%H:%M:%SZ')\"
+              }
+            }")
+
+          echo "PSA POST response: $RESPONSE"
+
+          # Validate response — expect a 200 with the new requestid
+          NEW_REQUEST_ID=$(echo "$RESPONSE" | python3 -c "import json,sys; d=json.load(sys.stdin); print(d.get('requestid',''))" 2>/dev/null || echo "")
+          STATUS=$(echo "$RESPONSE"          | python3 -c "import json,sys; d=json.load(sys.stdin); print(d.get('status','unknown'))" 2>/dev/null || echo "unknown")
+
+          if [[ -z "$NEW_REQUEST_ID" ]]; then
+            echo "::error::PSA replacePinObject did not return a requestid. Response: $RESPONSE"
+            exit 1
+          fi
+
+          echo "✅ Pin replaced successfully"
+          echo "  new requestid : $NEW_REQUEST_ID"
+          echo "  status        : $STATUS   (pinning → pinned once nodes replicate)"
+
+          echo "new_requestid=$NEW_REQUEST_ID" >> "$GITHUB_OUTPUT"
+          echo "status=$STATUS"                >> "$GITHUB_OUTPUT"
+
+          # Write summary
+          {
+            echo "### ♻️  abi-proof.json — Pin Replaced"
+            echo "| Field | Value |"
+            echo "|---|---|"
+            echo "| Old CID | \`${OLD_CID}\` |"
+            echo "| **New CID** | \`${NEW_CID}\` |"
+            echo "| Old requestid | \`${REQUEST_ID}\` |"
+            echo "| New requestid | \`${NEW_REQUEST_ID}\` |"
+            echo "| Status | \`${STATUS}\` |"
+            echo "| Build | #${{ github.run_number }} |"
+            echo "| Commit | \`${{ github.sha }}\` |"
+            echo ""
+            echo "> **Atomic operation**: the old pin was removed and the new CID queued in a single PSA call."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Record new abi-proof CID (no prior pin existed)
+        if: steps.find-abi-requestid.outputs.found == 'false'
+        run: |
+          NEW_CID="${{ needs.pin-new-artifact.outputs.abi_proof_cid }}"
+          echo "::notice::No previous pin found — '${{ needs.pin-new-artifact.outputs.abi_proof_pin_name }}' is now pinned at CID: $NEW_CID"
+          {
+            echo "### 📌 abi-proof.json — Initial Pin Recorded"
+            echo "| Field | Value |"
+            echo "|---|---|"
+            echo "| CID | \`${NEW_CID}\` |"
+            echo "| Note | No prior pin existed; this is the initial pin. |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # ── Replace ipfs-document-manifest pin ──────────────────────────────
+      - name: Locate existing ipfs-document-manifest.json requestid via PSA GET
+        if: needs.pin-new-artifact.outputs.manifest_cid != ''
+        id: find-manifest-requestid
+        env:
+          PINATA_JWT: ${{ secrets.PINATA_JWT }}
+        run: |
+          PIN_NAME="${{ needs.pin-new-artifact.outputs.manifest_pin_name || 'ipfs-document-manifest.json' }}"
+
+          RESPONSE=$(curl -s --max-time 30 \
+            -H "Authorization: Bearer $PINATA_JWT" \
+            "https://api.pinata.cloud/psa/pins?name=$(python3 -c "import urllib.parse,sys; print(urllib.parse.quote(sys.argv[1]))" "$PIN_NAME")&status=pinned")
+
+          COUNT=$(echo "$RESPONSE" | python3 -c "import json,sys; d=json.load(sys.stdin); print(d.get('count',0))" 2>/dev/null || echo "0")
+
+          if [[ "$COUNT" -gt "0" ]]; then
+            REQUEST_ID=$(echo "$RESPONSE" | python3 -c "import json,sys; d=json.load(sys.stdin); print(d['results'][0]['requestid'])")
+            OLD_CID=$(echo "$RESPONSE"    | python3 -c "import json,sys; d=json.load(sys.stdin); print(d['results'][0]['pin']['cid'])")
+            echo "requestid=$REQUEST_ID" >> "$GITHUB_OUTPUT"
+            echo "old_cid=$OLD_CID"      >> "$GITHUB_OUTPUT"
+            echo "found=true"            >> "$GITHUB_OUTPUT"
+          else
+            echo "found=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Replace ipfs-document-manifest.json pin via PSA POST /psa/pins/{requestid}
+        if: >-
+          needs.pin-new-artifact.outputs.manifest_cid != '' &&
+          steps.find-manifest-requestid.outputs.found == 'true'
+        id: replace-manifest
+        env:
+          PINATA_JWT: ${{ secrets.PINATA_JWT }}
+        run: |
+          REQUEST_ID="${{ steps.find-manifest-requestid.outputs.requestid }}"
+          NEW_CID="${{ needs.pin-new-artifact.outputs.manifest_cid }}"
+          PIN_NAME="${{ needs.pin-new-artifact.outputs.manifest_pin_name || 'ipfs-document-manifest.json' }}"
+          OLD_CID="${{ steps.find-manifest-requestid.outputs.old_cid }}"
+
+          RESPONSE=$(curl -s --max-time 60 -X POST \
+            "https://api.pinata.cloud/psa/pins/${REQUEST_ID}" \
+            -H "Authorization: Bearer $PINATA_JWT" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"cid\": \"${NEW_CID}\",
+              \"name\": \"${PIN_NAME}\",
+              \"meta\": {
+                \"version\": \"build-${{ github.run_number }}\",
+                \"commitSha\": \"${{ github.sha }}\",
+                \"replacedCid\": \"${OLD_CID}\",
+                \"ucc1FilingNumber\": \"${{ vars.UCC1_FILING_NUMBER || '20260000078753' }}\",
+                \"hermeticSealTiers\": \"1-7\",
+                \"replacedAt\": \"$(date -u '+%Y-%m-%dT%H:%M:%SZ')\"
+              }
+            }")
+
+          NEW_REQUEST_ID=$(echo "$RESPONSE" | python3 -c "import json,sys; d=json.load(sys.stdin); print(d.get('requestid',''))" 2>/dev/null || echo "")
+          STATUS=$(echo "$RESPONSE"          | python3 -c "import json,sys; d=json.load(sys.stdin); print(d.get('status','unknown'))" 2>/dev/null || echo "unknown")
+
+          if [[ -z "$NEW_REQUEST_ID" ]]; then
+            echo "::error::PSA replacePinObject (manifest) did not return a requestid. Response: $RESPONSE"
+            exit 1
+          fi
+
+          echo "new_requestid=$NEW_REQUEST_ID" >> "$GITHUB_OUTPUT"
+          echo "status=$STATUS"                >> "$GITHUB_OUTPUT"
+
+          {
+            echo "### ♻️  ipfs-document-manifest.json — Pin Replaced"
+            echo "| Field | Value |"
+            echo "|---|---|"
+            echo "| Old CID | \`${OLD_CID}\` |"
+            echo "| **New CID** | \`${NEW_CID}\` |"
+            echo "| New requestid | \`${NEW_REQUEST_ID}\` |"
+            echo "| Status | \`${STATUS}\` |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # ── Update deployment-registry.json with the new CIDs ───────────────
+      - name: Update deployment-registry.json with new CIDs
+        run: |
+          ABI_CID="${{ needs.pin-new-artifact.outputs.abi_proof_cid }}"
+          MANIFEST_CID="${{ needs.pin-new-artifact.outputs.manifest_cid }}"
+          COMMIT="${{ github.sha }}"
+          RUN="${{ github.run_number }}"
+          NOW="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+
+          node -e "
+            const fs = require('fs');
+            const reg = JSON.parse(fs.readFileSync('deployment-registry.json', 'utf8'));
+
+            reg['ipfs-artifacts'] = reg['ipfs-artifacts'] || {};
+            if ('$ABI_CID') {
+              reg['ipfs-artifacts']['abi-proof'] = '$ABI_CID';
+            }
+            if ('$MANIFEST_CID') {
+              reg['ipfs-artifacts']['ipfs-document-manifest'] = '$MANIFEST_CID';
+            }
+            reg['ipfs-artifacts']['last-replaced']  = '$NOW';
+            reg['ipfs-artifacts']['last-build']     = '$RUN';
+            reg['ipfs-artifacts']['last-commit']    = '$COMMIT';
+
+            fs.writeFileSync('deployment-registry.json', JSON.stringify(reg, null, 2));
+            console.log('deployment-registry.json updated');
+          "
+
+      - name: Commit updated deployment-registry.json
+        uses: EndBug/add-and-commit@v9
+        with:
+          add: "deployment-registry.json"
+          message: "chore: update IPFS artifact CIDs after replacePinObject — build #${{ github.run_number }} [skip ci]"
+          default_author: github_actions
+
+      # ── Final workflow summary ───────────────────────────────────────────
+      - name: Final summary
+        if: always()
+        run: |
+          GATEWAY="${{ vars.PINATA_GATEWAY_NAME }}"
+          ABI_CID="${{ needs.pin-new-artifact.outputs.abi_proof_cid }}"
+          MANIFEST_CID="${{ needs.pin-new-artifact.outputs.manifest_cid }}"
+
+          {
+            echo "---"
+            echo "## 🔏 Pinata replacePinObject — Run #${{ github.run_number }}"
+            echo ""
+            echo "| Key | Value |"
+            echo "|---|---|"
+            echo "| Repository | \`${{ github.repository }}\` |"
+            echo "| Commit | \`${{ github.sha }}\` |"
+            echo "| Triggered by | \`${{ github.event_name }}\` |"
+            echo "| UCC-1 Filing # | \`${{ vars.UCC1_FILING_NUMBER || '20260000078753' }}\` |"
+            echo "| Pinata gateway | \`${GATEWAY:-lavender-neat-urial-76}.mypinata.cloud\` |"
+            echo ""
+            if [[ -n "$ABI_CID" && "$ABI_CID" != "DRY_RUN_NO_CID" ]]; then
+              echo "**abi-proof.json CID:** [\`${ABI_CID}\`](https://${GATEWAY:-lavender-neat-urial-76}.mypinata.cloud/ipfs/${ABI_CID})"
+            fi
+            if [[ -n "$MANIFEST_CID" && "$MANIFEST_CID" != "DRY_RUN_NO_CID" ]]; then
+              echo "**ipfs-document-manifest.json CID:** [\`${MANIFEST_CID}\`](https://${GATEWAY:-lavender-neat-urial-76}.mypinata.cloud/ipfs/${MANIFEST_CID})"
+            fi
+            echo ""
+            echo "### Hermetical SEAL — UCC-1 Metadata"
+            echo "| Filing # | Jurisdiction | Debtors | Secured Party |"
+            echo "|---|---|---|---|"
+            echo "| \`20260000078753\` | New Mexico SOS | Slaps Streaming LLC / Clifton Kelly Bell | Morpho Protocol |"
+            echo ""
+            echo "### Story Protocol IP Asset"
+            echo "| IPID | Token # | Chain |"
+            echo "|---|---|---|"
+            echo "| \`0x98971c660ac20880b60F86Cc3113eBd979eb3aAE\` | 15192 | Story Protocol (1514) |"
+          } >> "$GITHUB_STEP_SUMMARY"

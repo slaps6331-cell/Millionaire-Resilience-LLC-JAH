@@ -65,7 +65,8 @@ The following documents have already been pinned and their CIDs are recorded in 
 
 | Document | CID |
 |---|---|
-| UCC-1 Financing Statement | `bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a` |
+| UCC-1 Filing Record       | `bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a` |
+| UCC-1 Financing Statement | `bafkreidomwlsf5wabkvhvf63jq424t65mffhnftd4t6spnmhh5t64jn2bu` |
 | UCC-1 Auxiliary Bundle | `bafybeidkp74w2idrwkg2qey66uepfaes5ekonxjqt62uztyxawii7yye7y` |
 | Gladiator Holdings Cert of Org | `bafybeiba2j4g34bizjjm26qznc2pf4upgotffrcwjtkw6lj3qa6squrzpu` |
 | Gladiator Holdings Notice of Filing | `bafkreifbikc26xs2cu2mvsghzlrginwm6icqotdp4ntsvq3sn6h4flrhhm` |

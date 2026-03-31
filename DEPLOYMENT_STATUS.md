@@ -31,7 +31,7 @@ These hashes serve as placeholder records and **must be replaced** with the actu
 
 **Compilation fixes applied (across 8 contracts):**
 
-1. **Invalid EIP-55 checksum — `STORY_ROYALTY` address** (`0xcc8b9f0c9dC370ED1F41D95f74C9F72E08f24C90` → `0xCC8b9f0c9Dc370Ed1F41d95F74C9f72E08f24C90`):
+1. **Invalid EIP-55 checksum — `STORY_ROYALTY` address** (`0xCC8b9f0c9Dc370Ed1F41d95F74C9f72E08f24C90` → `0xD2f60c40fEbccf6311f8B47c4f2Ec6b040400086`):
    - `StoryAttestationService.sol`, `StoryOrchestrationService.sol`, `GladiatorHoldingsSpvLoan.sol`, `PILLoanEnforcement.sol`, `SLAPSIPSpvLoan.sol`
 
 2. **Invalid address length (41 hex chars) — `DAI` address** (`0x6B175474E89094C44Da98b954EeDeB2b9dBe9B3E2` → `0x6B175474E89094C44Da98b954EedeAC495271d0F`):
@@ -107,6 +107,7 @@ To complete the multi-sig:
 | GitHub Actions CI (deploy) | ✅ Configured | `deploy-contracts.yml` — story, base, mainnet, both, all |
 | Pre-computed tx hashes | ✅ Recorded | `tx-hashes.json` (deterministic, not live) |
 | UCC-1 filing hash | ✅ Recorded | IPFS CID `bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a` |
+| UCC-1 Financing Statement | ✅ Pinned | IPFS CID `bafkreidomwlsf5wabkvhvf63jq424t65mffhnftd4t6spnmhh5t64jn2bu` |
 | **`DEPLOYER_PRIVATE_KEY`** | ❌ **Required** | Must be set in GitHub Actions secrets |
 | **`ALCHEMY_API_KEY`** | ❌ **Required** | Required for Base L2, Story Protocol, and Ethereum mainnet RPC |
 | **`STORYSCAN_API_KEY`** | ❌ **Required** | Required for Story Protocol source verification |
@@ -208,7 +209,7 @@ Without RPC credentials or a funded deployer wallet, on-chain verification canno
 | Protocol | Address | Network |
 |----------|---------|---------|
 | Morpho Blue | `0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb` | Base L2 (8453) |
-| Story IP Registry | `0x1a9d0d28a0422F26D31Be72Edc6f13ea4371E11B` | Story Protocol (1514) |
-| Story Licensing Module | `0xd81fd78f557b457b4350cB95D20b547bFEb4D857` | Story Protocol (1514) |
-| Story Royalty Module | `0xCC8b9f0c9Dc370Ed1F41d95F74C9f72E08f24C90` | Story Protocol (1514) |
+| Story IP Registry | `0x77319B4031e6eF1250907aa00018B8B1c67a244b` | Story Protocol (1514) |
+| Story Licensing Module | `0x04fbd8a2e56dd85CFD5500A4A4DfA955B9f1dE6f` | Story Protocol (1514) |
+| Story Royalty Module | `0xD2f60c40fEbccf6311f8B47c4f2Ec6b040400086` | Story Protocol (1514) |
 | Base USDC | `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` | Base L2 (8453) |

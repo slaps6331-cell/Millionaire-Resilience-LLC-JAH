@@ -50,7 +50,7 @@ gh variable set COINBASE_WALLET_ADDRESS  --body "0xDc2aFCd0a97c1e878FdD64497806E
 gh variable set UCC1_FILING_NUMBER       --body "2024-NM-UCC-0001"                           --repo "$REPO"
 gh variable set STORY_RPC_URL            --body "https://mainnet.storyrpc.io"                 --repo "$REPO"
 gh variable set BASE_RPC_URL             --body "https://mainnet.base.org"                    --repo "$REPO"
-gh variable set STORY_PROTOCOL_REGISTRY  --body "0x1a9d0d28a0422F26D31Be72Edc6f13ea4371E11B" --repo "$REPO"
+gh variable set STORY_PROTOCOL_REGISTRY  --body "0x77319B4031e6eF1250907aa00018B8B1c67a244b" --repo "$REPO"
 gh variable set MORPHO_BLUE              --body "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb" --repo "$REPO"
 gh variable set PINATA_GATEWAY_NAME      --body "YOUR_GATEWAY_SUBDOMAIN"                     --repo "$REPO"
 ```

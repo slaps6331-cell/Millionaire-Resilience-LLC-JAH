@@ -10,8 +10,14 @@
     "filingDate": "2026-03-26",
     "designation": "Public-Finance Transaction",
     "debtors": [
-      { "name": "Slaps Streaming LLC",  "address": "3141 FAIRVIEW AVE, SEATTLE, WA 98102" },
-      { "name": "Clifton Kelly Bell",   "address": "3141 FAIRVIEW AVE, SEATTLE, WA 98102" }
+      {
+        "name": "Slaps Streaming LLC",
+        "address": "3141 FAIRVIEW AVE, SEATTLE, WA 98102"
+      },
+      {
+        "name": "Clifton Kelly Bell",
+        "address": "3141 FAIRVIEW AVE, SEATTLE, WA 98102"
+      }
     ],
     "securedParty": {
       "name": "Morpho Protocol",
@@ -49,11 +55,17 @@
       "totalPatents": 42,
       "averageEssentiality": "71%"
     },
-    "registryAddress": "0x1a9d0d28a0422F26D31Be72Edc6f13ea4371E11B",
-    "licensingModuleAddress": "0xd81fd78f557b457b4350cB95D20b547bFEb4D857",
-    "royaltyModuleAddress": "0xCC8b9f0c9Dc370Ed1F41d95F74C9f72E08f24C90",
+    "registryAddress": "0x77319B4031e6eF1250907aa00018B8B1c67a244b",
+    "licensingModuleAddress": "0x04fbd8a2e56dd85CFD5500A4A4DfA955B9f1dE6f",
+    "royaltyModuleAddress": "0xD2f60c40fEbccf6311f8B47c4f2Ec6b040400086",
     "createdAt": "2026-03-24T00:00:00Z",
-    "tags": ["UCC-1-Financing", "Patent-Portfolio", "SEP-Licensing", "Story-Protocol", "Multi-SPV"]
+    "tags": [
+      "UCC-1-Financing",
+      "Patent-Portfolio",
+      "SEP-Licensing",
+      "Story-Protocol",
+      "Multi-SPV"
+    ]
   },
   "morphoProtocolMarketMetadata": {
     "protocol": "Morpho Blue",
@@ -89,8 +101,8 @@
     "usdcAddress": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
     "multisigSigners": [
       {
-        "signer": "ThirdWeb",
-        "address": "0xCD67f7e86A1397aBc33C473c58662BEB83b7a667",
+        "signer": "Story",
+        "address": "0x597856e93f19877a399f686D2F43b298e2268618",
         "signingMethod": "EIP-191 personal_sign",
         "purpose": "Approve Morpho market parameters"
       },
@@ -129,5 +141,7 @@
         "role": "IP Licensor / SPV"
       }
     ]
-  }
+  },
+  "ucc1FinancingStatementCID": "bafkreidomwlsf5wabkvhvf63jq424t65mffhnftd4t6spnmhh5t64jn2bu",
+  "ucc1FinancingStatementUrl": "https://lavender-neat-urial-76.mypinata.cloud/ipfs/bafkreidomwlsf5wabkvhvf63jq424t65mffhnftd4t6spnmhh5t64jn2bu"
 }

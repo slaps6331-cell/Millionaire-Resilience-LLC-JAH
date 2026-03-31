@@ -7,7 +7,6 @@
     "jurisdiction": "NEW_MEXICO_SECRETARY_OF_STATE",
     "documentType": "UCC-1 Financing Statement with On-Chain Smart Contract Collateral"
   },
-
   "ucc1FilingStatement": {
     "state": "NEW_MEXICO",
     "filingNumber": "20260000078753",
@@ -34,12 +33,12 @@
     "securedParty": {
       "name": "Morpho Protocol",
       "address": "251 LITTLE FALLS DRIVE, WILMINGTON, DE 19807",
-      "role": "Secured Creditor — Morpho Blue DeFi Lending Protocol",
+      "role": "Secured Creditor \u2014 Morpho Blue DeFi Lending Protocol",
       "chainId": 8453,
       "contractAddress": "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb"
     },
     "collateral": {
-      "description": "Collateral uploaded in attachment — Smart Contracts, Blockchain Deployments, Digital Intellectual Property, and Associated IPFS Artifacts",
+      "description": "Collateral uploaded in attachment \u2014 Smart Contracts, Blockchain Deployments, Digital Intellectual Property, and Associated IPFS Artifacts",
       "type": "BLOCKCHAIN_SMART_CONTRACTS",
       "networks": [
         "Story Protocol (ChainID: 1514)",
@@ -48,12 +47,11 @@
       "collateralLocation": "DECENTRALIZED_BLOCKCHAIN_NETWORKS"
     }
   },
-
   "smartContractCollateral": {
     "repository": {
       "url": "https://github.com/slaps6331-cell/Millionaire-Resilience-LLC-JAH",
       "repoId": "1182223016",
-      "description": "Smart Contract — UCC-1 Secured Digital Asset Repository",
+      "description": "Smart Contract \u2014 UCC-1 Secured Digital Asset Repository",
       "languageComposition": {
         "Solidity": 63.2,
         "JavaScript": 31.5,
@@ -153,7 +151,6 @@
       }
     ]
   },
-
   "ipfsArtifactReferences": {
     "optional_filer_reference_data": {
       "source": "New Mexico Secretary of State UCC-1 Filing",
@@ -193,7 +190,6 @@
         }
       ]
     },
-
     "pinataDirectReferences": {
       "apiEndpoint": "https://api.pinata.cloud/pinning/pinFileToIPFS",
       "jwtAuthentication": "Required for uploads",
@@ -201,7 +197,7 @@
         {
           "fileName": "UCC1-Filing-20260000078753-NM-SOS.pdf",
           "pinataMetadata": {
-            "name": "UCC-1 Financing Statement — NM SOS File #20260000078753",
+            "name": "UCC-1 Financing Statement \u2014 NM SOS File #20260000078753",
             "keyvalues": {
               "documentType": "UCC-1 Financing Statement",
               "jurisdiction": "NEW_MEXICO",
@@ -232,7 +228,6 @@
       ]
     }
   },
-
   "hermeticSealWithUCC1": {
     "tier1": {
       "name": "Source Code Integrity",
@@ -283,7 +278,6 @@
       "verificationMethod": "Multi-tier Cryptographic Seal"
     }
   },
-
   "morphoProtocolLoans": {
     "protocol": "Morpho Blue",
     "chainId": 8453,
@@ -312,7 +306,6 @@
       }
     ]
   },
-
   "completeUCC1MetadataForPinata": {
     "pinataMetadata": {
       "name": "Millionaire-Resilience-LLC-JAH UCC-1 Filing #20260000078753 with Smart Contract Collateral",
@@ -333,14 +326,22 @@
       }
     },
     "pin_options": {
-      "hostNodes": ["lavender-neat-urial-76.mypinata.cloud", "gateway.pinata.cloud"],
+      "hostNodes": [
+        "lavender-neat-urial-76.mypinata.cloud",
+        "gateway.pinata.cloud"
+      ],
       "timeoutMinutes": 30
     }
   },
-
   "readyForCopyPasteUpload": {
     "instruction": "Copy this entire JSON and POST to Pinata API endpoint",
     "endpoint": "https://api.pinata.cloud/pinning/pinJSONToIPFS",
     "curlCommand": "curl -X POST https://api.pinata.cloud/pinning/pinJSONToIPFS -H 'Content-Type: application/json' -H 'pinata_api_key: $PINATA_API_KEY' -H 'pinata_secret_api_key: $PINATA_SECRET_API_KEY' -d @documents/ucc1-filing-collateral.json"
+  },
+  "ucc1FinancingStatementIPFS": {
+    "cid": "bafkreidomwlsf5wabkvhvf63jq424t65mffhnftd4t6spnmhh5t64jn2bu",
+    "url": "https://lavender-neat-urial-76.mypinata.cloud/ipfs/bafkreidomwlsf5wabkvhvf63jq424t65mffhnftd4t6spnmhh5t64jn2bu",
+    "description": "UCC-1 Financing Statement pinned to Pinata IPFS",
+    "pinnedAt": "2026-03-30"
   }
 }

@@ -21,6 +21,9 @@ const DOCUMENT_TYPE = "UCC-1_FINANCING_STATEMENT";
 const UCC1_CID =
   process.env.UCC1_FILING_HASH ||
   "bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a";
+const UCC1_FINANCING_STATEMENT_CID =
+  process.env.UCC1_FINANCING_STATEMENT_CID ||
+  "bafkreidomwlsf5wabkvhvf63jq424t65mffhnftd4t6spnmhh5t64jn2bu";
 
 // Build the Pinata gateway base URL from env vars so the token is never hardcoded.
 // Set PINATA_GATEWAY_NAME (gateway subdomain) and PINATA_GATEWAY_TOKEN in .env or
@@ -77,12 +80,12 @@ async function anchorSignatureHash() {
     signatureHash,
     eip191Hash: prefixedHash,
     multisigSigners: {
-      thirdweb:
-        process.env.THIRDWEB_WALLET_ADDRESS ||
-        "0xCD67f7e86A1397aBc33C473c58662BEB83b7a667",
+      story:
+        process.env.STORY_DEPLOYER_ADDRESS ||
+        "0x597856e93f19877a399f686D2F43b298e2268618",
       coinbase:
         process.env.COINBASE_WALLET_ADDRESS ||
-        "0xdc2afcd0a97c1e878fdd64497806e52cc530f02a",
+        "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a",
     },
     requiredSignatures: 2,
     verificationMethod: "MORPHO_PROTOCOL_MULTISIG",

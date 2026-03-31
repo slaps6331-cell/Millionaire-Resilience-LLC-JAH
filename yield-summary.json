@@ -1,6 +1,6 @@
 {
   "generatedAt": "2026-03-24T01:21:08.625Z",
-  "source": "StoryOrchestrationService.sol — on-chain constants (BTC_LOAN_APR_BPS, ETH_LOAN_APR_BPS, getProjectedPayoffMonths)",
+  "source": "StoryOrchestrationService.sol \u2014 on-chain constants (BTC_LOAN_APR_BPS, ETH_LOAN_APR_BPS, getProjectedPayoffMonths)",
   "protocol": "Morpho Blue",
   "morphoBlue": "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
   "blockchain": [
@@ -44,7 +44,7 @@
   },
   "pilRevenueRepaymentEngine": {
     "description": "100% of PIL licensing revenue routed to loan repayment via Story Protocol Royalty Module",
-    "royaltyModule": "0xcc8b9f0c9dC370ED1F41D95f74C9F72E08f24C90",
+    "royaltyModule": "0xD2f60c40fEbccf6311f8B47c4f2Ec6b040400086",
     "paymentDestination": "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a",
     "licenseRevenue": {
       "PIL-PER (1% royalty)": {
@@ -66,9 +66,9 @@
   "netYieldToLender": {
     "summary": "4.33% weighted APR on $6,000,000 USDC",
     "annualInterestIncome_USD": 260000,
-    "collateralProtection": "86% LLTV via Morpho Blue — liquidation triggered at 86% LTV",
+    "collateralProtection": "86% LLTV via Morpho Blue \u2014 liquidation triggered at 86% LTV",
     "primaryRepaymentSource": "PIL licensing revenue ($12.3M/yr projected)",
     "secondaryCollateral": "SLAPS Streaming IP Portfolio ($75M AT_RISK)",
-    "excludedCollateral": "Millionaire Resilience IP Portfolio ($225M PROTECTED — excluded from default)"
+    "excludedCollateral": "Millionaire Resilience IP Portfolio ($225M PROTECTED \u2014 excluded from default)"
   }
 }

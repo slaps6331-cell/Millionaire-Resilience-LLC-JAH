@@ -47,6 +47,9 @@ const UCC1_JURISDICTION = process.env.UCC1_JURISDICTION || "New Mexico Secretary
 const UCC1_FILING_HASH =
   process.env.UCC1_FILING_HASH ||
   "bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a";
+const UCC1_FINANCING_STATEMENT_CID =
+  process.env.UCC1_FINANCING_STATEMENT_CID ||
+  "bafkreidomwlsf5wabkvhvf63jq424t65mffhnftd4t6spnmhh5t64jn2bu";
 
 /**
  * Derive a deterministic bytes32 contract hash from an address so it can be

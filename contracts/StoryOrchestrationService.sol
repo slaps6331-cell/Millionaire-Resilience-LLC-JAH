@@ -46,6 +46,19 @@ contract StoryOrchestrationService is Ownable, ReentrancyGuard {
     address public constant COINBASE_WALLET = 0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a;
     address public constant BASE_USDC = 0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913;
 
+    // ============ STORY PROTOCOL SDK — MAINNET ADDRESSES (Chain 1514) ============
+    // Source: https://docs.story.foundation/developers/deployed-smart-contracts
+    address public constant IP_ASSET_REGISTRY            = 0x77319B4031e6eF1250907aa00018B8B1c67a244b;
+    address public constant LICENSING_MODULE             = 0x04fbd8a2e56dd85CFD5500A4A4DfA955B9f1dE6f;
+    address public constant ROYALTY_MODULE               = 0xD2f60c40fEbccf6311f8B47c4f2Ec6b040400086;
+    address public constant PIL_LICENSE_TEMPLATE         = 0x2E896b0b2Fdb7457499B56AAaA4AE55BCB4Cd316;
+    address public constant ROYALTY_POLICY_LAP           = 0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E;
+    address public constant LICENSE_REGISTRY             = 0x529a750E02d8E2f15649c13D69a465286a780e24;
+    address public constant LICENSE_ATTACHMENT_WORKFLOWS = 0xcC2E862bCee5B6036Db0de6E06Ae87e524a79fd8;
+    address public constant ROYALTY_WORKFLOWS            = 0x9515faE61E0c0447C6AC6dEe5628A2097aFE1890;
+    address public constant REGISTRATION_WORKFLOWS       = 0xbe39E1C756e921BD25DF86e7AAa31106d1eb0424;
+    address public constant DERIVATIVE_WORKFLOWS         = 0x9e2d496f72C547C2C535B167e06ED8729B374a4f;
+
     // ============ PIL LICENSE TYPES ============
 
     uint256 public constant PIL_PER_ROYALTY_BPS = 100;
@@ -223,6 +236,13 @@ contract StoryOrchestrationService is Ownable, ReentrancyGuard {
         address ipAssetId
     );
 
+    event PILLicensesBound(
+        bytes32 indexed pipelineId,
+        address pilLicenseTemplate,
+        address licensingModule,
+        address royaltyPolicyLAP
+    );
+
     // ============ MODIFIERS ============
 
     modifier onlyAuthorized() {
@@ -327,6 +347,11 @@ contract StoryOrchestrationService is Ownable, ReentrancyGuard {
         activePipeline = pipeline;
 
         emit PipelineAdvanced(pipelineId, oldStage, PipelineStage.PIL_BOUND);
+        // Emit Story Protocol SDK module references for this PIL binding step.
+        // Off-chain callers must use these addresses with the Story Protocol SDK:
+        //   ILicenseAttachmentWorkflows(LICENSE_ATTACHMENT_WORKFLOWS).attachLicenseTerms(ipId, PIL_LICENSE_TEMPLATE, licenseTermsId)
+        //   IRoyaltyModule(ROYALTY_MODULE).payRoyaltyOnBehalf(receiverIpId, payerIpId, token, amount)
+        emit PILLicensesBound(pipelineId, PIL_LICENSE_TEMPLATE, LICENSING_MODULE, ROYALTY_POLICY_LAP);
     }
 
     function configureMorphoPositions(
