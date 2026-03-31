@@ -32,6 +32,7 @@
  *   IPFS_PATENTSIGHT_MR_CID      — Pinata CID for PatentSight MR report
  *   IPFS_PATENTSIGHT_SLAPS_CID   — Pinata CID for PatentSight SLAPS report
  *   IPFS_IPLYTICS_DECLARATION_CID — Pinata CID for IPlytics SEP declaration
+ *   IPFS_ABI_PROOF_CID           — Pinata CID for the pinned abi-proof.json itself
  */
 
 const fs   = require("fs");
@@ -89,6 +90,7 @@ const DOCUMENT_CIDS = {
   patentsightMR:           process.env.IPFS_PATENTSIGHT_MR_CID      || "bafkreihls2yoi265uxzmcmh7wzk2ytyo5yvopmb4jib4blw4nptlchivqm",
   patentsightSLAPS:        process.env.IPFS_PATENTSIGHT_SLAPS_CID   || "bafkreiflmhdsflvv53e24mo2woafdgecpkvfljcbm5heafnzdxzbj5ct4i",
   iplyticsDeclaration:     process.env.IPFS_IPLYTICS_DECLARATION_CID || "bafkreiej7wfskl53hxo4j47g55bxjkyyulihovjjtpjvtf264kfoddxc5i",
+  abiProof:                process.env.IPFS_ABI_PROOF_CID            || "bafkreidlihfltbmbcfnq6uiupwod4rgmferre4v2o3edbi5gsst3gytpay",
 };
 
 // ── Helpers ───────────────────────────────────────────────────────────────
