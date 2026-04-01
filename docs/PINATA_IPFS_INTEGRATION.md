@@ -52,7 +52,7 @@ PINATA_JWT="YOUR_JWT_HERE"
 curl -X POST "https://api.pinata.cloud/pinning/pinFileToIPFS" \
   -H "Authorization: Bearer $PINATA_JWT" \
   -F "file=@documents/ucc-1-financing-statement-2024-nm-0001.pdf" \
-  -F 'pinataMetadata={"name":"UCC-1_Financing_Statement_2024-NM-UCC-0001","keyvalues":{"filing_number":"2024-NM-UCC-0001","jurisdiction":"New Mexico SOS","entity":"Millionaire Resilience LLC"}}' \
+  -F 'pinataMetadata={"name":"UCC-1_Financing_Statement_20260000078753","keyvalues":{"filing_number":"20260000078753","jurisdiction":"New Mexico SOS","entity":"Millionaire Resilience LLC"}}' \
   -F 'pinataOptions={"cidVersion":1,"wrapWithDirectory":false}' \
   | jq '.IpfsHash'
 ```
@@ -92,7 +92,7 @@ Every document pinned with the `pin-to-pinata.cjs` script includes Pinata metada
 {
   "name": "<human-readable document name>",
   "keyvalues": {
-    "filing_number": "2024-NM-UCC-0001",
+    "filing_number": "20260000078753",
     "jurisdiction": "New Mexico Secretary of State",
     "entity": "Millionaire Resilience LLC",
     "document_type": "<type>",

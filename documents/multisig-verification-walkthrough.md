@@ -1,7 +1,7 @@
 # Wallet Multi-Signature Verification Walkthrough
 
 **Gladiator Holdings LLC / Millionaire Resilience LLC**  
-**Morpho Protocol 2-of-2 Multi-Sig — Coinbase & ThirdWeb Wallets**
+**Morpho Protocol 2-of-2 Multi-Sig — Story Protocol Deployer & Coinbase Wallets**
 
 ---
 
@@ -14,7 +14,7 @@ This document is the authoritative step-by-step guide for both signers.
 
 | Role | Wallet App | Address |
 |------|-----------|---------|
-| **Signer 1** | ThirdWeb Embedded Wallet | `0xCD67f7e86A1397aBc33C473c58662BEB83b7a667` |
+| **Signer 1** | Story Protocol Deployer Wallet | `0x597856e93f19877a399f686D2F43b298e2268618` |
 | **Signer 2** | Coinbase Wallet (smart wallet / EOA) | `0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a` |
 
 Both wallets must sign before the deployment workflow can proceed.
@@ -102,11 +102,11 @@ by `node scripts/generate-tx-hashes.cjs` and stored in `tx-hashes.json`.
 
 ---
 
-## Part 2 — ThirdWeb Wallet: Step-by-Step Signing
+## Part 2 — Story Protocol Deployer Wallet: Step-by-Step Signing
 
 ### Prerequisites
 
-- Access to the ThirdWeb wallet `0xCD67f7e86A1397aBc33C473c58662BEB83b7a667`
+- Access to the Story Protocol deployer wallet `0x597856e93f19877a399f686D2F43b298e2268618`
 - `signature-morpho-config.json` generated (run `node scripts/anchor-signature.cjs`)
 
 ### Step 1 — Generate the signature payload
@@ -127,43 +127,45 @@ Open `signature-morpho-config.json` and locate the `eip191Hash` field:
 }
 ```
 
-Copy the value of `eip191Hash`.  This is what the ThirdWeb wallet must sign.
+Copy the value of `eip191Hash`.  This is what the Story Protocol deployer wallet must sign.
 
-### Step 2 — Sign via ThirdWeb Dashboard (GUI method)
+### Step 2 — Sign via MetaMask / Hardware Wallet (GUI method)
 
-1. Open [https://thirdweb.com/dashboard](https://thirdweb.com/dashboard).
-2. Click **Connect Wallet** in the top-right corner.
-3. Select **ThirdWeb Embedded Wallet** and connect the account
-   `0xCD67f7e86A1397aBc33C473c58662BEB83b7a667`.
-4. Navigate to **Wallet SDK → Sign Message** in the left sidebar.
+1. Open your browser wallet (MetaMask, Frame, or equivalent) and connect the account
+   `0x597856e93f19877a399f686D2F43b298e2268618`.
+2. Open [https://www.myetherwallet.com](https://www.myetherwallet.com).
+3. Click **Tools** (top navigation) → **Sign Message**.
+4. Connect your wallet when prompted.
 5. In the message field, paste the `eip191Hash` value copied in Step 1.
-6. Click **Sign**.
-7. The dashboard returns a 132-character hex signature (starts with `0x`,
+6. Click **Sign**. The wallet popup appears — review the message hash, then click **Sign** to confirm.
+7. The interface returns a 132-character hex signature (starts with `0x`,
    followed by 130 hex characters).  Copy the entire value.
 
-### Step 3 — Sign via ThirdWeb TypeScript SDK (programmatic method)
+### Step 3 — Sign via ethers.js SDK (programmatic method)
 
-```typescript
-import { createThirdwebClient } from "thirdweb";
-import { privateKeyToAccount } from "thirdweb/wallets";
-import * as fs from "fs";
+```javascript
+"use strict";
+const { ethers } = require("ethers");
+const fs = require("fs");
+require("dotenv").config();
 
 const config = JSON.parse(fs.readFileSync("signature-morpho-config.json", "utf8"));
-const eip191Hash = config.eip191Hash;      // already prefixed — sign as raw bytes
+const eip191Hash = config.eip191Hash;
 
-const client = createThirdwebClient({
-  clientId: process.env.THIRDWEB_CLIENT_ID,   // from GitHub Secret
-});
-const account = privateKeyToAccount({
-  client,
-  privateKey: process.env.THIRDWEB_PRIVATE_KEY,  // never commit — use env var
-});
+async function signWithStoryDeployer() {
+  // Connect to Story Protocol Mainnet
+  const provider = new ethers.JsonRpcProvider(
+    process.env.STORY_RPC_URL || "https://mainnet.storyrpc.io"
+  );
+  const wallet = new ethers.Wallet(process.env.DEPLOYER_PRIVATE_KEY, provider);
 
-// Sign the raw eip191Hash bytes (already EIP-191-prefixed by anchor-signature.cjs)
-const signature = await account.signMessage({
-  message: { raw: Buffer.from(eip191Hash.slice(2), "hex") },
-});
-console.log("ThirdWeb signature:", signature);
+  // Sign the raw eip191Hash bytes (already EIP-191-prefixed by anchor-signature.cjs)
+  const rawBytes = ethers.getBytes(eip191Hash);
+  const signature = await wallet.signMessage(rawBytes);
+  console.log("Story deployer signature:", signature);
+}
+
+signWithStoryDeployer().catch(console.error);
 ```
 
 ### Step 4 — Sign via cast (Foundry CLI method)
@@ -173,26 +175,26 @@ console.log("ThirdWeb signature:", signature);
 
 ```bash
 # Load from .env (recommended)
-source .env   # file must contain: export THIRDWEB_PRIVATE_KEY=0x...
+source .env   # file must contain: export DEPLOYER_PRIVATE_KEY=0x...
 
 # Export the hash from the config file
 EIP191_HASH=$(node -e "console.log(require('./signature-morpho-config.json').eip191Hash)")
 
-# Sign with the ThirdWeb private key (--no-hash because the hash is already EIP-191 prefixed)
+# Sign with the Story deployer private key (--no-hash because the hash is already EIP-191 prefixed)
 cast wallet sign \
-  --private-key "$THIRDWEB_PRIVATE_KEY" \
+  --private-key "$DEPLOYER_PRIVATE_KEY" \
   --no-hash \
   "$EIP191_HASH"
 ```
 
-### Step 5 — Record the ThirdWeb signature
+### Step 5 — Record the Story deployer signature
 
 Add the signature to `signature-morpho-config.json`:
 
 ```json
 {
   "signatures": {
-    "thirdweb": "0x<the 132-char hex signature from Step 2, 3, or 4>",
+    "story":    "0x<the 132-char hex signature from Step 2, 3, or 4>",
     "coinbase":  null
   }
 }
@@ -204,8 +206,8 @@ Also update `multisig-transaction.json`:
 {
   "signatures": [
     {
-      "signer":    "0xCD67f7e86A1397aBc33C473c58662BEB83b7a667",
-      "label":     "ThirdWeb",
+      "signer":    "0x597856e93f19877a399f686D2F43b298e2268618",
+      "label":     "Story",
       "signature": "0x<the 132-char hex signature>",
       "verified":  true
     },
@@ -231,7 +233,7 @@ Also update `multisig-transaction.json`:
 ### Step 1 — Locate the eip191Hash
 
 Open `signature-morpho-config.json` and copy the `eip191Hash` field (same hash
-the ThirdWeb wallet signed in Part 2).
+the Story Protocol deployer wallet signed in Part 2).
 
 ### Step 2 — Sign via Coinbase Wallet Browser Extension (GUI method)
 
@@ -295,7 +297,7 @@ Update `signature-morpho-config.json` with the Coinbase signature:
 ```json
 {
   "signatures": {
-    "thirdweb": "0x<ThirdWeb signature from Part 2>",
+    "story":    "0x<Story deployer signature from Part 2>",
     "coinbase":  "0x<the 132-char Coinbase signature>"
   }
 }
@@ -307,15 +309,15 @@ Update `multisig-transaction.json`:
 {
   "signatures": [
     {
-      "signer":    "0xCD67f7e86A1397aBc33C473c58662BEB83b7a667",
-      "label":     "ThirdWeb",
-      "signature": "0x<ThirdWeb signature>",
+      "signer":    "0x597856e93f19877a399f686D2F43b298e2268618",
+      "label":     "Story",
+      "signature": "0x<Story deployer signature>",
       "verified":  true
     },
     {
       "signer":    "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a",
       "label":     "Coinbase",
-      "signature": "0x<Coinbase signature>",
+      "signature": "0x<the 132-char Coinbase signature>",
       "verified":  true
     }
   ]
@@ -346,8 +348,8 @@ Message details:
   Raw hash:      0x<64-char hash>
   EIP-191 hash:  0x<64-char eip191Hash>
 
-Verifying ThirdWeb (0xCD67f7e8...):
-  Recovered:    0xCD67f7e86A1397aBc33C473c58662BEB83b7a667
+Verifying Story (0x597856e9...):
+  Recovered:    0x597856e93f19877a399f686D2F43b298e2268618
   ✓  Signature valid — signer address matches
 
 Verifying Coinbase (0xDc2aFCd0...):
@@ -413,6 +415,8 @@ After live deployment:
 3. Confirm token ID **15192** under the Gladiator Holdings parent entity.
 4. Verify PIL license terms are attached (PIL-PER 1%, PIL-COM 5%, PIL-ENT 12%).
 5. Confirm royalty routing to `0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a`.
+6. Confirm owner address matches Story Protocol deployer:  
+   `0x597856e93f19877a399f686D2F43b298e2268618`.
 
 ### 5.3 Basescan — verify Morpho market positions
 
@@ -437,10 +441,10 @@ PRE-SIGNING
       → node scripts/anchor-signature.cjs
   ☐ eip191Hash value noted
 
-THIRDWEB WALLET  (0xCD67f7e86A1397aBc33C473c58662BEB83b7a667)
-  ☐ Wallet connected in ThirdWeb Dashboard or SDK
+STORY PROTOCOL DEPLOYER WALLET  (0x597856e93f19877a399f686D2F43b298e2268618)
+  ☐ Wallet connected (MetaMask / Frame / cast) with Story deployer account
   ☐ eip191Hash signed  → 132-char hex signature
-  ☐ Signature recorded in signature-morpho-config.json  (signatures.thirdweb)
+  ☐ Signature recorded in signature-morpho-config.json  (signatures.story)
   ☐ Signature recorded in multisig-transaction.json     (signatures[0].signature)
 
 COINBASE WALLET  (0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a)

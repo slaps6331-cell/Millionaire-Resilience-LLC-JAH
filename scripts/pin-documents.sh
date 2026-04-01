@@ -90,7 +90,7 @@ echo ""
 echo "=========================================="
 echo "  Pinata IPFS Document Pinning"
 echo "  Entity: Millionaire Resilience LLC"
-echo "  Filing: 2024-NM-UCC-0001"
+echo "  Filing: 20260000078753"
 echo "=========================================="
 echo ""
 
@@ -117,7 +117,7 @@ echo ""
 PROOF_LINES=()
 PROOF_LINES+=("# IPFS Proof Document")
 PROOF_LINES+=("**Entity**: Millionaire Resilience LLC")
-PROOF_LINES+=("**Filing Number**: 2024-NM-UCC-0001")
+PROOF_LINES+=("**Filing Number**: 20260000078753")
 PROOF_LINES+=("**Pinned at**: $(date -u '+%Y-%m-%dT%H:%M:%SZ')")
 PROOF_LINES+=("")
 PROOF_LINES+=("| Document | CID | Gateway URL |")
@@ -134,7 +134,7 @@ add_proof_line() {
 
 echo "Step 1: Primary UCC-1 Financing Statement"
 echo "---"
-UCC1_META='{"name":"UCC-1_Financing_Statement_2024-NM-UCC-0001","keyvalues":{"filing_number":"2024-NM-UCC-0001","jurisdiction":"New Mexico Secretary of State","entity":"Millionaire Resilience LLC","document_type":"UCC-1 Financing Statement"}}'
+UCC1_META='{"name":"UCC-1_Financing_Statement_20260000078753","keyvalues":{"filing_number":"20260000078753","jurisdiction":"New Mexico Secretary of State","entity":"Millionaire Resilience LLC","document_type":"UCC-1 Financing Statement"}}'
 UCC1_CID=$(pin_file "$DOCS_DIR/ucc-1-financing-statement-2024-nm-0001.pdf" "UCC-1 Financing Statement" "$UCC1_META")
 update_registry "ucc1-filing" "$UCC1_CID"
 add_proof_line "UCC-1 Financing Statement" "$UCC1_CID"
@@ -143,7 +143,7 @@ add_proof_line "UCC-1 Financing Statement" "$UCC1_CID"
 
 echo "Step 2: Auxiliary Documents Bundle"
 echo "---"
-AUX_META='{"name":"UCC1_Auxiliary_Documents_Bundle","keyvalues":{"filing_number":"2024-NM-UCC-0001","document_type":"UCC-1 Auxiliary Bundle","contents":"Certificate of Organization, Notice of Filing, Articles of Incorporation, Bylaws, IRS CP575"}}'
+AUX_META='{"name":"UCC1_Auxiliary_Documents_Bundle","keyvalues":{"filing_number":"20260000078753","document_type":"UCC-1 Auxiliary Bundle","contents":"Certificate of Organization, Notice of Filing, Articles of Incorporation, Bylaws, IRS CP575"}}'
 AUX_CID=$(pin_file "$DOCS_DIR/ucc-1-auxiliary-docs-bundle.zip" "UCC-1 Auxiliary Bundle" "$AUX_META")
 update_registry "ucc1-auxiliary" "$AUX_CID"
 add_proof_line "UCC-1 Auxiliary Bundle" "$AUX_CID"

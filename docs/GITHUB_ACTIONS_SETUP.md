@@ -45,14 +45,15 @@ echo "$PINATA_GATEWAY_TOKEN"         | gh secret set PINATA_GATEWAY_TOKEN       
 ```bash
 REPO="slaps6331-cell/Millionaire-Resilience-LLC-JAH"
 
-gh variable set THIRDWEB_WALLET_ADDRESS  --body "0xCD67f7e86A1397aBc33C473c58662BEB83b7a667" --repo "$REPO"
+gh variable set STORY_DEPLOYER_ADDRESS   --body "0x597856e93f19877a399f686D2F43b298e2268618" --repo "$REPO"
 gh variable set COINBASE_WALLET_ADDRESS  --body "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a" --repo "$REPO"
-gh variable set UCC1_FILING_NUMBER       --body "2024-NM-UCC-0001"                           --repo "$REPO"
-gh variable set STORY_RPC_URL            --body "https://mainnet.storyrpc.io"                 --repo "$REPO"
-gh variable set BASE_RPC_URL             --body "https://mainnet.base.org"                    --repo "$REPO"
+gh variable set UCC1_FILING_NUMBER       --body "20260000078753"                             --repo "$REPO"
+gh variable set STORY_RPC_URL            --body "https://mainnet.storyrpc.io"                --repo "$REPO"
+gh variable set BASE_RPC_URL             --body "https://mainnet.base.org"                   --repo "$REPO"
 gh variable set STORY_PROTOCOL_REGISTRY  --body "0x77319B4031e6eF1250907aa00018B8B1c67a244b" --repo "$REPO"
 gh variable set MORPHO_BLUE              --body "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb" --repo "$REPO"
-gh variable set PINATA_GATEWAY_NAME      --body "YOUR_GATEWAY_SUBDOMAIN"                     --repo "$REPO"
+gh variable set PINATA_GATEWAY_NAME      --body "lavender-neat-urial-76"                     --repo "$REPO"
+gh variable set UCC1_FINANCING_STATEMENT_CID --body "bafkreidomwlsf5wabkvhvf63jq424t65mffhnftd4t6spnmhh5t64jn2bu" --repo "$REPO"
 ```
 
 ### Create Deployment Environments

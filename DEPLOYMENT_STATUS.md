@@ -77,7 +77,7 @@ The Morpho Protocol 2-of-2 multi-sig payload requires signatures from both walle
 
 | Signer | Address | Signature Status |
 |--------|---------|-----------------|
-| **ThirdWeb** | `0xCD67f7e86A1397aBc33C473c58662BEB83b7a667` | ⏳ Pending |
+| **Story Protocol Deployer** | `0x597856e93f19877a399f686D2F43b298e2268618` | ⏳ Pending |
 | **Coinbase** | `0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a` | ⏳ Pending |
 
 - **Signing method:** EIP-191 `personal_sign`
@@ -86,7 +86,7 @@ The Morpho Protocol 2-of-2 multi-sig payload requires signatures from both walle
 
 To complete the multi-sig:
 1. Run `node scripts/anchor-signature.cjs` (generates `signature-morpho-config.json`)
-2. ThirdWeb wallet signs the `eip191Hash` — see `documents/multisig-verification-walkthrough.md §2`
+2. Story Protocol deployer wallet signs the `eip191Hash` — see `documents/multisig-verification-walkthrough.md §2`
 3. Coinbase wallet signs the `eip191Hash` — see `documents/multisig-verification-walkthrough.md §3`
 4. Run `node scripts/verify-multisig.cjs` to verify locally
 5. Submit the signed transaction to the network
@@ -157,7 +157,7 @@ To deploy to a specific network, choose a dry-run, or deploy to Ethereum mainnet
 After the deploy workflow completes:
 - Retrieve deployed addresses from the `deployment-config.<network>.json` artifact
 - Update `tx-hashes.json` with the live transaction hashes
-- Complete the Morpho 2-of-2 multi-sig (ThirdWeb + Coinbase wallets)
+- Complete the Morpho 2-of-2 multi-sig (Story Protocol deployer + Coinbase wallets)
 
 ### Manual CLI Alternative
 
