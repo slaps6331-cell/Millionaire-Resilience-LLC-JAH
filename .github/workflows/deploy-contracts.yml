@@ -61,6 +61,31 @@ jobs:
       - name: Compile contracts
         run: npm run contracts:compile
 
+      - name: Export ABI / bytecode proof
+        env:
+          PINATA_GATEWAY_NAME: ${{ vars.PINATA_GATEWAY_NAME }}
+          # UCC-1 filing CIDs (publicly recorded — NM SOS File #20260000078753)
+          UCC1_FILING_HASH: "bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a"
+          UCC1_AUXILIARY_DOCS: "bafybeidkp74w2idrwkg2qey66uepfaes5ekonxjqt62uztyxawii7yye7y"
+          UCC1_FINANCING_STATEMENT_CID: ${{ vars.UCC1_FINANCING_STATEMENT_CID || 'bafkreidomwlsf5wabkvhvf63jq424t65mffhnftd4t6spnmhh5t64jn2bu' }}
+          # Corporate document IPFS CIDs (Pinata-pinned)
+          IPFS_GLADIATOR_CERT_CID: ${{ vars.IPFS_GLADIATOR_CERT_CID || 'bafybeiba2j4g34bizjjm26qznc2pf4upgotffrcwjtkw6lj3qa6squrzpu' }}
+          IPFS_GLADIATOR_NOTICE_CID: ${{ vars.IPFS_GLADIATOR_NOTICE_CID || 'bafkreifbikc26xs2cu2mvsghzlrginwm6icqotdp4ntsvq3sn6h4flrhhm' }}
+          IPFS_MR_ARTICLES_CID: ${{ vars.IPFS_MR_ARTICLES_CID || 'bafkreifxiesrze736sxhvsa5op64q6f3ddvv3rismnvd75wi3yfqilu4py' }}
+          IPFS_MR_EIN_LETTER_CID: ${{ vars.IPFS_MR_EIN_LETTER_CID || 'bafkreihz5zpp33pimzckaey64mht2vezlbzngoxe46urrfctzqvjvsdboe' }}
+          IPFS_SLAPS_ARTICLES_CID: ${{ vars.IPFS_SLAPS_ARTICLES_CID || 'bafkreic3n6bdf25tobljqbjxzvzkbch6s7xkqq5yehmyt3zju4de7ey52u' }}
+          IPFS_SLAPS_EIN_LETTER_CID: ${{ vars.IPFS_SLAPS_EIN_LETTER_CID || 'bafkreifnuwchbvbolmhbgionvsltdi3edzasfqytd4zzqlvu42m5m4jhei' }}
+          IPFS_RBW_EIN_LETTER_CID: ${{ vars.IPFS_RBW_EIN_LETTER_CID || 'bafkreid77fuxwqtwyku5syp3dswmy75rymvxh6v3tf7rfrzqbrizoutxtu' }}
+          IPFS_NM_SOS_RECEIPT_CID: ${{ vars.IPFS_NM_SOS_RECEIPT_CID || 'bafkreigjsqx6d47sgqwkjxgtt3qrjnoz3hdth4hqk7qnxflqog2ikjs2kq' }}
+          IPFS_BENEFICIAL_OWNER_ID_CID: ${{ vars.IPFS_BENEFICIAL_OWNER_ID_CID || 'bafkreie5spkgxxhmafdqylwyfplx37jqhcjrs3es3neasgcnynzgkg5mzi' }}
+          IPFS_PATENTSIGHT_PORTFOLIO_CID: ${{ vars.IPFS_PATENTSIGHT_PORTFOLIO_CID || 'bafkreibxqnmhir5iifpboxdv5ndltm5vnbplso4ndtcuzfnanykudrwdbu' }}
+          IPFS_PATENTSIGHT_MR_CID: ${{ vars.IPFS_PATENTSIGHT_MR_CID || 'bafkreihls2yoi265uxzmcmh7wzk2ytyo5yvopmb4jib4blw4nptlchivqm' }}
+          IPFS_PATENTSIGHT_SLAPS_CID: ${{ vars.IPFS_PATENTSIGHT_SLAPS_CID || 'bafkreiflmhdsflvv53e24mo2woafdgecpkvfljcbm5heafnzdxzbj5ct4i' }}
+          IPFS_IPLYTICS_DECLARATION_CID: ${{ vars.IPFS_IPLYTICS_DECLARATION_CID || 'bafkreiej7wfskl53hxo4j47g55bxjkyyulihovjjtpjvtf264kfoddxc5i' }}
+          # ABI / bytecode proof — self-referencing CID of the pinned abi-proof.json
+          IPFS_ABI_PROOF_CID: ${{ vars.IPFS_ABI_PROOF_CID || 'bafkreidlihfltbmbcfnq6uiupwod4rgmferre4v2o3edbi5gsst3gytpay' }}
+        run: npm run contracts:export-abi-proof
+
       - name: Set artifacts key
         id: artifacts
         run: echo "key=artifacts-${{ github.sha }}" >> "$GITHUB_OUTPUT"
@@ -69,7 +94,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: artifacts-${{ github.sha }}
-          path: artifacts/
+          path: |
+            artifacts/
+            abi-proof.json
           retention-days: 30
 
   deploy-story:
@@ -104,8 +131,10 @@ jobs:
       - name: Deploy contracts to Story Protocol
         env:
           DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
-          # STORY_RPC_URL is built from ALCHEMY_API_KEY when available (recommended).
-          # Fall back to STORY_RPC_URL secret, then the public endpoint.
+          # ALCHEMY_API_KEY is read by hardhat.config.cjs to build the Story RPC URL
+          # automatically (https://story-mainnet.g.alchemy.com/v2/<key>).
+          # STORY_RPC_URL falls back to the STORY_RPC_URL secret, then the public endpoint.
+          ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
           STORY_RPC_URL: ${{ secrets.ALCHEMY_API_KEY && format('https://story-mainnet.g.alchemy.com/v2/{0}', secrets.ALCHEMY_API_KEY) || secrets.STORY_RPC_URL || 'https://mainnet.storyrpc.io' }}
           STORYSCAN_API_KEY: ${{ secrets.STORYSCAN_API_KEY }}
           # Pinata / IPFS credentials — used by deployment scripts that pin or fetch
@@ -171,6 +200,8 @@ jobs:
           IPFS_PATENTSIGHT_MR_CID: ${{ vars.IPFS_PATENTSIGHT_MR_CID || 'bafkreihls2yoi265uxzmcmh7wzk2ytyo5yvopmb4jib4blw4nptlchivqm' }}
           IPFS_PATENTSIGHT_SLAPS_CID: ${{ vars.IPFS_PATENTSIGHT_SLAPS_CID || 'bafkreiflmhdsflvv53e24mo2woafdgecpkvfljcbm5heafnzdxzbj5ct4i' }}
           IPFS_IPLYTICS_DECLARATION_CID: ${{ vars.IPFS_IPLYTICS_DECLARATION_CID || 'bafkreiej7wfskl53hxo4j47g55bxjkyyulihovjjtpjvtf264kfoddxc5i' }}
+          # ABI / bytecode proof — Pinata-pinned abi-proof.json CID (Story Protocol Chain 1514)
+          IPFS_ABI_PROOF_CID: ${{ vars.IPFS_ABI_PROOF_CID || 'bafkreidlihfltbmbcfnq6uiupwod4rgmferre4v2o3edbi5gsst3gytpay' }}
         run: npm run contracts:orchestrate:story
 
       - name: Generate multi-sig transaction config
@@ -180,6 +211,22 @@ jobs:
           UCC1_FILING_HASH: "bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a"
           GAS_PRICE_GWEI: "50"
         run: npm run contracts:multisig
+
+      - name: Record UCC-1 filing on-chain (Story Protocol)
+        env:
+          DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+          ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
+          STORY_RPC_URL: ${{ secrets.ALCHEMY_API_KEY && format('https://story-mainnet.g.alchemy.com/v2/{0}', secrets.ALCHEMY_API_KEY) || secrets.STORY_RPC_URL || 'https://mainnet.storyrpc.io' }}
+          UCC1_FILING_NUMBER: ${{ vars.UCC1_FILING_NUMBER || '20260000078753' }}
+          UCC1_JURISDICTION: "New Mexico Secretary of State"
+          UCC1_FILING_HASH: "bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a"
+          UCC1_FINANCING_STATEMENT_CID: ${{ vars.UCC1_FINANCING_STATEMENT_CID || 'bafkreidomwlsf5wabkvhvf63jq424t65mffhnftd4t6spnmhh5t64jn2bu' }}
+          PINATA_JWT: ${{ secrets.PINATA_JWT }}
+          PINATA_API_KEY: ${{ secrets.PINATA_API_KEY }}
+          PINATA_SECRET_API_KEY: ${{ secrets.PINATA_SECRET_API_KEY }}
+          PINATA_GATEWAY_TOKEN: ${{ secrets.PINATA_GATEWAY_TOKEN }}
+          PINATA_GATEWAY_NAME: ${{ vars.PINATA_GATEWAY_NAME }}
+        run: npm run contracts:record-ucc1:story
 
       - name: Upload deployment artifacts
         uses: actions/upload-artifact@v4
@@ -191,6 +238,8 @@ jobs:
             registration-attestation.story.json
             valuation-attestation.json
             yield-summary.json
+            abi-proof.json
+            ucc1-filing-record.json
           retention-days: 90
 
       - name: Show deployed contract addresses
@@ -371,6 +420,8 @@ jobs:
           IPFS_PATENTSIGHT_MR_CID: ${{ vars.IPFS_PATENTSIGHT_MR_CID || 'bafkreihls2yoi265uxzmcmh7wzk2ytyo5yvopmb4jib4blw4nptlchivqm' }}
           IPFS_PATENTSIGHT_SLAPS_CID: ${{ vars.IPFS_PATENTSIGHT_SLAPS_CID || 'bafkreiflmhdsflvv53e24mo2woafdgecpkvfljcbm5heafnzdxzbj5ct4i' }}
           IPFS_IPLYTICS_DECLARATION_CID: ${{ vars.IPFS_IPLYTICS_DECLARATION_CID || 'bafkreiej7wfskl53hxo4j47g55bxjkyyulihovjjtpjvtf264kfoddxc5i' }}
+          # ABI / bytecode proof — Pinata-pinned abi-proof.json CID (Base L2 Chain 8453)
+          IPFS_ABI_PROOF_CID: ${{ vars.IPFS_ABI_PROOF_CID || 'bafkreidlihfltbmbcfnq6uiupwod4rgmferre4v2o3edbi5gsst3gytpay' }}
           # Morpho Blue parameters
           MORPHO_BLUE: ${{ vars.MORPHO_BLUE || '0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb' }}
           BASE_USDC: ${{ vars.BASE_USDC || '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913' }}
@@ -381,6 +432,22 @@ jobs:
           MORPHO_LLTV: ${{ vars.MORPHO_LLTV || '860000000000000000' }}
         run: npm run contracts:orchestrate:base
 
+      - name: Record UCC-1 filing on-chain (Base L2)
+        env:
+          DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+          ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
+          BASE_RPC_URL: ${{ secrets.BASE_RPC_URL || 'https://mainnet.base.org' }}
+          UCC1_FILING_NUMBER: ${{ vars.UCC1_FILING_NUMBER || '20260000078753' }}
+          UCC1_JURISDICTION: "New Mexico Secretary of State"
+          UCC1_FILING_HASH: "bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a"
+          UCC1_FINANCING_STATEMENT_CID: ${{ vars.UCC1_FINANCING_STATEMENT_CID || 'bafkreidomwlsf5wabkvhvf63jq424t65mffhnftd4t6spnmhh5t64jn2bu' }}
+          PINATA_JWT: ${{ secrets.PINATA_JWT }}
+          PINATA_API_KEY: ${{ secrets.PINATA_API_KEY }}
+          PINATA_SECRET_API_KEY: ${{ secrets.PINATA_SECRET_API_KEY }}
+          PINATA_GATEWAY_TOKEN: ${{ secrets.PINATA_GATEWAY_TOKEN }}
+          PINATA_GATEWAY_NAME: ${{ vars.PINATA_GATEWAY_NAME }}
+        run: npm run contracts:record-ucc1:base
+
       - name: Upload deployment artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -390,6 +457,8 @@ jobs:
             registration-attestation.base.json
             valuation-attestation.json
             yield-summary.json
+            abi-proof.json
+            ucc1-filing-record.json
           retention-days: 90
 
       - name: Show deployed contract addresses
@@ -550,5 +619,5 @@ jobs:
         run: |
           echo "## ✓ Dry Run Complete" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "All 11 contracts compiled successfully." >> "$GITHUB_STEP_SUMMARY"
+          echo "All 12 contracts compiled successfully." >> "$GITHUB_STEP_SUMMARY"
           echo "Set **Dry run** to _false_ and re-run to deploy." >> "$GITHUB_STEP_SUMMARY"
