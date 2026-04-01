@@ -107,7 +107,7 @@ echo ""
 echo "Setting Repository Variables (public)..."
 set_variable STORY_DEPLOYER_ADDRESS   "0x597856e93f19877a399f686D2F43b298e2268618"
 set_variable COINBASE_WALLET_ADDRESS  "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a"
-set_variable UCC1_FILING_NUMBER       "2024-NM-UCC-0001"
+set_variable UCC1_FILING_NUMBER       "20260000078753"
 set_variable STORY_RPC_URL            "https://mainnet.storyrpc.io"
 set_variable BASE_RPC_URL             "https://mainnet.base.org"
 set_variable STORY_PROTOCOL_REGISTRY  "0x77319B4031e6eF1250907aa00018B8B1c67a244b" # Story Protocol IPAssetRegistry (mainnet)

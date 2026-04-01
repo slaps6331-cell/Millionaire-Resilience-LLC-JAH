@@ -33,7 +33,7 @@ Before triggering the deployment workflow, confirm **every item** in this checkl
 
 | Check | Requirement |
 |-------|-------------|
-| ☐ Wallet created | A dedicated deployment wallet (separate from the Coinbase or ThirdWeb multi-sig wallets) |
+| ☐ Wallet created | A dedicated deployment wallet (separate from the Coinbase or Story Protocol deployer multi-sig wallets) |
 | ☐ Story Protocol gas | Minimum **0.5 IP** in the deployer wallet on Story Protocol mainnet (Chain 1514) |
 | ☐ Base L2 gas | Minimum **0.01 ETH** in the deployer wallet on Base L2 (Chain 8453) |
 | ☐ Private key exported | The deployer private key is ready to paste into GitHub Secrets (see §2) |
@@ -46,7 +46,7 @@ Morpho Protocol requires **2-of-2 signatures** from both of these wallets before
 
 | Label | Address | Wallet App |
 |-------|---------|------------|
-| **ThirdWeb** | `0xCD67f7e86A1397aBc33C473c58662BEB83b7a667` | ThirdWeb Embedded Wallet |
+| **Story** | `0x597856e93f19877a399f686D2F43b298e2268618` | Story Protocol Deployer Wallet |
 | **Coinbase** | `0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a` | Coinbase Wallet (smart wallet or EOA) |
 
 Both wallet holders must be available and ready to sign when the deployment reaches the Morpho multi-sig step.
@@ -156,9 +156,9 @@ echo "$MY_PRIVATE_KEY" | gh secret set DEPLOYER_PRIVATE_KEY
 Set the optional repository **variables** (public wallet addresses — not secrets):
 
 ```bash
-gh variable set THIRDWEB_WALLET_ADDRESS --body "0xCD67f7e86A1397aBc33C473c58662BEB83b7a667"
+gh variable set STORY_DEPLOYER_ADDRESS --body "0x597856e93f19877a399f686D2F43b298e2268618"
 gh variable set COINBASE_WALLET_ADDRESS --body "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a"
-gh variable set UCC1_FILING_NUMBER      --body "2024-NM-UCC-0001"
+gh variable set UCC1_FILING_NUMBER      --body "20260000078753"
 ```
 
 Confirm everything was saved:
@@ -199,8 +199,8 @@ gh variable list
 | `ETHERSCAN_API_KEY` | Etherscan/Basescan API key for contract source verification | Base deployment |
 | `STORY_RPC_URL` | Override Story Protocol RPC URL. Only needed if you want to use a non-Alchemy endpoint. Auto-constructed from `ALCHEMY_API_KEY` when set. | Story deployment |
 | `BASE_RPC_URL` | Dedicated Base L2 RPC endpoint *(defaults to public if omitted, or Alchemy if `ALCHEMY_API_KEY` is set)* | Base deployment |
-| `THIRDWEB_CLIENT_ID` | ThirdWeb project client ID | ThirdWeb wallet integration |
-| `THIRDWEB_SECRET_KEY` | ThirdWeb project secret key | ThirdWeb wallet integration |
+| `THIRDWEB_CLIENT_ID` | ThirdWeb SDK client ID | Story deployer wallet integration |
+| `THIRDWEB_SECRET_KEY` | ThirdWeb SDK secret key | Story deployer wallet integration |
 | `PINATA_JWT` | Pinata IPFS JWT token | IPFS document pinning |
 
 ### Optional Repository Variables (not secrets — public wallet addresses)
@@ -209,9 +209,9 @@ Navigate to **Settings → Secrets and variables → Actions → Variables tab**
 
 | Variable Name | Value |
 |---------------|-------|
-| `THIRDWEB_WALLET_ADDRESS` | `0xCD67f7e86A1397aBc33C473c58662BEB83b7a667` |
+| `STORY_DEPLOYER_ADDRESS` | `0x597856e93f19877a399f686D2F43b298e2268618` |
 | `COINBASE_WALLET_ADDRESS` | `0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a` |
-| `UCC1_FILING_NUMBER` | Official UCC-1 filing number assigned by the NM SOS (e.g. `2024-NM-UCC-0001`) |
+| `UCC1_FILING_NUMBER` | Official UCC-1 filing number assigned by the NM SOS (e.g. `20260000078753`) |
 
 > These wallet addresses are already hardcoded as defaults in the workflow. Setting them as repository variables allows you to update them without a code change.
 
@@ -263,17 +263,17 @@ eip191Hash  = keccak256("\x19Ethereum Signed Message:\n32" + rawHash)
 
 Both wallets must sign `eip191Hash`. The resulting signatures are stored in `signature-morpho-config.json`.
 
-### 3.3 Step-by-Step: ThirdWeb Wallet Signing
+### 3.3 Step-by-Step: Story Protocol Deployer Wallet Signing
 
-**Using the ThirdWeb dashboard (recommended):**
+**Using the wallet dashboard (recommended):**
 
-1. Open the [ThirdWeb Dashboard](https://thirdweb.com/dashboard) and connect the wallet at `0xCD67f7e86A1397aBc33C473c58662BEB83b7a667`.
+1. Open the [MetaMask / Frame wallet](https://thirdweb.com/dashboard) and connect the wallet at `0x597856e93f19877a399f686D2F43b298e2268618`.
 2. Navigate to **Wallet SDK → Sign Message**.
 3. Paste the `eip191Hash` value from `signature-morpho-config.json`.
 4. Click **Sign**. The dashboard will return a 132-character hex string (`0x` + 130 hex chars).
 5. Record the signature.
 
-**Using the ThirdWeb TypeScript SDK programmatically:**
+**Using the ethers.js SDK programmatically:**
 
 ```typescript
 import { createThirdwebClient, prepareContractCall } from "thirdweb";
@@ -284,7 +284,7 @@ const account = privateKeyToAccount({ client, privateKey: process.env.THIRDWEB_P
 
 // eip191Hash is the value from signature-morpho-config.json
 const signature = await account.signMessage({ message: { raw: eip191Hash } });
-console.log("ThirdWeb signature:", signature);
+console.log("Story deployer signature:", signature);
 ```
 
 **Using `cast` (Foundry) from the command line:**
@@ -335,7 +335,7 @@ After both signers produce their signatures, update `signature-morpho-config.jso
 ```json
 {
   "multisigSigners": {
-    "thirdweb": "0xCD67f7e86A1397aBc33C473c58662BEB83b7a667",
+    "story": "0x597856e93f19877a399f686D2F43b298e2268618",
     "coinbase":  "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a"
   },
   "signatures": {
@@ -351,8 +351,8 @@ And update `multisig-transaction.json`:
 {
   "signatures": [
     {
-      "signer":    "0xCD67f7e86A1397aBc33C473c58662BEB83b7a667",
-      "label":     "ThirdWeb",
+      "signer":    "0x597856e93f19877a399f686D2F43b298e2268618",
+      "label":     "Story",
       "signature": "0x<130 hex characters>",
       "verified":  true
     },
@@ -390,8 +390,8 @@ Message details:
   Document:     UCC-1_FINANCING_STATEMENT
   EIP-191 hash: 0x...
 
-Verifying ThirdWeb (0xCD67f7...):
-  Recovered:    0xCD67f7e86A1397aBc33C473c58662BEB83b7a667
+Verifying Story (0x597856...):
+  Recovered:    0x597856e93f19877a399f686D2F43b298e2268618
   ✓  Signature valid — signer address matches
 
 Verifying Coinbase (0xDc2aFc...):
@@ -863,8 +863,8 @@ Use `gh variable set` for the public wallet addresses and filing number (§2):
 ```bash
 REPO="slaps6331-cell/Millionaire-Resilience-LLC"
 
-gh variable set THIRDWEB_WALLET_ADDRESS \
-  --body "0xCD67f7e86A1397aBc33C473c58662BEB83b7a667" \
+gh variable set STORY_DEPLOYER_ADDRESS \
+  --body "0x597856e93f19877a399f686D2F43b298e2268618" \
   --repo "$REPO"
 
 gh variable set COINBASE_WALLET_ADDRESS \
@@ -872,7 +872,7 @@ gh variable set COINBASE_WALLET_ADDRESS \
   --repo "$REPO"
 
 gh variable set UCC1_FILING_NUMBER \
-  --body "2024-NM-UCC-0001" \
+  --body "20260000078753" \
   --repo "$REPO"
 ```
 
@@ -1063,12 +1063,12 @@ echo "$THIRDWEB_SECRET_KEY"           | gh secret set THIRDWEB_SECRET_KEY       
 echo "$PINATA_JWT"                    | gh secret set PINATA_JWT                    --repo "$REPO"
 
 echo "── Setting variables ────────────────────────────────────"
-gh variable set THIRDWEB_WALLET_ADDRESS \
-  --body "0xCD67f7e86A1397aBc33C473c58662BEB83b7a667" --repo "$REPO"
+gh variable set STORY_DEPLOYER_ADDRESS \
+  --body "0x597856e93f19877a399f686D2F43b298e2268618" --repo "$REPO"
 gh variable set COINBASE_WALLET_ADDRESS \
   --body "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a" --repo "$REPO"
 gh variable set UCC1_FILING_NUMBER \
-  --body "${UCC1_FILING_NUMBER:-2024-NM-UCC-0001}" --repo "$REPO"
+  --body "${UCC1_FILING_NUMBER:-20260000078753}" --repo "$REPO"
 
 echo "── Creating environments ────────────────────────────────"
 gh api --method PUT "/repos/$REPO/environments/story-mainnet" > /dev/null
@@ -1107,7 +1107,7 @@ bash /tmp/setup-gh-secrets.sh
 
 | Label | Address |
 |-------|---------|
-| ThirdWeb | `0xCD67f7e86A1397aBc33C473c58662BEB83b7a667` |
+| Story | `0x597856e93f19877a399f686D2F43b298e2268618` |
 | Coinbase | `0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a` |
 
 ---
@@ -1176,9 +1176,9 @@ gh secret set THIRDWEB_SECRET_KEY
 gh secret set PINATA_JWT
 
 # Set repository variables (public wallet addresses)
-gh variable set THIRDWEB_WALLET_ADDRESS --body "0xCD67f7e86A1397aBc33C473c58662BEB83b7a667"
+gh variable set STORY_DEPLOYER_ADDRESS --body "0x597856e93f19877a399f686D2F43b298e2268618"
 gh variable set COINBASE_WALLET_ADDRESS --body "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a"
-gh variable set UCC1_FILING_NUMBER      --body "2024-NM-UCC-0001"
+gh variable set UCC1_FILING_NUMBER      --body "20260000078753"
 
 # Confirm secrets and variables are saved
 gh secret list

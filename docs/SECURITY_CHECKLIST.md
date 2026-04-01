@@ -8,7 +8,7 @@
 
 ### Deployer Wallet
 
-- [ ] Deployer wallet is a **dedicated deployment wallet** — not the Coinbase or ThirdWeb multi-sig wallet
+- [ ] Deployer wallet is a **dedicated deployment wallet** — not the Coinbase or Story Protocol deployer multi-sig wallet
 - [ ] Wallet holds sufficient gas: ≥ 0.5 IP (Story Protocol) and ≥ 0.01 ETH (Base L2)
 - [ ] Private key is stored **only** in GitHub Secrets (`DEPLOYER_PRIVATE_KEY`)
 - [ ] Private key has **never** been committed to source code, issue comments, or chat messages

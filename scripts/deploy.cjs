@@ -47,7 +47,7 @@ async function main() {
   const balance = await ethers.provider.getBalance(deployer.address);
   console.log(`Balance:   ${ethers.formatEther(balance)} ETH`);
   console.log(`\nMulti-sig signers (Morpho Protocol — 2/2 required):`);
-  console.log(`  ThirdWeb: ${MULTISIG_SIGNERS.thirdweb}`);
+  console.log(`  Story:    ${MULTISIG_SIGNERS.story}`);
   console.log(`  Coinbase: ${MULTISIG_SIGNERS.coinbase}`);
   console.log();
 

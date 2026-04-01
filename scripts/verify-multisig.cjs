@@ -61,7 +61,7 @@ function recoverSigner(messageHash, signature) {
 /**
  * Verify a single signature and print the result.
  *
- * @param {string} label         - Human-readable signer label ("ThirdWeb" / "Coinbase")
+ * @param {string} label         - Human-readable signer label ("Story" / "Coinbase")
  * @param {string} expectedAddr  - The expected checksummed signer address
  * @param {string} messageHash   - 32-byte keccak256 hash (without EIP-191 prefix)
  * @param {string|null} signature - 65-byte hex signature, or null if not yet provided

@@ -68,9 +68,10 @@ Set the following in **Settings → Secrets and variables → Actions**:
 
 | Variable | Value |
 |---|---|
-| `THIRDWEB_WALLET_ADDRESS` | `0xCD67f7e86A1397aBc33C473c58662BEB83b7a667` |
+| `STORY_DEPLOYER_ADDRESS` | `0x597856e93f19877a399f686D2F43b298e2268618` |
 | `COINBASE_WALLET_ADDRESS` | `0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a` |
-| `UCC1_FILING_NUMBER` | `2024-NM-UCC-0001` |
+| `UCC1_FILING_NUMBER` | `20260000078753` |
+| `UCC1_FINANCING_STATEMENT_CID` | `bafkreidomwlsf5wabkvhvf63jq424t65mffhnftd4t6spnmhh5t64jn2bu` |
 | `STORY_RPC_URL` | `https://mainnet.storyrpc.io` |
 | `BASE_RPC_URL` | `https://mainnet.base.org` |
 | `STORY_PROTOCOL_REGISTRY` | `0x77319B4031e6eF1250907aa00018B8B1c67a244b` |
