@@ -39,6 +39,14 @@ async function main() {
   console.log(`Timestamp: ${new Date().toISOString()}`);
 
   const [deployer] = await ethers.getSigners();
+
+  if (!deployer) {
+    throw new Error(
+      "No deployer account found. " +
+      "Set DEPLOYER_PRIVATE_KEY as a GitHub secret (or in your .env file) before deploying."
+    );
+  }
+
   const network = await ethers.provider.getNetwork();
 
   console.log(`\nNetwork:   ${hre.network.name} (Chain ${network.chainId})`);
