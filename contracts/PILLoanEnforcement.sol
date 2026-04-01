@@ -2,6 +2,7 @@
 pragma solidity ^0.8.23;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
@@ -25,6 +26,7 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
  * enforcing the security interest filed under the Uniform Commercial Code.
  */
 contract PILLoanEnforcement is Ownable, ReentrancyGuard {
+    using SafeERC20 for IERC20;
     
     // ============ STABLECOIN ADDRESSES ============
     
@@ -366,7 +368,7 @@ contract PILLoanEnforcement is Ownable, ReentrancyGuard {
         Loan storage loan = loans[loanId];
         
         // Transfer stablecoin to this contract
-        IERC20(token).transferFrom(msg.sender, address(this), amount);
+        IERC20(token).safeTransferFrom(msg.sender, address(this), amount);
         
         // Record revenue
         revenueCounter++;
@@ -409,12 +411,12 @@ contract PILLoanEnforcement is Ownable, ReentrancyGuard {
             
             // Return excess to borrower
             if (excess > 0) {
-                IERC20(token).transfer(loan.borrower, excess);
+                IERC20(token).safeTransfer(loan.borrower, excess);
             }
             
             // Transfer remaining payment to lender
             if (paymentAmount > excess) {
-                IERC20(token).transfer(loan.lender, paymentAmount - excess);
+                IERC20(token).safeTransfer(loan.lender, paymentAmount - excess);
             }
         } else {
             // Partial payment
@@ -422,7 +424,7 @@ contract PILLoanEnforcement is Ownable, ReentrancyGuard {
             loan.lastPaymentDate = block.timestamp;
             
             // Transfer to lender
-            IERC20(token).transfer(loan.lender, paymentAmount);
+            IERC20(token).safeTransfer(loan.lender, paymentAmount);
             
             // Update amortization progress
             _updateAmortizationProgress(loanId, paymentAmount);
@@ -670,6 +672,6 @@ contract PILLoanEnforcement is Ownable, ReentrancyGuard {
         address recipient
     ) external onlyOwner {
         require(recipient != address(0), "Invalid recipient");
-        IERC20(token).transfer(recipient, amount);
+        IERC20(token).safeTransfer(recipient, amount);
     }
 }
