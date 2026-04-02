@@ -47,6 +47,7 @@ contract SlapsSPV is ERC20, ERC20Burnable, AccessControl, ReentrancyGuard, Pausa
     uint256 public pendingDistribution;
     uint256 public managementFeeRate = 200; // 2% annual
     uint256 public performanceFeeRate = 2000; // 20% of profits
+    address payable public feeRecipient;
     
     // Investment state
     bool public fundingComplete;
@@ -106,6 +107,7 @@ contract SlapsSPV is ERC20, ERC20Burnable, AccessControl, ReentrancyGuard, Pausa
         
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _grantRole(MANAGER_ROLE, msg.sender);
+        feeRecipient = payable(msg.sender);
     }
 
     // ============ INVESTMENT FUNCTIONS ============
@@ -341,8 +343,14 @@ contract SlapsSPV is ERC20, ERC20Burnable, AccessControl, ReentrancyGuard, Pausa
         
         if (fee > balance) fee = balance;
         require(fee > 0, "No fees available");
+        require(feeRecipient != address(0), "Fee recipient not set");
         
-        payable(msg.sender).transfer(fee);
+        feeRecipient.transfer(fee);
+    }
+
+    function setFeeRecipient(address payable _recipient) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(_recipient != address(0), "Invalid recipient");
+        feeRecipient = _recipient;
     }
 
     // ============ VIEW FUNCTIONS ============

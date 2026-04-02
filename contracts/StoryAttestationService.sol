@@ -420,7 +420,7 @@ contract StoryAttestationService is Ownable, ReentrancyGuard {
         bytes32 filingNoticeHash,
         string calldata metadataURI
     ) external onlyAuthorizedAttestor returns (bytes32 attestationId) {
-        bytes32 dataHash = keccak256(abi.encodePacked(
+        bytes32 dataHash = keccak256(abi.encode(
             entityName, entityId, ein, certificateHash, filingNoticeHash
         ));
 
@@ -525,7 +525,7 @@ contract StoryAttestationService is Ownable, ReentrancyGuard {
         if (filingHash == bytes32(0)) revert InvalidFilingHash();
         if (debtor == address(0)) revert InvalidDebtor();
 
-        bytes32 dataHash = keccak256(abi.encodePacked(
+        bytes32 dataHash = keccak256(abi.encode(
             filingHash, debtor, securedParty, jurisdiction, filingNumber
         ));
 
@@ -684,7 +684,7 @@ contract StoryAttestationService is Ownable, ReentrancyGuard {
 
         string memory riskStatus = atRisk ? "AT_RISK" : "PROTECTED";
 
-        bytes32 dataHash = keccak256(abi.encodePacked(
+        bytes32 dataHash = keccak256(abi.encode(
             spvName, ein, ipAssetId, portfolioValue, atRisk
         ));
 
