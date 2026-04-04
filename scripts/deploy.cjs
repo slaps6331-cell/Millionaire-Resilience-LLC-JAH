@@ -38,7 +38,14 @@ async function main() {
   console.log("=".repeat(60));
   console.log(`Timestamp: ${new Date().toISOString()}`);
 
-  const [deployer] = await ethers.getSigners();
+  const signers = await ethers.getSigners();
+  if (signers.length === 0) {
+    throw new Error(
+      "No deployer account found. Set the DEPLOYER_PRIVATE_KEY environment variable " +
+      "to a funded account private key before running this script."
+    );
+  }
+  const [deployer] = signers;
   const network = await ethers.provider.getNetwork();
 
   console.log(`\nNetwork:   ${hre.network.name} (Chain ${network.chainId})`);
