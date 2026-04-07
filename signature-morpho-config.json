@@ -1,0 +1,16 @@
+{
+  "signer": "Clifton Kelly Bell",
+  "documentType": "UCC-1_FINANCING_STATEMENT",
+  "ucc1Cid": "bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a",
+  "ucc1Url": "https://lavender-neat-urial-76.mypinata.cloud/ipfs/bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a",
+  "timestamp": 1775531973,
+  "signatureHash": "0xbd4092f95e1f86188172351e29f73db76b1b6643faeb76f260459932f558fac7",
+  "eip191Hash": "0x43ebfc7d0c89240d220e6ddecca21c295ed529f6be2d8cb1d802b6305b416189",
+  "multisigSigners": {
+    "story": "0x597856e93f19877a399f686D2F43b298e2268618",
+    "coinbase": "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a"
+  },
+  "requiredSignatures": 2,
+  "verificationMethod": "MORPHO_PROTOCOL_MULTISIG",
+  "generatedAt": "2026-04-07T03:19:33.876Z"
+}
