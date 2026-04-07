@@ -15,13 +15,17 @@
       ],
       "settings": {
         "[solidity]": {
-          "editor.defaultFormatter": "JuanBlanco.solidity"
+          "editor.defaultFormatter": "NomicFoundation.hardhat-solidity"
         },
-        "solidity.compileUsingRemoteVersion": "v0.8.23+commit.f704f362"
+        "solidity.compileUsingRemoteVersion": "v0.8.26+commit.8a97fa7a",
+        "solidity.defaultCompiler": "remote",
+        "solidity.packageDefaultDependenciesDirectory": "node_modules",
+        "solidity.packageDefaultDependenciesContractsDirectory": "",
+        "hardhat.projectsDirectories": ["${workspaceFolder}"]
       }
     }
   },
-  "postCreateCommand": "npm install --legacy-peer-deps",
+  "postCreateCommand": "npm install --legacy-peer-deps && npm run contracts:compile",
   "remoteUser": "node",
   "forwardPorts": [8545],
   "portsAttributes": {

@@ -1,0 +1,29 @@
+{
+  // ── Solidity extension (JuanBlanco) ───────────────────────────────────────
+  // Must match the version used in hardhat.config.cjs so the editor and the
+  // build toolchain agree on available language features / built-ins.
+  "solidity.compileUsingRemoteVersion": "v0.8.26+commit.8a97fa7a",
+  "solidity.defaultCompiler": "remote",
+
+  // Tell the extension where to find third-party imports (e.g. @openzeppelin).
+  "solidity.packageDefaultDependenciesDirectory": "node_modules",
+  "solidity.packageDefaultDependenciesContractsDirectory": "",
+
+  // Use the Hardhat extension as the default formatter for Solidity files.
+  "[solidity]": {
+    "editor.defaultFormatter": "NomicFoundation.hardhat-solidity"
+  },
+
+  // ── Hardhat for VS Code (NomicFoundation) ─────────────────────────────────
+  // The workspace root is ESM ("type":"module" in package.json), so the
+  // extension must be explicitly pointed at the CJS config file.  Without
+  // this, the extension cannot resolve the Hardhat runtime and shows
+  // "Solidity file provider failed" errors.
+  "hardhat.projectsDirectories": ["${workspaceFolder}"],
+
+  // ── General editor settings for Solidity ─────────────────────────────────
+  "editor.formatOnSave": true,
+  "files.associations": {
+    "*.sol": "solidity"
+  }
+}
