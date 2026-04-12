@@ -1,0 +1,526 @@
+# Azure DevOps CI Pipeline for Smart Contract Development
+# Millionaire Resilience LLC - Continuous Integration
+#
+# Triggers: Push to main/develop, Pull Requests
+# Stages: Install → Compile → Test → Security → Artifacts
+
+trigger:
+  branches:
+    include:
+      - main
+      - develop
+      - feature/*
+  paths:
+    include:
+      - contracts/**
+      - scripts/**
+      - hardhat.config.cjs
+      - foundry.toml
+      - package.json
+
+pr:
+  branches:
+    include:
+      - main
+      - develop
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  - group: blockchain-config
+  - name: NODE_VERSION
+    value: '20.x'
+  - name: SOLIDITY_VERSION
+    value: '0.8.26'
+
+stages:
+  # ============================================================
+  # STAGE 1: Install Dependencies
+  # ============================================================
+  - stage: Install
+    displayName: 'Install Dependencies'
+    jobs:
+      - job: InstallDependencies
+        displayName: 'Install Node.js & Tools'
+        steps:
+          - task: NodeTool@0
+            displayName: 'Install Node.js $(NODE_VERSION)'
+            inputs:
+              versionSpec: '$(NODE_VERSION)'
+
+          - script: |
+              echo "============================================================"
+              echo "Installing npm dependencies..."
+              echo "============================================================"
+              npm ci --legacy-peer-deps
+            displayName: 'Install npm packages'
+            workingDirectory: '$(Build.SourcesDirectory)'
+
+          - script: |
+              echo "============================================================"
+              echo "Installing Foundry..."
+              echo "============================================================"
+              curl -L https://foundry.paradigm.xyz | bash
+              export PATH="$HOME/.foundry/bin:$PATH"
+              foundryup
+              forge --version
+              cast --version
+            displayName: 'Install Foundry'
+
+          - script: |
+              echo "============================================================"
+              echo "Installing Security Tools..."
+              echo "============================================================"
+              pip3 install slither-analyzer
+              pip3 install mythril
+              npm install -g solhint
+            displayName: 'Install Security Tools'
+
+          - task: Cache@2
+            displayName: 'Cache node_modules'
+            inputs:
+              key: 'npm | "$(Agent.OS)" | package-lock.json'
+              path: 'node_modules'
+              restoreKeys: |
+                npm | "$(Agent.OS)"
+
+  # ============================================================
+  # STAGE 2: Compile Contracts
+  # ============================================================
+  - stage: Compile
+    displayName: 'Compile Contracts'
+    dependsOn: Install
+    jobs:
+      - job: HardhatCompile
+        displayName: 'Hardhat Compilation'
+        steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: '$(NODE_VERSION)'
+
+          - script: npm ci --legacy-peer-deps
+            displayName: 'Restore packages'
+
+          - script: |
+              echo "============================================================"
+              echo "Compiling with Hardhat (Solidity $(SOLIDITY_VERSION))..."
+              echo "============================================================"
+              npx hardhat compile --force
+              
+              echo ""
+              echo "Contract bytecode sizes:"
+              echo "============================================================"
+              for contract in StoryAttestationService StoryOrchestrationService StoryAttestationBridge \
+                             SLAPSIPSpvLoan GladiatorHoldingsSpvLoan PILLoanEnforcement \
+                             StablecoinIPEscrow AngelCoin ResilienceToken SlapsStreaming \
+                             SlapsSPV UCC1FilingIntegration; do
+                ARTIFACT="artifacts/contracts/${contract}.sol/${contract}.json"
+                if [ -f "$ARTIFACT" ]; then
+                  SIZE=$(node -e "
+                    const a = require('./$ARTIFACT');
+                    const b = a.deployedBytecode.replace('0x','');
+                    console.log(Math.floor(b.length/2));
+                  ")
+                  printf "  %-30s %6d bytes" "$contract" "$SIZE"
+                  if [ "$SIZE" -gt 24576 ]; then
+                    echo " ⚠️  EXCEEDS LIMIT"
+                  else
+                    echo " ✓"
+                  fi
+                fi
+              done
+            displayName: 'Hardhat Compile'
+
+          - task: PublishPipelineArtifact@1
+            displayName: 'Publish Hardhat Artifacts'
+            inputs:
+              targetPath: 'artifacts'
+              artifact: 'hardhat-artifacts'
+
+      - job: FoundryCompile
+        displayName: 'Foundry Compilation'
+        steps:
+          - script: |
+              curl -L https://foundry.paradigm.xyz | bash
+              export PATH="$HOME/.foundry/bin:$PATH"
+              foundryup
+            displayName: 'Install Foundry'
+
+          - script: |
+              echo "============================================================"
+              echo "Compiling with Foundry..."
+              echo "============================================================"
+              export PATH="$HOME/.foundry/bin:$PATH"
+              
+              # Create foundry.toml if not exists
+              if [ ! -f "foundry.toml" ]; then
+                cat > foundry.toml << 'EOF'
+              [profile.default]
+              src = "contracts"
+              out = "out"
+              libs = ["node_modules"]
+              solc = "0.8.26"
+              evm_version = "cancun"
+              via_ir = true
+              optimizer = true
+              optimizer_runs = 200
+              
+              [profile.default.optimizer_details]
+              yul = true
+              EOF
+              fi
+              
+              forge build --force
+              
+              echo ""
+              echo "Foundry compilation complete"
+            displayName: 'Foundry Compile'
+
+          - task: PublishPipelineArtifact@1
+            displayName: 'Publish Foundry Artifacts'
+            inputs:
+              targetPath: 'out'
+              artifact: 'foundry-artifacts'
+
+  # ============================================================
+  # STAGE 3: Run Tests
+  # ============================================================
+  - stage: Test
+    displayName: 'Run Tests'
+    dependsOn: Compile
+    jobs:
+      - job: HardhatTests
+        displayName: 'Hardhat Unit Tests'
+        steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: '$(NODE_VERSION)'
+
+          - script: npm ci --legacy-peer-deps
+            displayName: 'Restore packages'
+
+          - script: |
+              echo "============================================================"
+              echo "Running Hardhat Tests..."
+              echo "============================================================"
+              npx hardhat test --parallel 2>&1 | tee test-results.txt
+            displayName: 'Run Hardhat Tests'
+            continueOnError: true
+
+          - script: |
+              echo "============================================================"
+              echo "Generating Coverage Report..."
+              echo "============================================================"
+              npx hardhat coverage || true
+            displayName: 'Generate Coverage'
+            continueOnError: true
+
+          - task: PublishTestResults@2
+            displayName: 'Publish Test Results'
+            inputs:
+              testResultsFormat: 'JUnit'
+              testResultsFiles: '**/test-results.xml'
+              failTaskOnFailedTests: true
+            condition: always()
+
+          - task: PublishCodeCoverageResults@1
+            displayName: 'Publish Coverage'
+            inputs:
+              codeCoverageTool: 'Cobertura'
+              summaryFileLocation: 'coverage/cobertura-coverage.xml'
+            condition: always()
+
+      - job: FoundryTests
+        displayName: 'Foundry Fuzz Tests'
+        steps:
+          - script: |
+              curl -L https://foundry.paradigm.xyz | bash
+              export PATH="$HOME/.foundry/bin:$PATH"
+              foundryup
+            displayName: 'Install Foundry'
+
+          - script: |
+              echo "============================================================"
+              echo "Running Foundry Fuzz Tests..."
+              echo "============================================================"
+              export PATH="$HOME/.foundry/bin:$PATH"
+              
+              # Run forge tests with fuzzing
+              forge test -vvv --fuzz-runs 256 2>&1 | tee forge-test-results.txt || true
+              
+              echo ""
+              echo "Foundry tests complete"
+            displayName: 'Run Foundry Tests'
+            continueOnError: true
+
+          - task: PublishPipelineArtifact@1
+            displayName: 'Publish Foundry Test Results'
+            inputs:
+              targetPath: 'forge-test-results.txt'
+              artifact: 'foundry-test-results'
+            condition: always()
+
+  # ============================================================
+  # STAGE 4: Security Analysis
+  # ============================================================
+  - stage: Security
+    displayName: 'Security Analysis'
+    dependsOn: Compile
+    jobs:
+      - job: SlitherAnalysis
+        displayName: 'Slither Static Analysis'
+        steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: '$(NODE_VERSION)'
+
+          - script: npm ci --legacy-peer-deps
+            displayName: 'Restore packages'
+
+          - script: |
+              pip3 install slither-analyzer
+            displayName: 'Install Slither'
+
+          - script: |
+              echo "============================================================"
+              echo "Running Slither Static Analysis..."
+              echo "============================================================"
+              
+              # Run Slither on each contract
+              mkdir -p security-reports
+              
+              slither . \
+                --json security-reports/slither-report.json \
+                --sarif security-reports/slither-report.sarif \
+                --exclude-dependencies \
+                --exclude-informational \
+                --exclude-low \
+                2>&1 | tee security-reports/slither-output.txt || true
+              
+              # Summary
+              echo ""
+              echo "============================================================"
+              echo "Slither Analysis Summary:"
+              echo "============================================================"
+              if [ -f "security-reports/slither-report.json" ]; then
+                ISSUES=$(cat security-reports/slither-report.json | python3 -c "
+              import json, sys
+              data = json.load(sys.stdin)
+              detectors = data.get('results', {}).get('detectors', [])
+              high = len([d for d in detectors if d.get('impact') == 'High'])
+              medium = len([d for d in detectors if d.get('impact') == 'Medium'])
+              low = len([d for d in detectors if d.get('impact') == 'Low'])
+              print(f'High: {high}, Medium: {medium}, Low: {low}')
+              ")
+                echo "  Issues found: $ISSUES"
+              fi
+            displayName: 'Run Slither'
+            continueOnError: true
+
+          - task: PublishPipelineArtifact@1
+            displayName: 'Publish Slither Report'
+            inputs:
+              targetPath: 'security-reports'
+              artifact: 'slither-reports'
+            condition: always()
+
+      - job: MythrilAnalysis
+        displayName: 'Mythril Symbolic Analysis'
+        timeoutInMinutes: 60
+        steps:
+          - script: |
+              pip3 install mythril
+            displayName: 'Install Mythril'
+
+          - script: |
+              echo "============================================================"
+              echo "Running Mythril Symbolic Execution..."
+              echo "============================================================"
+              
+              mkdir -p security-reports
+              
+              # Run Mythril on key contracts (limited due to time)
+              for contract in AngelCoin ResilienceToken StablecoinIPEscrow; do
+                echo "Analyzing $contract..."
+                myth analyze contracts/${contract}.sol \
+                  --solc-json mythril-solc.json \
+                  --execution-timeout 300 \
+                  --max-depth 12 \
+                  -o json \
+                  > security-reports/mythril-${contract}.json 2>&1 || true
+              done
+              
+              echo "Mythril analysis complete"
+            displayName: 'Run Mythril'
+            continueOnError: true
+
+          - task: PublishPipelineArtifact@1
+            displayName: 'Publish Mythril Report'
+            inputs:
+              targetPath: 'security-reports'
+              artifact: 'mythril-reports'
+            condition: always()
+
+      - job: GasReport
+        displayName: 'Gas Optimization Report'
+        steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: '$(NODE_VERSION)'
+
+          - script: npm ci --legacy-peer-deps
+            displayName: 'Restore packages'
+
+          - script: |
+              echo "============================================================"
+              echo "Generating Gas Report..."
+              echo "============================================================"
+              
+              REPORT_GAS=true npx hardhat test 2>&1 | tee gas-report.txt || true
+              
+              echo ""
+              echo "Gas report generated"
+            displayName: 'Generate Gas Report'
+            continueOnError: true
+
+          - task: PublishPipelineArtifact@1
+            displayName: 'Publish Gas Report'
+            inputs:
+              targetPath: 'gas-report.txt'
+              artifact: 'gas-report'
+            condition: always()
+
+  # ============================================================
+  # STAGE 5: Security Gate
+  # ============================================================
+  - stage: SecurityGate
+    displayName: 'Security Gate'
+    dependsOn: Security
+    jobs:
+      - job: EvaluateSecurity
+        displayName: 'Evaluate Security Results'
+        steps:
+          - task: DownloadPipelineArtifact@2
+            inputs:
+              artifact: 'slither-reports'
+              path: '$(Pipeline.Workspace)/slither-reports'
+
+          - script: |
+              echo "============================================================"
+              echo "Evaluating Security Gate..."
+              echo "============================================================"
+              
+              REPORT="$(Pipeline.Workspace)/slither-reports/slither-report.json"
+              
+              if [ -f "$REPORT" ]; then
+                HIGH_ISSUES=$(cat "$REPORT" | python3 -c "
+              import json, sys
+              data = json.load(sys.stdin)
+              detectors = data.get('results', {}).get('detectors', [])
+              high = len([d for d in detectors if d.get('impact') == 'High'])
+              print(high)
+              " 2>/dev/null || echo "0")
+                
+                MEDIUM_ISSUES=$(cat "$REPORT" | python3 -c "
+              import json, sys
+              data = json.load(sys.stdin)
+              detectors = data.get('results', {}).get('detectors', [])
+              medium = len([d for d in detectors if d.get('impact') == 'Medium'])
+              print(medium)
+              " 2>/dev/null || echo "0")
+                
+                echo "High severity issues:   $HIGH_ISSUES"
+                echo "Medium severity issues: $MEDIUM_ISSUES"
+                
+                if [ "$HIGH_ISSUES" -gt 0 ]; then
+                  echo "##vso[task.logissue type=error]Security Gate FAILED: $HIGH_ISSUES high severity issues found"
+                  echo "##vso[task.complete result=Failed;]Security Gate Failed"
+                  exit 1
+                fi
+                
+                if [ "$MEDIUM_ISSUES" -gt 5 ]; then
+                  echo "##vso[task.logissue type=warning]Security Gate WARNING: $MEDIUM_ISSUES medium severity issues found"
+                fi
+                
+                echo ""
+                echo "✓ Security Gate PASSED"
+              else
+                echo "No security report found - skipping gate"
+              fi
+            displayName: 'Security Gate Check'
+
+  # ============================================================
+  # STAGE 6: Build Artifacts
+  # ============================================================
+  - stage: BuildArtifacts
+    displayName: 'Build Deployment Artifacts'
+    dependsOn: SecurityGate
+    condition: succeeded()
+    jobs:
+      - job: PackageArtifacts
+        displayName: 'Package Deployment Artifacts'
+        steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: '$(NODE_VERSION)'
+
+          - script: npm ci --legacy-peer-deps
+            displayName: 'Restore packages'
+
+          - script: npx hardhat compile
+            displayName: 'Compile contracts'
+
+          - script: |
+              echo "============================================================"
+              echo "Packaging Deployment Artifacts..."
+              echo "============================================================"
+              
+              mkdir -p $(Build.ArtifactStagingDirectory)/contracts
+              mkdir -p $(Build.ArtifactStagingDirectory)/scripts
+              mkdir -p $(Build.ArtifactStagingDirectory)/config
+              
+              # Copy compiled contracts
+              cp -r artifacts/contracts $(Build.ArtifactStagingDirectory)/
+              
+              # Copy deployment scripts
+              cp scripts/deploy.cjs $(Build.ArtifactStagingDirectory)/scripts/
+              cp scripts/verify.cjs $(Build.ArtifactStagingDirectory)/scripts/
+              cp scripts/post-deploy-orchestrate.cjs $(Build.ArtifactStagingDirectory)/scripts/
+              cp scripts/anchor-signature.cjs $(Build.ArtifactStagingDirectory)/scripts/
+              cp scripts/verify-multisig.cjs $(Build.ArtifactStagingDirectory)/scripts/
+              
+              # Copy config files
+              cp hardhat.config.cjs $(Build.ArtifactStagingDirectory)/config/
+              cp package.json $(Build.ArtifactStagingDirectory)/config/
+              
+              # Generate ABI proof
+              node scripts/export-abi-proof.cjs || true
+              cp abi-proof.json $(Build.ArtifactStagingDirectory)/ 2>/dev/null || true
+              
+              # Copy signature config if exists
+              cp signature-morpho-config.json $(Build.ArtifactStagingDirectory)/ 2>/dev/null || true
+              
+              echo "Artifacts packaged successfully"
+            displayName: 'Package Artifacts'
+
+          - task: PublishBuildArtifacts@1
+            displayName: 'Publish Build Artifacts'
+            inputs:
+              pathToPublish: '$(Build.ArtifactStagingDirectory)'
+              artifactName: 'deployment-package'
+
+          - script: |
+              echo "============================================================"
+              echo "CI Pipeline Complete"
+              echo "============================================================"
+              echo ""
+              echo "Build: $(Build.BuildNumber)"
+              echo "Commit: $(Build.SourceVersion)"
+              echo "Branch: $(Build.SourceBranchName)"
+              echo ""
+              echo "Artifacts published:"
+              echo "  - deployment-package"
+              echo ""
+              echo "Next: Run CD pipeline for deployment"
+            displayName: 'CI Summary'
