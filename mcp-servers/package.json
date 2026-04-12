@@ -1,0 +1,24 @@
+{
+  "name": "mcp-servers",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "MCP Servers for Blockchain Deployment - Millionaire Resilience LLC",
+  "scripts": {
+    "start:deployer": "node blockchain-deployer/index.js",
+    "start:keyvault": "node azure-keyvault/index.js",
+    "start:verifier": "node contract-verifier/index.js",
+    "start:multisig": "node multisig-manager/index.js",
+    "start:ipfs": "node ipfs-pinata/index.js",
+    "install:all": "npm install"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "@azure/identity": "^4.0.0",
+    "@azure/keyvault-secrets": "^4.8.0",
+    "ethers": "^6.11.0",
+    "node-fetch": "^3.3.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "mcpServers": {
+    "blockchain-deployer": {
+      "command": "node",
+      "args": ["mcp-servers/blockchain-deployer/index.js"],
+      "env": {
+        "STORY_RPC_URL": "https://mainnet.storyrpc.io",
+        "BASE_RPC_URL": "https://mainnet.base.org",
+        "AZURE_KEY_VAULT_NAME": "kv-blockchain-deploy",
+        "LOG_LEVEL": "info"
+      },
+      "description": "Smart contract deployment server for Story Protocol and Base L2"
+    },
+    "azure-keyvault": {
+      "command": "node",
+      "args": ["mcp-servers/azure-keyvault/index.js"],
+      "env": {
+        "AZURE_KEY_VAULT_NAME": "kv-blockchain-deploy",
+        "AZURE_TENANT_ID": "${AZURE_TENANT_ID}",
+        "AZURE_CLIENT_ID": "${AZURE_CLIENT_ID}"
+      },
+      "description": "Azure Key Vault secret management for secure credential access"
+    },
+    "contract-verifier": {
+      "command": "node",
+      "args": ["mcp-servers/contract-verifier/index.js"],
+      "env": {
+        "STORYSCAN_API_URL": "https://www.storyscan.io/api",
+        "BASESCAN_API_URL": "https://api.basescan.org/api"
+      },
+      "description": "Contract verification service for StoryScan and BaseScan"
+    },
+    "multisig-manager": {
+      "command": "node",
+      "args": ["mcp-servers/multisig-manager/index.js"],
+      "env": {
+        "STORY_DEPLOYER_ADDRESS": "0x597856e93f19877a399f686D2F43b298e2268618",
+        "COINBASE_WALLET_ADDRESS": "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a",
+        "REQUIRED_SIGNATURES": "2"
+      },
+      "description": "Multi-signature verification and management for Morpho Protocol"
+    },
+    "ipfs-pinata": {
+      "command": "node",
+      "args": ["mcp-servers/ipfs-pinata/index.js"],
+      "env": {
+        "PINATA_GATEWAY": "https://lavender-neat-urial-76.mypinata.cloud"
+      },
+      "description": "IPFS pinning service via Pinata for UCC-1 documents and ABI proofs"
+    }
+  }
+}
