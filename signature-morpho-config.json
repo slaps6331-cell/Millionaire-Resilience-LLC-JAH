@@ -4,26 +4,59 @@
   "ucc1Cid": "bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a",
   "ucc1Url": "https://lavender-neat-urial-76.mypinata.cloud/ipfs/bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a",
   "timestamp": 1775998466,
+  "multisigConfig": {
+    "type": "GNOSIS_SAFE_3_OF_5",
+    "threshold": 3,
+    "totalSigners": 5
+  },
   "deploymentWallets": {
-    "storyMainnet": {
+    "signer1_coinbase": {
+      "address": "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a",
+      "label": "Coinbase Wallet",
+      "network": "Base Mainnet",
+      "chainId": 8453,
+      "signingMethod": "Coinbase Wallet / WalletConnect"
+    },
+    "signer2_morpho": {
+      "address": "0x20A8402c67b9D476ddC1D2DB12f03B30A468f135",
+      "label": "Morpho Authorization",
+      "network": "Base Mainnet",
+      "chainId": 8453,
+      "signingMethod": "Safe / WalletConnect"
+    },
+    "signer3_story": {
       "address": "0x5EEFF17e12401b6A8391f5257758E07c157E1e45",
+      "label": "Story Protocol Deployer",
       "network": "Story Protocol Mainnet",
       "chainId": 1514,
       "signingMethod": "MetaMask"
     },
-    "baseMainnet": {
+    "signer4_base": {
       "address": "0x4C7CD4eC5232589696d3fFC0D3ddaa9B59FF072A",
+      "label": "Base Authorization",
       "network": "Base Mainnet",
       "chainId": 8453,
       "signingMethod": "MyEtherWallet"
+    },
+    "signer5_spv": {
+      "address": "0xD39447807f18Ba965E8F3F6929c8815794B3C951",
+      "label": "SPV Custodian",
+      "network": "Cross-chain",
+      "chainId": null,
+      "signingMethod": "Safe / WalletConnect"
     }
   },
-  "requiredSignatures": 2,
+  "safeContractAddress": "0xd314BE0a27c73Cd057308aC4f3dd472c482acc09",
+  "requiredSignatures": 3,
   "signatures": {
-    "storyMainnet": null,
-    "baseMainnet": null
+    "signer1_coinbase": null,
+    "signer2_morpho": null,
+    "signer3_story": null,
+    "signer4_base": null,
+    "signer5_spv": null
   },
   "signatureHash": "0x973ed30208968e1a4fc831e1d89f4c67dcd5bad63d2e78d0d4379529738d710c",
   "eip191Hash": "0x602b1b4f5a2e8bfa60aec337688b21fdccbfef6a21befe412133ddac9a2c04fb",
-  "generatedAt": "2026-04-12T12:54:26.936Z"
+  "generatedAt": "2026-04-12T12:54:26.936Z",
+  "updatedAt": "2026-04-13T00:00:00.000Z"
 }

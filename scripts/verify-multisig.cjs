@@ -29,11 +29,28 @@ const { ethers } = require("ethers");
 const fs = require("fs");
 require("dotenv").config();
 
-// ── Expected signer addresses (hardcoded constants from the contracts) ──────
+// ── Expected signer addresses for the 3-of-5 Morpho multi-sig ───────────────
+// Environment variables override defaults so GitHub Actions can inject the
+// addresses stored in repository variables.
 const EXPECTED_SIGNERS = {
-  story:   "0x597856e93f19877a399f686D2F43b298e2268618",
-  coinbase: "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a",
+  signer1_coinbase: process.env.MORPHO_MULTISIG_SIGNER_1 ||
+    "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a",
+  signer2_morpho: process.env.MORPHO_MULTISIG_SIGNER_2 ||
+    "0x20A8402c67b9D476ddC1D2DB12f03B30A468f135",
+  signer3_story: process.env.MORPHO_MULTISIG_SIGNER_3 ||
+    "0x5EEFF17e12401b6A8391f5257758E07c157E1e45",
+  signer4_base: process.env.MORPHO_MULTISIG_SIGNER_4 ||
+    "0x4C7CD4eC5232589696d3fFC0D3ddaa9B59FF072A",
+  signer5_spv: process.env.MORPHO_MULTISIG_SIGNER_5 ||
+    "0xD39447807f18Ba965E8F3F6929c8815794B3C951",
 };
+
+// Safe contract address (the multi-sig wallet itself)
+const SAFE_CONTRACT_ADDRESS = process.env.MORPHO_SAFE_ADDRESS ||
+  "0xd314BE0a27c73Cd057308aC4f3dd472c482acc09";
+
+// 3-of-5 threshold: at least 3 valid signatures required to proceed
+const MULTISIG_THRESHOLD = parseInt(process.env.MORPHO_MULTISIG_THRESHOLD || "3", 10);
 
 // ── Signature config file produced by anchor-signature.cjs ──────────────────
 const SIGNATURE_CONFIG_FILE = "signature-morpho-config.json";
@@ -135,77 +152,87 @@ async function main() {
   console.log(`  EIP-191 hash:  ${eip191Hash}`);
   console.log();
 
-  // ── 2. Resolve signatures ─────────────────────────────────────────────────
+  // ── 2. Resolve signatures (3-of-5 multi-sig) ────────────────────────────
   // Priority: env var → signature-morpho-config.json → multisig-transaction.json
-  let storySig   = process.env.STORY_SIGNATURE || null;
-  let coinbaseSig = process.env.COINBASE_SIGNATURE || null;
+  const SIGNER_ENV_MAP = {
+    signer1_coinbase: "SIGNER1_SIGNATURE",
+    signer2_morpho:   "SIGNER2_SIGNATURE",
+    signer3_story:    "SIGNER3_SIGNATURE",
+    signer4_base:     "SIGNER4_SIGNATURE",
+    signer5_spv:      "SIGNER5_SIGNATURE",
+  };
 
-  if (!storySig && sigConfig.signatures) {
-    storySig = sigConfig.signatures.story || null;
-  }
-  if (!coinbaseSig && sigConfig.signatures) {
-    coinbaseSig = sigConfig.signatures.coinbase || null;
+  const SIGNER_LABELS = {
+    signer1_coinbase: "Signer 1 — Coinbase Wallet",
+    signer2_morpho:   "Signer 2 — Morpho Authorization",
+    signer3_story:    "Signer 3 — Story Protocol Deployer",
+    signer4_base:     "Signer 4 — Base Authorization",
+    signer5_spv:      "Signer 5 — SPV Custodian",
+  };
+
+  const resolvedSigs = {};
+  for (const [key, envName] of Object.entries(SIGNER_ENV_MAP)) {
+    // 1. Environment variable
+    resolvedSigs[key] = process.env[envName] || null;
+    // 2. signature-morpho-config.json
+    if (!resolvedSigs[key] && sigConfig.signatures) {
+      resolvedSigs[key] = sigConfig.signatures[key] || null;
+    }
   }
 
-  // Fall back to multisig-transaction.json
-  if ((!storySig || !coinbaseSig) && fs.existsSync(MULTISIG_TX_FILE)) {
+  // 3. Fall back to multisig-transaction.json
+  if (fs.existsSync(MULTISIG_TX_FILE)) {
     const txFile = JSON.parse(fs.readFileSync(MULTISIG_TX_FILE, "utf8"));
     if (txFile.signatures && Array.isArray(txFile.signatures)) {
       for (const entry of txFile.signatures) {
-        if (
-          entry.label === "Story" &&
-          !storySig &&
-          entry.signature
-        ) {
-          storySig = entry.signature;
-        }
-        if (
-          entry.label === "Coinbase" &&
-          !coinbaseSig &&
-          entry.signature
-        ) {
-          coinbaseSig = entry.signature;
+        for (const [key, label] of Object.entries(SIGNER_LABELS)) {
+          if (!resolvedSigs[key] && entry.signer &&
+              entry.signer.toLowerCase() === EXPECTED_SIGNERS[key].toLowerCase() &&
+              entry.signature) {
+            resolvedSigs[key] = entry.signature;
+          }
         }
       }
     }
   }
 
-  // ── 3. Verify each signature ──────────────────────────────────────────────
+  // ── 3. Verify each signature (3-of-5 threshold) ──────────────────────────
   // NOTE: The raw keccak256 hash (signatureHash) is passed here because
   // recoverSigner() applies the EIP-191 prefix internally — this matches
   // the on-chain ecrecover() behaviour exactly.
   const rawHash = sigConfig.signatureHash;
 
-  const storyOk = verifyOne(
-    "Story",
-    EXPECTED_SIGNERS.story,
-    rawHash,
-    storySig
-  );
-  const coinbaseOk = verifyOne(
-    "Coinbase",
-    EXPECTED_SIGNERS.coinbase,
-    rawHash,
-    coinbaseSig
-  );
+  console.log(`Safe contract address: ${SAFE_CONTRACT_ADDRESS}`);
+  console.log(`Multi-sig threshold:   ${MULTISIG_THRESHOLD} of ${Object.keys(EXPECTED_SIGNERS).length}\n`);
 
-  // ── 4. Final result ───────────────────────────────────────────────────────
+  const results = {};
+  for (const [key, expectedAddr] of Object.entries(EXPECTED_SIGNERS)) {
+    results[key] = verifyOne(
+      SIGNER_LABELS[key],
+      expectedAddr,
+      rawHash,
+      resolvedSigs[key]
+    );
+  }
+
+  // ── 4. Final result (3-of-5 threshold check) ─────────────────────────────
   console.log("=".repeat(60));
-  const bothValid = storyOk && coinbaseOk;
+  const validCount = Object.values(results).filter(Boolean).length;
+  const totalSigners = Object.keys(EXPECTED_SIGNERS).length;
+  const meetsThreshold = validCount >= MULTISIG_THRESHOLD;
 
-  if (bothValid) {
-    console.log("✓ 2/2 signatures verified — ready to submit to Morpho");
+  if (meetsThreshold) {
+    console.log(`✓ ${validCount}/${totalSigners} signatures verified (threshold: ${MULTISIG_THRESHOLD}) — ready to submit to Morpho`);
   } else {
-    const count = [storyOk, coinbaseOk].filter(Boolean).length;
-    console.log(`✗ ${count}/2 signatures verified — cannot proceed`);
+    console.log(`✗ ${validCount}/${totalSigners} signatures verified (need ${MULTISIG_THRESHOLD}) — cannot proceed`);
     console.log(
-      "\nObtain the missing signature(s) and re-run this script."
+      `\nObtain ${MULTISIG_THRESHOLD - validCount} more signature(s) and re-run this script.`
     );
     console.log("See DEPLOYMENT_GUIDE.md §3 for signing instructions.");
   }
   console.log("=".repeat(60));
 
-  process.exit(bothValid ? 0 : 1);
+  process.exit(meetsThreshold ? 0 : 1);
 }
 
 main().catch((err) => {
