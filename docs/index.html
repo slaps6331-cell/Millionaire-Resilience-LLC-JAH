@@ -68,8 +68,8 @@
         This registry documents the smart contracts deployed by Millionaire Resilience LLC /
         Gladiator Holdings LLC across two EVM networks: <span class="network-story">Story Protocol
         Mainnet (Chain&nbsp;1514)</span> and <span class="network-base">Base L2 (Chain&nbsp;8453)</span>.
-        Contracts cover IP-backed SPV loans, attestation services, multi-sig orchestration, and
-        stablecoin escrow under Morpho Protocol.
+        Contracts cover IP-backed SPV loans, attestation services, 3-of-5 multi-sig orchestration, and
+        stablecoin escrow under Morpho Protocol. 12 contracts total across both networks.
       </p>
     </section>
 
@@ -107,27 +107,47 @@
     </section>
 
     <section>
-      <h2>Multi-Signature Wallets</h2>
+      <h2>Multi-Signature Wallets <span class="badge badge-ready">3-of-5 Safe</span></h2>
       <table>
         <thead>
-          <tr><th>Role</th><th>Wallet</th><th>Address</th></tr>
+          <tr><th>Role</th><th>Address</th><th>Network</th></tr>
         </thead>
         <tbody>
           <tr>
-            <td>Signer 1 (Story)</td>
-            <td>Story Protocol Deployer Wallet</td>
-            <td><code>0x597856e93f19877a399f686D2F43b298e2268618</code></td>
+            <td>Signer 1 (Coinbase Wallet)</td>
+            <td><code>0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a</code></td>
+            <td>Base</td>
           </tr>
           <tr>
-            <td>Signer 2 (Coinbase)</td>
-            <td>Coinbase Smart Wallet / EOA</td>
-            <td><code>0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a</code></td>
+            <td>Signer 2 (Morpho Authorization)</td>
+            <td><code>0x20A8402c67b9D476ddC1D2DB12f03B30A468f135</code></td>
+            <td>Base</td>
+          </tr>
+          <tr>
+            <td>Signer 3 (Story Protocol Deployer)</td>
+            <td><code>0x5EEFF17e12401b6A8391f5257758E07c157E1e45</code></td>
+            <td>Story</td>
+          </tr>
+          <tr>
+            <td>Signer 4 (Base Authorization)</td>
+            <td><code>0x4C7CD4eC5232589696d3fFC0D3ddaa9B59FF072A</code></td>
+            <td>Base</td>
+          </tr>
+          <tr>
+            <td>Signer 5 (SPV Custodian)</td>
+            <td><code>0xD39447807f18Ba965E8F3F6929c8815794B3C951</code></td>
+            <td>Cross-chain</td>
+          </tr>
+          <tr style="background:#161b22">
+            <td><strong>Safe Contract (3-of-5)</strong></td>
+            <td><code>0xd314BE0a27c73Cd057308aC4f3dd472c482acc09</code></td>
+            <td>Multi-chain</td>
           </tr>
         </tbody>
       </table>
       <p style="margin-top:0.75rem;font-size:0.85rem;color:#8b949e">
-        Morpho Protocol requires a 2-of-2 EIP-191 multi-signature from both wallets before
-        any Morpho Blue market position can be activated.
+        Morpho Protocol requires a 3-of-5 EIP-191 multi-signature from Safe wallet owners before
+        any Morpho Blue market position can be activated. Threshold: 3 approvals required.
       </p>
     </section>
 
@@ -135,38 +155,59 @@
       <h2>Key Documents</h2>
       <div class="card-grid">
         <div class="card">
-          <h3>Deployment Guide</h3>
-          <p>Step-by-step instructions for deploying all 11 contracts to Story Protocol and Base L2.</p>
+          <h3>Azure Blockchain Dev Kit + EIP-191 Guide</h3>
+          <p>Complete workflow: compile, sign (3-of-5), deploy to Story &amp; Base, verify, orchestrate, and seal.</p>
           <p style="margin-top:0.5rem">
-            <a href="https://github.com/slaps6331-cell/Millionaire-Resilience-LLC-JAH/blob/main/DEPLOYMENT_GUIDE.md">DEPLOYMENT_GUIDE.md &rarr;</a>
+            <a href="AZURE_BLOCKCHAIN_DEVKIT_EIP191_DEPLOYMENT_GUIDE.md">AZURE_BLOCKCHAIN_DEVKIT_EIP191_DEPLOYMENT_GUIDE.md &rarr;</a>
           </p>
         </div>
         <div class="card">
-          <h3>Deployment Status</h3>
-          <p>Current deployment status, pre-computed transaction hashes, and readiness assessment.</p>
+          <h3>GitHub Environment Variables</h3>
+          <p>Complete reference for all repo secrets, variables, Copilot, and GitHub Pages config.</p>
           <p style="margin-top:0.5rem">
-            <a href="https://github.com/slaps6331-cell/Millionaire-Resilience-LLC-JAH/blob/main/DEPLOYMENT_STATUS.md">DEPLOYMENT_STATUS.md &rarr;</a>
+            <a href="GITHUB_ENVIRONMENT_VARIABLES.md">GITHUB_ENVIRONMENT_VARIABLES.md &rarr;</a>
           </p>
         </div>
         <div class="card">
-          <h3>Multi-Sig Walkthrough</h3>
-          <p>Step-by-step guide for both Morpho Protocol signers (Story + Coinbase).</p>
+          <h3>Safe Wallet 3-of-5 Multi-Sig Guide</h3>
+          <p>SPV integration, WalletConnect, Coinbase gas sponsorship, cross-chain Story/Base.</p>
           <p style="margin-top:0.5rem">
-            <a href="https://github.com/slaps6331-cell/Millionaire-Resilience-LLC-JAH/blob/main/documents/multisig-verification-walkthrough.md">multisig-verification-walkthrough.md &rarr;</a>
+            <a href="SAFE_WALLET_3OF5_MULTISIG_GUIDE.md">SAFE_WALLET_3OF5_MULTISIG_GUIDE.md &rarr;</a>
           </p>
         </div>
         <div class="card">
-          <h3>Security Policy</h3>
-          <p>Credential handling rules and incident response procedure.</p>
+          <h3>Azure VM Configuration</h3>
+          <p>VM creation, Key Vault setup, Bastion access, and CI/CD pipeline config.</p>
           <p style="margin-top:0.5rem">
-            <a href="https://github.com/slaps6331-cell/Millionaire-Resilience-LLC-JAH/blob/main/SECURITY.md">SECURITY.md &rarr;</a>
+            <a href="AZURE_VM_CONFIGURATION_GUIDE.md">AZURE_VM_CONFIGURATION_GUIDE.md &rarr;</a>
           </p>
         </div>
         <div class="card">
-          <h3>GitHub Pages Setup</h3>
-          <p>How to configure and maintain this GitHub Pages site.</p>
+          <h3>Azure CI/CD Pipeline</h3>
+          <p>Azure DevOps pipelines for automated contract deployment.</p>
           <p style="margin-top:0.5rem">
-            <a href="https://github.com/slaps6331-cell/Millionaire-Resilience-LLC-JAH/blob/main/GITHUB_PAGES.md">GITHUB_PAGES.md &rarr;</a>
+            <a href="AZURE_CICD_PIPELINE_GUIDE.md">AZURE_CICD_PIPELINE_GUIDE.md &rarr;</a>
+          </p>
+        </div>
+        <div class="card">
+          <h3>MyEtherWallet Signing Workflow</h3>
+          <p>Step-by-step EIP-191 signing using MyEtherWallet for hardware/software wallets.</p>
+          <p style="margin-top:0.5rem">
+            <a href="MYETHERWALLET_SIGNING_WORKFLOW.md">MYETHERWALLET_SIGNING_WORKFLOW.md &rarr;</a>
+          </p>
+        </div>
+        <div class="card">
+          <h3>Signing Instructions</h3>
+          <p>Hash values and per-wallet signing instructions for the Morpho multi-sig.</p>
+          <p style="margin-top:0.5rem">
+            <a href="SIGNING_INSTRUCTIONS.md">SIGNING_INSTRUCTIONS.md &rarr;</a>
+          </p>
+        </div>
+        <div class="card">
+          <h3>Pinata IPFS Integration</h3>
+          <p>Document pinning, gateway configuration, and ABI proof verification.</p>
+          <p style="margin-top:0.5rem">
+            <a href="PINATA_IPFS_INTEGRATION.md">PINATA_IPFS_INTEGRATION.md &rarr;</a>
           </p>
         </div>
         <div class="card">

@@ -58,7 +58,7 @@
   "ucc1FilingHashes": {
     "filingNumber": "20260000078753",
     "jurisdiction": "New Mexico Secretary of State",
-    "debtor": "0x597856e93f19877a399f686D2F43b298e2268618",
+    "debtor": "0x5EEFF17e12401b6A8391f5257758E07c157E1e45",
     "securedParty": "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a",
     "ipfsCid": "bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a",
     "ucc1FilingHash32": "0x0fec875f0c70b4c91173ba67d182fd89d2bf614d00fda5bebd018bc6ca0568fe",
@@ -89,7 +89,7 @@
     "royaltyModule": "0xD2f60c40fEbccf6311f8B47c4f2Ec6b040400086",
     "mrIpId": "0x98971c660ac20880b60F86Cc3113eBd979eb3aAE",
     "mrTokenId": 15192,
-    "mrOwner": "0x597856e93f19877a399f686D2F43b298e2268618",
+    "mrOwner": "0x5EEFF17e12401b6A8391f5257758E07c157E1e45",
     "coinbaseWallet": "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a",
     "pilLicenseTemplate": "0x2E896b0b2Fdb7457499B56AAaA4AE55BCB4Cd316",
     "royaltyPolicyLAP": "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E",
