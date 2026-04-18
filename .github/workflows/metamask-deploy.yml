@@ -1,0 +1,277 @@
+name: MetaMask Deployment — Compile, Pin & Verify
+
+# This workflow handles the MetaMask-compatible deployment path:
+# 1. Compiles all 12 contracts
+# 2. Exports ABI proof and pins to Pinata IPFS
+# 3. Verifies contracts on StoryScan and Basescan
+# 4. Updates deployment registry and GitHub Pages
+#
+# The actual deployment transaction is signed via MetaMask (browser)
+# using the exported deployment data. This workflow handles everything
+# before and after the MetaMask signing step.
+
+on:
+  workflow_dispatch:
+    inputs:
+      network:
+        description: "Target network for verification"
+        required: true
+        default: "both"
+        type: choice
+        options:
+          - story
+          - base
+          - both
+      deployment_config_story:
+        description: "Paste deployment-config.story.json contents (optional)"
+        required: false
+        type: string
+      deployment_config_base:
+        description: "Paste deployment-config.base.json contents (optional)"
+        required: false
+        type: string
+
+concurrency:
+  group: metamask-deploy-${{ github.event.inputs.network }}
+  cancel-in-progress: false
+
+jobs:
+  compile-and-export:
+    name: Compile & Export ABI Proof
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Compile all 12 contracts
+        run: npx hardhat compile --force
+
+      - name: Export ABI proof
+        run: node scripts/export-abi-proof.cjs
+
+      - name: Generate valuation attestation hashes
+        run: node scripts/generate-valuation-attestation.cjs
+
+      - name: Pin ABI proof to Pinata IPFS
+        if: env.PINATA_JWT != ''
+        env:
+          PINATA_JWT: ${{ secrets.PINATA_JWT }}
+          PINATA_GATEWAY_NAME: ${{ vars.PINATA_GATEWAY_NAME }}
+        run: |
+          echo "Pinning ABI proof to Pinata..."
+          CID=$(curl -s -X POST "https://api.pinata.cloud/pinning/pinFileToIPFS" \
+            -H "Authorization: Bearer $PINATA_JWT" \
+            -F "file=@abi-proof.json" \
+            -F 'pinataMetadata={"name":"ABI_Proof_12_Contracts_MetaMask_Deploy","keyvalues":{"workflow":"metamask","contracts":"12","networks":"story-1514,base-8453"}}' \
+            | python3 -c "import sys,json; print(json.load(sys.stdin)['IpfsHash'])")
+          echo "ABI Proof CID: $CID"
+          echo "Gateway URL: https://${PINATA_GATEWAY_NAME}.mypinata.cloud/ipfs/$CID"
+          echo "ABI_PROOF_CID=$CID" >> "$GITHUB_ENV"
+
+      - name: Pin valuation attestation to Pinata
+        if: env.PINATA_JWT != ''
+        env:
+          PINATA_JWT: ${{ secrets.PINATA_JWT }}
+        run: |
+          echo "Pinning valuation attestation..."
+          curl -s -X POST "https://api.pinata.cloud/pinning/pinJSONToIPFS" \
+            -H "Authorization: Bearer $PINATA_JWT" \
+            -H "Content-Type: application/json" \
+            -d "{\"pinataContent\":$(cat valuation-attestation.json),\"pinataMetadata\":{\"name\":\"Valuation_Attestation_MetaMask_Deploy\"}}" \
+            | python3 -c "import sys,json; print('Valuation CID:', json.load(sys.stdin)['IpfsHash'])"
+
+      - name: Pin multi-sig config to Pinata
+        if: env.PINATA_JWT != ''
+        env:
+          PINATA_JWT: ${{ secrets.PINATA_JWT }}
+        run: |
+          echo "Pinning 3-of-5 multi-sig config..."
+          curl -s -X POST "https://api.pinata.cloud/pinning/pinJSONToIPFS" \
+            -H "Authorization: Bearer $PINATA_JWT" \
+            -H "Content-Type: application/json" \
+            -d "{\"pinataContent\":$(cat signature-morpho-config.json),\"pinataMetadata\":{\"name\":\"MultiSig_3of5_Config\"}}" \
+            | python3 -c "import sys,json; print('MultiSig CID:', json.load(sys.stdin)['IpfsHash'])"
+
+      - name: Upload compilation artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: metamask-deploy-artifacts-${{ github.sha }}
+          path: |
+            artifacts/
+            abi-proof.json
+            valuation-attestation.json
+            signature-morpho-config.json
+          retention-days: 90
+
+      - name: Generate MetaMask deployment data
+        run: |
+          echo "## MetaMask Deployment Data" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "### Compiled Contracts (12)" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "| # | Contract | ABI Size |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|---|----------|----------|" >> "$GITHUB_STEP_SUMMARY"
+          node -e "
+            const fs = require('fs');
+            const contracts = [
+              'StoryAttestationService', 'StoryOrchestrationService', 'StoryAttestationBridge',
+              'SLAPSIPSpvLoan', 'GladiatorHoldingsSpvLoan', 'PILLoanEnforcement',
+              'StablecoinIPEscrow', 'AngelCoin', 'ResilienceToken',
+              'SlapsStreaming', 'SlapsSPV', 'UCC1FilingIntegration'
+            ];
+            contracts.forEach((name, i) => {
+              const path = 'artifacts/contracts/' + name + '.sol/' + name + '.json';
+              if (fs.existsSync(path)) {
+                const data = JSON.parse(fs.readFileSync(path));
+                const size = JSON.stringify(data.abi).length;
+                console.log('| ' + (i+1) + ' | ' + name + ' | ' + size + ' bytes |');
+              }
+            });
+          " >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "### Next Step" >> "$GITHUB_STEP_SUMMARY"
+          echo "Deploy each contract using MetaMask in your browser. See \`docs/METAMASK_DEPLOYMENT_WORKFLOW.md\` for instructions." >> "$GITHUB_STEP_SUMMARY"
+
+  verify-story:
+    name: Verify on StoryScan (Chain 1514)
+    runs-on: ubuntu-latest
+    needs: compile-and-export
+    if: inputs.network == 'story' || inputs.network == 'both'
+    environment: story-mainnet
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Write Story deployment config
+        if: inputs.deployment_config_story != ''
+        run: echo '${{ inputs.deployment_config_story }}' > deployment-config.story.json
+
+      - name: Verify contracts on StoryScan
+        if: inputs.deployment_config_story != ''
+        env:
+          DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+          STORY_RPC_URL: ${{ secrets.ALCHEMY_API_KEY && format('https://story-mainnet.g.alchemy.com/v2/{0}', secrets.ALCHEMY_API_KEY) || 'https://mainnet.storyrpc.io' }}
+          STORYSCAN_API_KEY: ${{ secrets.STORYSCAN_API_KEY }}
+        run: npm run contracts:verify:story
+
+      - name: Post-deployment orchestration (Story)
+        if: inputs.deployment_config_story != ''
+        env:
+          DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+          STORY_RPC_URL: ${{ secrets.ALCHEMY_API_KEY && format('https://story-mainnet.g.alchemy.com/v2/{0}', secrets.ALCHEMY_API_KEY) || 'https://mainnet.storyrpc.io' }}
+          MORPHO_MULTISIG_SIGNER_1: ${{ vars.MORPHO_MULTISIG_SIGNER_1 || '0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a' }}
+          MORPHO_MULTISIG_SIGNER_2: ${{ vars.MORPHO_MULTISIG_SIGNER_2 || '0x20A8402c67b9D476ddC1D2DB12f03B30A468f135' }}
+          MORPHO_MULTISIG_SIGNER_3: ${{ vars.MORPHO_MULTISIG_SIGNER_3 || '0x5EEFF17e12401b6A8391f5257758E07c157E1e45' }}
+          MORPHO_MULTISIG_SIGNER_4: ${{ vars.MORPHO_MULTISIG_SIGNER_4 || '0x4C7CD4eC5232589696d3fFC0D3ddaa9B59FF072A' }}
+          MORPHO_MULTISIG_SIGNER_5: ${{ vars.MORPHO_MULTISIG_SIGNER_5 || '0xD39447807f18Ba965E8F3F6929c8815794B3C951' }}
+          MORPHO_SAFE_ADDRESS: ${{ vars.MORPHO_SAFE_ADDRESS || '0xd314BE0a27c73Cd057308aC4f3dd472c482acc09' }}
+          STORY_DEPLOYER_ADDRESS: ${{ vars.STORY_DEPLOYER_ADDRESS || '0x5EEFF17e12401b6A8391f5257758E07c157E1e45' }}
+          COINBASE_WALLET_ADDRESS: ${{ vars.COINBASE_WALLET_ADDRESS || '0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a' }}
+          UCC1_FILING_HASH: "bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a"
+          PINATA_JWT: ${{ secrets.PINATA_JWT }}
+          PINATA_GATEWAY_NAME: ${{ vars.PINATA_GATEWAY_NAME }}
+        run: npm run contracts:orchestrate:story
+
+  verify-base:
+    name: Verify on Basescan (Chain 8453)
+    runs-on: ubuntu-latest
+    needs: compile-and-export
+    if: inputs.network == 'base' || inputs.network == 'both'
+    environment: base-mainnet
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Write Base deployment config
+        if: inputs.deployment_config_base != ''
+        run: echo '${{ inputs.deployment_config_base }}' > deployment-config.base.json
+
+      - name: Verify contracts on Basescan
+        if: inputs.deployment_config_base != ''
+        env:
+          DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+          BASE_RPC_URL: ${{ secrets.ALCHEMY_API_KEY && format('https://base-mainnet.g.alchemy.com/v2/{0}', secrets.ALCHEMY_API_KEY) || 'https://mainnet.base.org' }}
+          ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+        run: npm run contracts:verify:base
+
+      - name: Post-deployment orchestration (Base)
+        if: inputs.deployment_config_base != ''
+        env:
+          DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+          BASE_RPC_URL: ${{ secrets.ALCHEMY_API_KEY && format('https://base-mainnet.g.alchemy.com/v2/{0}', secrets.ALCHEMY_API_KEY) || 'https://mainnet.base.org' }}
+          MORPHO_MULTISIG_SIGNER_1: ${{ vars.MORPHO_MULTISIG_SIGNER_1 || '0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a' }}
+          MORPHO_MULTISIG_SIGNER_2: ${{ vars.MORPHO_MULTISIG_SIGNER_2 || '0x20A8402c67b9D476ddC1D2DB12f03B30A468f135' }}
+          MORPHO_MULTISIG_SIGNER_3: ${{ vars.MORPHO_MULTISIG_SIGNER_3 || '0x5EEFF17e12401b6A8391f5257758E07c157E1e45' }}
+          MORPHO_MULTISIG_SIGNER_4: ${{ vars.MORPHO_MULTISIG_SIGNER_4 || '0x4C7CD4eC5232589696d3fFC0D3ddaa9B59FF072A' }}
+          MORPHO_MULTISIG_SIGNER_5: ${{ vars.MORPHO_MULTISIG_SIGNER_5 || '0xD39447807f18Ba965E8F3F6929c8815794B3C951' }}
+          MORPHO_SAFE_ADDRESS: ${{ vars.MORPHO_SAFE_ADDRESS || '0xd314BE0a27c73Cd057308aC4f3dd472c482acc09' }}
+          MORPHO_BLUE: ${{ vars.MORPHO_BLUE || '0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb' }}
+          BASE_USDC: ${{ vars.BASE_USDC || '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913' }}
+          PINATA_JWT: ${{ secrets.PINATA_JWT }}
+          PINATA_GATEWAY_NAME: ${{ vars.PINATA_GATEWAY_NAME }}
+        run: npm run contracts:orchestrate:base
+
+  update-pages:
+    name: Pin Registry & Update GitHub Pages
+    runs-on: ubuntu-latest
+    needs: [verify-story, verify-base]
+    if: always() && (needs.verify-story.result == 'success' || needs.verify-base.result == 'success')
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Pin deployment registry to Pinata
+        if: env.PINATA_JWT != ''
+        env:
+          PINATA_JWT: ${{ secrets.PINATA_JWT }}
+        run: |
+          echo "Pinning deployment registry..."
+          curl -s -X POST "https://api.pinata.cloud/pinning/pinJSONToIPFS" \
+            -H "Authorization: Bearer $PINATA_JWT" \
+            -H "Content-Type: application/json" \
+            -d "{\"pinataContent\":$(cat deployment-registry.json),\"pinataMetadata\":{\"name\":\"Deployment_Registry_$(date +%Y%m%d)\"}}" \
+            | python3 -c "import sys,json; print('Registry CID:', json.load(sys.stdin)['IpfsHash'])"
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/
+
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4

@@ -9,18 +9,30 @@ const ethers = hre.ethers;
  *   - Story Protocol mainnet (Chain 1514) — verified on StoryScan
  *   - Base L2 (Chain 8453) — verified on Etherscan/Basescan
  *
- * Multi-signature requirement (Morpho Protocol):
- *   - Story Protocol deployer: 0x597856e93f19877a399f686D2F43b298e2268618
- *   - Coinbase wallet:         0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a
+ * Multi-signature requirement (Morpho Protocol — 3-of-5 Gnosis Safe):
+ *   Signer 1 (Coinbase):         0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a
+ *   Signer 2 (Morpho Auth):      0x20A8402c67b9D476ddC1D2DB12f03B30A468f135
+ *   Signer 3 (Story Deployer):   0x5EEFF17e12401b6A8391f5257758E07c157E1e45
+ *   Signer 4 (Base Auth):        0x4C7CD4eC5232589696d3fFC0D3ddaa9B59FF072A
+ *   Signer 5 (SPV Custodian):    0xD39447807f18Ba965E8F3F6929c8815794B3C951
+ *   Safe Contract:                0xd314BE0a27c73Cd057308aC4f3dd472c482acc09
  *
  * Usage:
  *   npx hardhat run scripts/deploy.cjs --network story
  *   npx hardhat run scripts/deploy.cjs --network base
  */
 
-const MULTISIG_SIGNERS = {
-  story:   "0x597856e93f19877a399f686D2F43b298e2268618",
-  coinbase: "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a",
+const MULTISIG_CONFIG = {
+  type: "GNOSIS_SAFE_3_OF_5",
+  threshold: 3,
+  safeContract: process.env.MORPHO_SAFE_ADDRESS || "0xd314BE0a27c73Cd057308aC4f3dd472c482acc09",
+  signers: {
+    signer1_coinbase: process.env.MORPHO_MULTISIG_SIGNER_1 || "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a",
+    signer2_morpho:   process.env.MORPHO_MULTISIG_SIGNER_2 || "0x20A8402c67b9D476ddC1D2DB12f03B30A468f135",
+    signer3_story:    process.env.MORPHO_MULTISIG_SIGNER_3 || "0x5EEFF17e12401b6A8391f5257758E07c157E1e45",
+    signer4_base:     process.env.MORPHO_MULTISIG_SIGNER_4 || "0x4C7CD4eC5232589696d3fFC0D3ddaa9B59FF072A",
+    signer5_spv:      process.env.MORPHO_MULTISIG_SIGNER_5 || "0xD39447807f18Ba965E8F3F6929c8815794B3C951",
+  },
 };
 
 async function deployContract(name, factory, ...args) {
@@ -46,9 +58,11 @@ async function main() {
 
   const balance = await ethers.provider.getBalance(deployer.address);
   console.log(`Balance:   ${ethers.formatEther(balance)} ETH`);
-  console.log(`\nMulti-sig signers (Morpho Protocol — 2/2 required):`);
-  console.log(`  Story:    ${MULTISIG_SIGNERS.story}`);
-  console.log(`  Coinbase: ${MULTISIG_SIGNERS.coinbase}`);
+  console.log(`\nMulti-sig (Morpho Protocol — ${MULTISIG_CONFIG.threshold}/${Object.keys(MULTISIG_CONFIG.signers).length}):`);
+  console.log(`  Safe contract: ${MULTISIG_CONFIG.safeContract}`);
+  Object.entries(MULTISIG_CONFIG.signers).forEach(([key, addr]) => {
+    console.log(`  ${key}: ${addr}`);
+  });
   console.log();
 
   const deploymentConfig = {
@@ -56,7 +70,7 @@ async function main() {
     network: hre.network.name,
     chainId: Number(network.chainId),
     timestamp: new Date().toISOString(),
-    multisigSigners: MULTISIG_SIGNERS,
+    multisigConfig: MULTISIG_CONFIG,
     contracts: {},
   };
 
