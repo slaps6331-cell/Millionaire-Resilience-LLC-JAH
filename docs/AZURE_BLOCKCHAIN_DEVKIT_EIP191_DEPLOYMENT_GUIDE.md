@@ -230,7 +230,36 @@ console.log("Signature:", signature);
 4. Paste the EIP-191 hash
 5. Confirm with the connected owner wallet
 
-### 5.4 Inject Signatures into Config
+**Method E: Blockchain.com Wallet via WalletConnect (Signer 2 -- Recommended)**
+
+Blockchain.com Wallet supports WalletConnect v2.0 with native `personal_sign` (EIP-191), allowing signing **without exporting the private key**:
+
+1. Open the Blockchain.com mobile app
+2. Tap the **QR scanner** on the home screen
+3. Navigate to the signing dApp (e.g., https://app.safe.global or a custom signing page)
+4. Scan the WalletConnect QR code displayed by the dApp
+5. Confirm the session connection in the Blockchain.com app
+6. When the `personal_sign` request appears, verify the hash matches:
+   ```
+   0x602b1b4f5a2e8bfa60aec337688b21fdccbfef6a21befe412133ddac9a2c04fb
+   ```
+7. Approve the signing request
+8. The 132-character hex signature is returned to the dApp -- copy it
+
+This method is the most secure because the private key never leaves the wallet device.
+
+### 5.4 Blockchain.com Wallet Beneficial Features Applied to Deployment
+
+| Deployment Step | Blockchain.com Feature | Benefit |
+|---|---|---|
+| EIP-191 Multi-Sig Signing | WalletConnect v2.0 `personal_sign` | Sign without key export -- most secure method |
+| Cross-Chain Monitoring | Multi-chain support (ETH + Polygon/Base) | Track deployments on both Story and Base |
+| Gas Funding | In-wallet DEX aggregator swaps | Convert assets to ETH for gas directly in-wallet |
+| Signature Collection Period | ETH staking (daily rewards) | Earn yield on idle ETH while collecting 3-of-5 sigs |
+| UCC-1 Legal Compliance | Non-custodial architecture | Proves signer custody for UCC-1 perfection |
+| Safe Transaction Approval | WalletConnect to Gnosis Safe | Approve multi-sig txs from Blockchain.com app |
+
+### 5.5 Inject Signatures into Config
 
 Once you have at least 3 signatures, update `signature-morpho-config.json`:
 

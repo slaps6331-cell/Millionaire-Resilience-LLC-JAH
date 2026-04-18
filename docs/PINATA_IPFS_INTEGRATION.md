@@ -132,3 +132,120 @@ curl -H "Authorization: Bearer $PINATA_JWT" \
   "https://api.pinata.cloud/data/userPinnedDataTotal" \
   | jq '.'
 ```
+
+---
+
+## Metadata Updates for Morpho Protocol, Basescan & StoryScan Verification
+
+When deploying contracts, the following metadata must be pinned/updated on Pinata for on-chain verification on Basescan and StoryScan.
+
+### ABI Proof Pinning
+
+After compilation, the ABI proof must be pinned for contract verification:
+
+```bash
+# Generate ABI proof
+node scripts/export-abi-proof.cjs
+
+# Pin to Pinata
+curl -X POST "https://api.pinata.cloud/pinning/pinFileToIPFS" \
+  -H "Authorization: Bearer $PINATA_JWT" \
+  -F "file=@abi-proof.json" \
+  -F 'pinataMetadata={"name":"ABI_Proof_12_Contracts","keyvalues":{"version":"3of5-multisig","contracts":"12","networks":"story-1514,base-8453","safe_address":"0xd314BE0a27c73Cd057308aC4f3dd472c482acc09"}}' \
+  | jq '.IpfsHash'
+```
+
+Current ABI proof CID: `bafkreidlihfltbmbcfnq6uiupwod4rgmferre4v2o3edbi5gsst3gytpay`
+
+### Valuation Attestation Pinning
+
+Pin the valuation attestation for Morpho Protocol market validation:
+
+```bash
+curl -X POST "https://api.pinata.cloud/pinning/pinJSONToIPFS" \
+  -H "Authorization: Bearer $PINATA_JWT" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "pinataContent": '"$(cat valuation-attestation.json)"',
+    "pinataMetadata": {
+      "name": "Valuation_Attestation_MR_SLAPS",
+      "keyvalues": {
+        "hermetic_seal": "0xed4bd3b5123971b5bd15fb55b0b57d543518c78b22906b45199bfeec1db7f413",
+        "total_valuation_usd": "300000000",
+        "morpho_blue": "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
+        "multisig_threshold": "3-of-5"
+      }
+    }
+  }' | jq '.IpfsHash'
+```
+
+### Multi-Sig Configuration Pinning
+
+Pin the 3-of-5 multi-sig configuration for Morpho Protocol authorization:
+
+```bash
+curl -X POST "https://api.pinata.cloud/pinning/pinJSONToIPFS" \
+  -H "Authorization: Bearer $PINATA_JWT" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "pinataContent": '"$(cat signature-morpho-config.json)"',
+    "pinataMetadata": {
+      "name": "Morpho_3of5_MultiSig_Config",
+      "keyvalues": {
+        "safe_address": "0xd314BE0a27c73Cd057308aC4f3dd472c482acc09",
+        "threshold": "3",
+        "signers": "5",
+        "eip191_hash": "0x602b1b4f5a2e8bfa60aec337688b21fdccbfef6a21befe412133ddac9a2c04fb"
+      }
+    }
+  }' | jq '.IpfsHash'
+```
+
+### Deployment Registry Pinning (Post-Deployment)
+
+After contracts are deployed, pin the deployment registry for permanent on-chain reference:
+
+```bash
+curl -X POST "https://api.pinata.cloud/pinning/pinJSONToIPFS" \
+  -H "Authorization: Bearer $PINATA_JWT" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "pinataContent": '"$(cat deployment-registry.json)"',
+    "pinataMetadata": {
+      "name": "Deployment_Registry_Story_Base",
+      "keyvalues": {
+        "story_chain": "1514",
+        "base_chain": "8453",
+        "contract_count": "12",
+        "ucc1_filing": "20260000078753"
+      }
+    }
+  }' | jq '.IpfsHash'
+```
+
+### StoryScan Registration Metadata
+
+For StoryScan IP asset registration, the following metadata is required:
+
+```bash
+# Pin IPA metadata for Story Protocol registration
+for metadata in archive/metadata-json/*IPAMetadata.json; do
+  NAME=$(basename "$metadata" .json)
+  curl -X POST "https://api.pinata.cloud/pinning/pinFileToIPFS" \
+    -H "Authorization: Bearer $PINATA_JWT" \
+    -F "file=@$metadata" \
+    -F "pinataMetadata={\"name\":\"$NAME\",\"keyvalues\":{\"protocol\":\"story\",\"chain\":\"1514\"}}" \
+    | jq '.IpfsHash'
+done
+```
+
+### Basescan Verification Metadata
+
+For Basescan contract verification, the ABI proof is referenced during the `hardhat verify` step. Ensure the ABI proof CID is accessible:
+
+```bash
+# Verify ABI proof is accessible via gateway
+curl -s -o /dev/null -w "%{http_code}" \
+  "https://lavender-neat-urial-76.mypinata.cloud/ipfs/bafkreidlihfltbmbcfnq6uiupwod4rgmferre4v2o3edbi5gsst3gytpay"
+# Expected: 200
+```
