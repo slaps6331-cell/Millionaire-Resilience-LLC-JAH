@@ -35,11 +35,11 @@ module.exports = {
   },
   networks: {
     story: {
-      // If ALCHEMY_API_KEY is set the Alchemy Story Protocol endpoint is used
-      // automatically; otherwise falls back to STORY_RPC_URL secret, then the
-      // public endpoint.  Set ALCHEMY_API_KEY for production deployments to
-      // avoid rate-limiting on the public endpoint.
-      url: process.env.ALCHEMY_API_KEY
+      // Primary: Thirdweb RPC gateway for reliable access
+      // Fallback: Alchemy Story endpoint, then StakeMe RPC, then public endpoint
+      url: process.env.THIRDWEB_RPC_URL
+        ? process.env.THIRDWEB_RPC_URL
+        : process.env.ALCHEMY_API_KEY
         ? `https://story-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
         : process.env.STORY_RPC_URL || "https://mainnet.storyrpc.io",
       accounts: process.env.DEPLOYER_PRIVATE_KEY

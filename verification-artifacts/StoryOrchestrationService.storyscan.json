@@ -1,0 +1,1841 @@
+{
+  "contractName": "StoryOrchestrationService",
+  "chainId": 1514,
+  "network": "Story Protocol Mainnet",
+  "compiler": "v0.8.26+commit.8a97fa7a",
+  "evmVersion": "cancun",
+  "optimization": {
+    "enabled": true,
+    "runs": 200
+  },
+  "viaIR": true,
+  "license": "MIT",
+  "constructorArguments": "0x",
+  "abi": [
+    {
+      "inputs": [],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "owner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnableInvalidOwner",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "OwnableUnauthorizedAccount",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "ReentrancyGuardReentrantCall",
+      "type": "error"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "cascadeId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "enum StoryOrchestrationService.DefaultStage",
+          "name": "fromStage",
+          "type": "uint8"
+        },
+        {
+          "indexed": false,
+          "internalType": "enum StoryOrchestrationService.DefaultStage",
+          "name": "toStage",
+          "type": "uint8"
+        }
+      ],
+      "name": "DefaultCascadeAdvanced",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "cascadeId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "enum StoryOrchestrationService.DefaultStage",
+          "name": "stage",
+          "type": "uint8"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "outstandingBalance",
+          "type": "uint256"
+        }
+      ],
+      "name": "DefaultCascadeInitiated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "pipelineId",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "totalAttestations",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "timestamp",
+          "type": "uint256"
+        }
+      ],
+      "name": "HermeticSealCompleted",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "marketId",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "principal",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "collateralAmount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "interestRate",
+          "type": "uint256"
+        }
+      ],
+      "name": "MorphoPositionCreated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "pipelineId",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "pilLicenseTemplate",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "licensingModule",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "royaltyPolicyLAP",
+          "type": "address"
+        }
+      ],
+      "name": "PILLicensesBound",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "sourceIpId",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "destination",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "totalRouted",
+          "type": "uint256"
+        }
+      ],
+      "name": "PILRevenueRouted",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "pipelineId",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "enum StoryOrchestrationService.PipelineStage",
+          "name": "fromStage",
+          "type": "uint8"
+        },
+        {
+          "indexed": false,
+          "internalType": "enum StoryOrchestrationService.PipelineStage",
+          "name": "toStage",
+          "type": "uint8"
+        }
+      ],
+      "name": "PipelineAdvanced",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "pipelineId",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "ucc1FilingHash",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "enum StoryOrchestrationService.PipelineStage",
+          "name": "stage",
+          "type": "uint8"
+        }
+      ],
+      "name": "PipelineCreated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "pipelineId",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "entityName",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "riskStatus",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "ipAssetId",
+          "type": "address"
+        }
+      ],
+      "name": "StoryScanRegistered",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "BASE_USDC",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "BTC_LOAN_APR_BPS",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "BTC_LOAN_PRINCIPAL",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "COINBASE_WALLET",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "DERIVATIVE_WORKFLOWS",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "ETH_LOAN_APR_BPS",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "ETH_LOAN_PRINCIPAL",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "IP_ASSET_REGISTRY",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "LICENSE_ATTACHMENT_WORKFLOWS",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "LICENSE_REGISTRY",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "LICENSING_MODULE",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "MORPHO_BLUE",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "MORPHO_LLTV",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "PIL_COM_ANNUAL_REVENUE",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "PIL_COM_ROYALTY_BPS",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "PIL_ENT_ANNUAL_REVENUE",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "PIL_ENT_ROYALTY_BPS",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "PIL_LICENSE_TEMPLATE",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "PIL_PER_ANNUAL_REVENUE",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "PIL_PER_ROYALTY_BPS",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "REGISTRATION_WORKFLOWS",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "ROYALTY_MODULE",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "ROYALTY_POLICY_LAP",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "ROYALTY_WORKFLOWS",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "TOTAL_ANNUAL_PIL_REVENUE",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "TOTAL_LOAN_PRINCIPAL",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "pipelineId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "sourceIpId",
+          "type": "address"
+        }
+      ],
+      "name": "activateRevenueRouting",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "activePipeline",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "pipelineId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "enum StoryOrchestrationService.PipelineStage",
+          "name": "stage",
+          "type": "uint8"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "ucc1FilingHash",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "ucc1AttestationId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "corporateAttestationId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "valuationAttestationId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "morphoBtcAttestationId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "morphoEthAttestationId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "spvSegregationAttestationId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "revenueEscrowAttestationId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "loanCollateralAttestationId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint256",
+          "name": "createdAt",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "completedAt",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "storyScanRegistryUrl",
+          "type": "string"
+        },
+        {
+          "internalType": "bool",
+          "name": "isSealed",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "cascadeId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "enum StoryOrchestrationService.DefaultStage",
+          "name": "newStage",
+          "type": "uint8"
+        }
+      ],
+      "name": "advanceDefaultCascade",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "attestationServiceAddress",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "pipelineId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "bindPILLicenses",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "pipelineId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "completeSeal",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "pipelineId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "btcMarketId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "ethMarketId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "configureMorphoPositions",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "defaultCascadeCounter",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "defaultCascades",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "loanId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "enum StoryOrchestrationService.DefaultStage",
+          "name": "stage",
+          "type": "uint8"
+        },
+        {
+          "internalType": "uint256",
+          "name": "pilRevenueAccelerated",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "morphoCollateralLiquidated",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "slapsIPTransferred",
+          "type": "bool"
+        },
+        {
+          "internalType": "uint256",
+          "name": "deficiencyAmount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "initiatedAt",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "completedAt",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getActivePipelineStage",
+      "outputs": [
+        {
+          "internalType": "enum StoryOrchestrationService.PipelineStage",
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "cascadeId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getDefaultCascade",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "loanId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "enum StoryOrchestrationService.DefaultStage",
+              "name": "stage",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint256",
+              "name": "pilRevenueAccelerated",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "morphoCollateralLiquidated",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bool",
+              "name": "slapsIPTransferred",
+              "type": "bool"
+            },
+            {
+              "internalType": "uint256",
+              "name": "deficiencyAmount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "initiatedAt",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "completedAt",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct StoryOrchestrationService.DefaultCascade",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getLoanSummary",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "btcPrincipal",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "btcAPR",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "ethPrincipal",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "ethAPR",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "totalPrincipal",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "lltv",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "annualPILRevenue",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "marketId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "getMorphoPosition",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "bytes32",
+              "name": "marketId",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "loanToken",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "collateralToken",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "principal",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "collateralAmount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "interestRate",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "originationDate",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "totalRepaid",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "outstandingBalance",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bool",
+              "name": "active",
+              "type": "bool"
+            },
+            {
+              "internalType": "enum StoryOrchestrationService.DefaultStage",
+              "name": "defaultStatus",
+              "type": "uint8"
+            }
+          ],
+          "internalType": "struct StoryOrchestrationService.MorphoLoanPosition",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "pipelineId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "getPipelineStatus",
+      "outputs": [
+        {
+          "internalType": "enum StoryOrchestrationService.PipelineStage",
+          "name": "stage",
+          "type": "uint8"
+        },
+        {
+          "internalType": "bool",
+          "name": "isSealed",
+          "type": "bool"
+        },
+        {
+          "internalType": "uint256",
+          "name": "createdAt",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "completedAt",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "ucc1FilingHash",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getProjectedPayoffMonths",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "btcLoanMonths",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "ethLoanMonths",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "combinedMonths",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "totalAnnualRevenue",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "monthlyRevenue",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "ipId",
+          "type": "address"
+        }
+      ],
+      "name": "getRevenueRoute",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "sourceIpId",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "paymentDestination",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "allocationPercentage",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "totalCollected",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "totalRouted",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "lastCollectionTimestamp",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bool",
+              "name": "active",
+              "type": "bool"
+            }
+          ],
+          "internalType": "struct StoryOrchestrationService.PILRevenueRoute",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "entityName",
+          "type": "string"
+        }
+      ],
+      "name": "getStoryScanEntry",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "bytes32",
+              "name": "pipelineId",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "string",
+              "name": "entityName",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "entityId",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "riskStatus",
+              "type": "string"
+            },
+            {
+              "internalType": "address",
+              "name": "ipAssetId",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "portfolioValue",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32[]",
+              "name": "attestationIds",
+              "type": "bytes32[]"
+            },
+            {
+              "internalType": "uint256",
+              "name": "registeredAt",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bool",
+              "name": "verified",
+              "type": "bool"
+            }
+          ],
+          "internalType": "struct StoryOrchestrationService.StoryScanEntry",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "morphoMarketId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "initiateDefaultCascade",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "cascadeId",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "ucc1FilingHash",
+          "type": "bytes32"
+        }
+      ],
+      "name": "initiatePipeline",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "pipelineId",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "name": "morphoPositions",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "marketId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "loanToken",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "collateralToken",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "principal",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "collateralAmount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "interestRate",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "originationDate",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "totalRepaid",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "outstandingBalance",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "active",
+          "type": "bool"
+        },
+        {
+          "internalType": "enum StoryOrchestrationService.DefaultStage",
+          "name": "defaultStatus",
+          "type": "uint8"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "pipelineCounter",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "name": "pipelines",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "pipelineId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "enum StoryOrchestrationService.PipelineStage",
+          "name": "stage",
+          "type": "uint8"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "ucc1FilingHash",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "ucc1AttestationId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "corporateAttestationId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "valuationAttestationId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "morphoBtcAttestationId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "morphoEthAttestationId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "spvSegregationAttestationId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "revenueEscrowAttestationId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "loanCollateralAttestationId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint256",
+          "name": "createdAt",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "completedAt",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "storyScanRegistryUrl",
+          "type": "string"
+        },
+        {
+          "internalType": "bool",
+          "name": "isSealed",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "pipelineId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "ucc1AttestationId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "corporateAttestationId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "valuationAttestationId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "morphoBtcAttestationId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "morphoEthAttestationId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "spvSegregationAttestationId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "revenueEscrowAttestationId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "loanCollateralAttestationId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "recordAttestations",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "sourceIpId",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "recordPILRevenueCollection",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "pipelineId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "string",
+          "name": "entityName",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "entityId",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "riskStatus",
+          "type": "string"
+        },
+        {
+          "internalType": "address",
+          "name": "ipAssetId",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "portfolioValue",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bytes32[]",
+          "name": "attestationIds",
+          "type": "bytes32[]"
+        }
+      ],
+      "name": "registerOnStoryScan",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "renounceOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "revenueRoutes",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "sourceIpId",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "paymentDestination",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "allocationPercentage",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "totalCollected",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "totalRouted",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "lastCollectionTimestamp",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "active",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "sourceIpId",
+          "type": "address"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "morphoMarketId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "routePILRevenueToLoan",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_service",
+          "type": "address"
+        }
+      ],
+      "name": "setAttestationService",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_attestationService",
+          "type": "address"
+        }
+      ],
+      "name": "setAttestationServiceAddress",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_contract",
+          "type": "address"
+        }
+      ],
+      "name": "setSPVLoanContract",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_spvLoanContract",
+          "type": "address"
+        }
+      ],
+      "name": "setSpvLoanContractAddress",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "spvLoanContractAddress",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "name": "storyScanRegistry",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "pipelineId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "string",
+          "name": "entityName",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "entityId",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "riskStatus",
+          "type": "string"
+        },
+        {
+          "internalType": "address",
+          "name": "ipAssetId",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "portfolioValue",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "registeredAt",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "verified",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecodeKeccak256": "0x992f9f4ea33c28b9d5fc7d92056f52a0704a2f55dfe904645983d79095c0dfba",
+  "deployedBytecodeKeccak256": "0xe1945219332b1807544822b4cdbd745001150f027a5110e5e6466a3a1f813d02",
+  "abiSha256": "0x1d7ac972b62012670a86c35d8ae86f9ba043ab7ef0d16b2a8d784224786a6185",
+  "deployedBytecodeSize": 13436,
+  "evmLimitCheck": "PASS"
+}

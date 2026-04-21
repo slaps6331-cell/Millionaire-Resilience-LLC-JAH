@@ -46,9 +46,11 @@ require("dotenv").config();
 const ARTIFACTS_DIR  = path.join(__dirname, "..", "artifacts", "contracts");
 const OUTPUT_FILE    = path.join(__dirname, "..", "abi-proof.json");
 const CHAIN_ID       = 1514;
+const BASE_CHAIN_ID  = 8453;
 const STORYSCAN_BASE = "https://www.storyscan.io";
+const BASESCAN_BASE  = "https://basescan.org";
 
-// All 11 contracts deployed on Story Protocol mainnet.
+// All 12 contracts deployed on Story Protocol mainnet and Base L2.
 const CONTRACT_NAMES = [
   "StoryAttestationService",
   "StoryOrchestrationService",
@@ -61,6 +63,7 @@ const CONTRACT_NAMES = [
   "ResilienceToken",
   "SlapsStreaming",
   "SlapsSPV",
+  "UCC1FilingIntegration",
 ];
 
 // Pinata gateway for resolving CID URLs
@@ -225,6 +228,18 @@ const proof = {
     network:       "Story Protocol Mainnet",
     explorer:      STORYSCAN_BASE,
     explorerApi:   `${STORYSCAN_BASE}/api`,
+  },
+
+  baseL2: {
+    chainId:       BASE_CHAIN_ID,
+    network:       "Base L2",
+    explorer:      BASESCAN_BASE,
+    explorerApi:   `${BASESCAN_BASE}/api`,
+  },
+
+  thirdwebRpc: {
+    endpoint: "https://1.rpc.thirdweb.com/eccb68351bc5fb4cc8ea27242b2dbc53",
+    description: "Thirdweb RPC gateway for blockchain interaction",
   },
 
   compilationConfig: {

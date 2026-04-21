@@ -1,0 +1,3047 @@
+{
+  "contractName": "StoryAttestationService",
+  "chainId": 1514,
+  "network": "Story Protocol Mainnet",
+  "compiler": "v0.8.26+commit.8a97fa7a",
+  "evmVersion": "cancun",
+  "optimization": {
+    "enabled": true,
+    "runs": 1
+  },
+  "viaIR": true,
+  "license": "MIT",
+  "constructorArguments": "0x",
+  "abi": [
+    {
+      "inputs": [],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "inputs": [],
+      "name": "AlreadyRevoked",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "AttestationNotFound",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "AttestationRevoked_",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "AuditorAlreadyApproved",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "AuditorNotActive",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "FilingNumberRequired",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InvalidAttestationType",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InvalidAuditorAddress",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InvalidBorrowAmount",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InvalidContractHash",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InvalidDebtor",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InvalidFilingHash",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InvalidIPAsset",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InvalidMorphoMarketId",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InvalidPaymentDestination",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InvalidPresentValue",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "MustAllocateFull",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "NotAuthorized",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "NotAuthorizedAttestor",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "NotAuthorizedValuator",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "owner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnableInvalidOwner",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "OwnableUnauthorizedAccount",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "PatentSightScoreTooLow",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "ProjectionInvalid10Y",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "ProjectionInvalid5Y",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "ProtectedSPVNeedsIPId",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "ReentrancyGuardReentrantCall",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "SASAlreadyRegistered",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "SOSAlreadyRegistered",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "ServiceTypeRequired",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "UCC1AlreadyRecorded",
+      "type": "error"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "attestationId",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "attestationType",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "ipAssetId",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "attestor",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "chainId",
+          "type": "uint256"
+        }
+      ],
+      "name": "AttestationCreated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "attestationId",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "revoker",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "reason",
+          "type": "string"
+        }
+      ],
+      "name": "AttestationRevoked",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "auditorAddress",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "role",
+          "type": "string"
+        }
+      ],
+      "name": "AuditorApproved",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "auditorAddress",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "reason",
+          "type": "string"
+        }
+      ],
+      "name": "AuditorRevoked",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "auditorAddress",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "attestationId",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "methodology",
+          "type": "string"
+        }
+      ],
+      "name": "AuditorValuationSubmitted",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "attestationId",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "entityName",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "entityId",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "certificateHash",
+          "type": "bytes32"
+        }
+      ],
+      "name": "CorporateVerified",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "ucc1AttestationId",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "morphoAttestationId",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "spvAttestationId",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "totalAttestations",
+          "type": "uint256"
+        }
+      ],
+      "name": "HermeticSealCompleted",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "attestationId",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "ipAssetId",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "presentValue",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "patentSightScore",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "bool",
+          "name": "isProtected",
+          "type": "bool"
+        }
+      ],
+      "name": "IPValuationCertified",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "attestationId",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "morphoMarketId",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "borrowAmount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "collateralAmount",
+          "type": "uint256"
+        }
+      ],
+      "name": "MorphoMarketAttested",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "serviceType",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "contractHash",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "requester",
+          "type": "address"
+        }
+      ],
+      "name": "RegistryRequestSubmitted",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "attestationId",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "totalAnnualRevenue",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "allocationPercentage",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "paymentDestination",
+          "type": "address"
+        }
+      ],
+      "name": "RevenueEscrowAttested",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "contractHash",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "timestamp",
+          "type": "uint256"
+        }
+      ],
+      "name": "SASRegistered",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "contractHash",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "timestamp",
+          "type": "uint256"
+        }
+      ],
+      "name": "SOSRegistered",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "attestationId",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "spvName",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "bool",
+          "name": "atRisk",
+          "type": "bool"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "portfolioValue",
+          "type": "uint256"
+        }
+      ],
+      "name": "SPVSegregationAttested",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "attestationId",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "filingHash",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "debtor",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "securedParty",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "jurisdiction",
+          "type": "string"
+        }
+      ],
+      "name": "UCC1Bridged",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "filingNumber",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "jurisdiction",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "timestamp",
+          "type": "uint256"
+        }
+      ],
+      "name": "UCC1FilingNumberRecorded",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "ATT_CORPORATE_VERIFICATION",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "ATT_IP_VALUATION",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "ATT_LOAN_COLLATERAL",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "ATT_MORPHO_MARKET",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "ATT_REVENUE_ESCROW",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "ATT_SPV_SEGREGATION",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "ATT_UCC1_BRIDGE",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "BASE_CHAIN_ID",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "BASE_USDC",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "CERTIFICATE_HASH",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "COINBASE_WALLET",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "FILING_NOTICE_HASH",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "IP_ASSET_REGISTRY",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "LICENSE_REGISTRY",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "LICENSING_MODULE",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "MORPHO_BLUE",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "MR_OWNER",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "PIL_LICENSE_TEMPLATE",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "REGISTRATION_WORKFLOWS",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "ROYALTY_MODULE",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "ROYALTY_POLICY_LAP",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "STORY_CHAIN_ID",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "STORY_METADATA_HASH",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "WHETSTONE_EIN_LETTER_HASH",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "attestor",
+          "type": "address"
+        }
+      ],
+      "name": "addAttestor",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "valuator",
+          "type": "address"
+        }
+      ],
+      "name": "addValuator",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "allAttestationIds",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "auditorAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "string",
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "internalType": "string[]",
+          "name": "credentials",
+          "type": "string[]"
+        },
+        {
+          "internalType": "string",
+          "name": "role",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "validityDays",
+          "type": "uint256"
+        }
+      ],
+      "name": "approveAuditor",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "approvedAuditors",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "role",
+          "type": "string"
+        },
+        {
+          "internalType": "address",
+          "name": "auditorAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "bool",
+          "name": "active",
+          "type": "bool"
+        },
+        {
+          "internalType": "uint256",
+          "name": "approvedAt",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "validUntil",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "entityName",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "entityId",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "ein",
+          "type": "string"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "certificateHash",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "filingNoticeHash",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "string",
+          "name": "metadataURI",
+          "type": "string"
+        }
+      ],
+      "name": "attestCorporateVerification",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "attestationId",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "ipAssetId",
+          "type": "address"
+        },
+        {
+          "internalType": "string",
+          "name": "portfolioName",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "presentValue",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "projectedValue5Y",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "projectedValue10Y",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "patentSightScore",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "sepCount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "avgEssentiality",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "methodology",
+          "type": "string"
+        },
+        {
+          "internalType": "bool",
+          "name": "isProtected",
+          "type": "bool"
+        },
+        {
+          "internalType": "uint256",
+          "name": "validityDays",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "metadataURI",
+          "type": "string"
+        }
+      ],
+      "name": "attestIPValuation",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "attestationId",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "ipAssetId",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "lender",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "loanAmount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "collateralType",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "collateralValue",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "metadataURI",
+          "type": "string"
+        }
+      ],
+      "name": "attestLoanCollateral",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "attestationId",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "morphoMarketId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "loanToken",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "collateralToken",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "lltv",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "borrowAmount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "collateralAmount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "interestRate",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "metadataURI",
+          "type": "string"
+        }
+      ],
+      "name": "attestMorphoMarket",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "attestationId",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "ipAssetId",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "pilPerRevenue",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "pilComRevenue",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "pilEntRevenue",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "allocationPercentage",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "paymentDestination",
+          "type": "address"
+        },
+        {
+          "internalType": "string",
+          "name": "metadataURI",
+          "type": "string"
+        }
+      ],
+      "name": "attestRevenueEscrow",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "attestationId",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "spvName",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "ein",
+          "type": "string"
+        },
+        {
+          "internalType": "address",
+          "name": "ipAssetId",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "portfolioValue",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "atRisk",
+          "type": "bool"
+        },
+        {
+          "internalType": "string",
+          "name": "metadataURI",
+          "type": "string"
+        }
+      ],
+      "name": "attestSPVSegregation",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "attestationId",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "filingHash",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "debtor",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "securedParty",
+          "type": "address"
+        },
+        {
+          "internalType": "string",
+          "name": "jurisdiction",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "filingNumber",
+          "type": "string"
+        },
+        {
+          "internalType": "address",
+          "name": "ipAssetId",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "collateralValue",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "metadataURI",
+          "type": "string"
+        }
+      ],
+      "name": "attestUCC1Bridge",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "attestationId",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "attestationCounter",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "name": "attestations",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "id",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "attestationType",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "ipAssetId",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "tokenId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "dataHash",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "attestor",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "timestamp",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "validUntil",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "metadataURI",
+          "type": "string"
+        },
+        {
+          "internalType": "bool",
+          "name": "revoked",
+          "type": "bool"
+        },
+        {
+          "internalType": "uint256",
+          "name": "chainId",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "auditorCount",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "auditorList",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "authorizedAttestors",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "authorizedValuators",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "corporateVerificationCount",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "name": "corporateVerifications",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "attestationId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "string",
+          "name": "entityName",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "entityId",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "ein",
+          "type": "string"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "certificateHash",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "filingNoticeHash",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bool",
+          "name": "verified",
+          "type": "bool"
+        },
+        {
+          "internalType": "uint256",
+          "name": "verifiedAt",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "ucc1AttestationId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "morphoAttestationId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "spvAttestationId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "executeHermeticSeal",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "attestationId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "getAttestation",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "bytes32",
+              "name": "id",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "attestationType",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "ipAssetId",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "tokenId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "dataHash",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "attestor",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "timestamp",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "validUntil",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "metadataURI",
+              "type": "string"
+            },
+            {
+              "internalType": "bool",
+              "name": "revoked",
+              "type": "bool"
+            },
+            {
+              "internalType": "uint256",
+              "name": "chainId",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct StoryAttestationService.Attestation",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getAttestationSummary",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "total",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "corporate",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "valuations",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "morphoMarkets_",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "spvSegregations_",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getAuditorCredentials",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "auditorName",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "credential1",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "credential2",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "auditorRole",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "auditorAddress",
+          "type": "address"
+        }
+      ],
+      "name": "getAuditorInfo",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "role",
+          "type": "string"
+        },
+        {
+          "internalType": "bool",
+          "name": "active",
+          "type": "bool"
+        },
+        {
+          "internalType": "uint256",
+          "name": "approvedAt",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "validUntil",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "attestationId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "getCorporateVerification",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "bytes32",
+              "name": "attestationId",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "string",
+              "name": "entityName",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "entityId",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "ein",
+              "type": "string"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "certificateHash",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "filingNoticeHash",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bool",
+              "name": "verified",
+              "type": "bool"
+            },
+            {
+              "internalType": "uint256",
+              "name": "verifiedAt",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct StoryAttestationService.CorporateVerification",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "ipAssetId",
+          "type": "address"
+        }
+      ],
+      "name": "getIPAttestations",
+      "outputs": [
+        {
+          "internalType": "bytes32[]",
+          "name": "",
+          "type": "bytes32[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "ipAssetId",
+          "type": "address"
+        }
+      ],
+      "name": "getIPValuation",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "bytes32",
+              "name": "attestationId",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "ipAssetId",
+              "type": "address"
+            },
+            {
+              "internalType": "string",
+              "name": "portfolioName",
+              "type": "string"
+            },
+            {
+              "internalType": "uint256",
+              "name": "presentValue",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "projectedValue5Y",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "projectedValue10Y",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "patentSightScore",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "sepCount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "avgEssentiality",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "methodology",
+              "type": "string"
+            },
+            {
+              "internalType": "bool",
+              "name": "isProtected",
+              "type": "bool"
+            },
+            {
+              "internalType": "uint256",
+              "name": "validUntil",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct StoryAttestationService.IPValuation",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "marketId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "getMorphoMarket",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "bytes32",
+              "name": "attestationId",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "morphoMarketId",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "loanToken",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "collateralToken",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "lltv",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "borrowAmount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "collateralAmount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "interestRate",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "timestamp",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bool",
+              "name": "active",
+              "type": "bool"
+            }
+          ],
+          "internalType": "struct StoryAttestationService.MorphoMarketAttestation",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getProtectedPortfolioValue",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "mrPlatformValue",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "whetstoneValue",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "lexisNexisValue",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "infrastructureValue",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "totalProtected",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "slapsAtRisk",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getRegistryStatus",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "sasIsRegistered",
+          "type": "bool"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "sasHash",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint256",
+          "name": "sasTimestamp",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "sosIsRegistered",
+          "type": "bool"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "sosHash",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint256",
+          "name": "sosTimestamp",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "ipAssetId",
+          "type": "address"
+        }
+      ],
+      "name": "getRevenueEscrow",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "bytes32",
+              "name": "attestationId",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "uint256",
+              "name": "pilPerRevenue",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "pilComRevenue",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "pilEntRevenue",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "totalAnnualRevenue",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "allocationPercentage",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "paymentDestination",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "timestamp",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct StoryAttestationService.RevenueEscrow",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "spvName",
+          "type": "string"
+        }
+      ],
+      "name": "getSPVSegregation",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "bytes32",
+              "name": "attestationId",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "string",
+              "name": "spvName",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "ein",
+              "type": "string"
+            },
+            {
+              "internalType": "address",
+              "name": "ipAssetId",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "portfolioValue",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bool",
+              "name": "atRisk",
+              "type": "bool"
+            },
+            {
+              "internalType": "string",
+              "name": "riskStatus",
+              "type": "string"
+            },
+            {
+              "internalType": "uint256",
+              "name": "timestamp",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct StoryAttestationService.SPVSegregation",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getTotalAttestations",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getUCC1FilingInfo",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "filingNumber",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "jurisdiction",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "filingTimestamp",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "recorded",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "ipAttestations",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "ipValuations",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "attestationId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "ipAssetId",
+          "type": "address"
+        },
+        {
+          "internalType": "string",
+          "name": "portfolioName",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "presentValue",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "projectedValue5Y",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "projectedValue10Y",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "patentSightScore",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "sepCount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "avgEssentiality",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "methodology",
+          "type": "string"
+        },
+        {
+          "internalType": "bool",
+          "name": "isProtected",
+          "type": "bool"
+        },
+        {
+          "internalType": "uint256",
+          "name": "validUntil",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "morphoMarketCount",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "name": "morphoMarkets",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "attestationId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "morphoMarketId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "loanToken",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "collateralToken",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "lltv",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "borrowAmount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "collateralAmount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "interestRate",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "timestamp",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "active",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "filingNumber",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "jurisdiction",
+          "type": "string"
+        }
+      ],
+      "name": "recordUCC1FilingNumber",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "contractHash",
+          "type": "bytes32"
+        }
+      ],
+      "name": "registerSAS",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "contractHash",
+          "type": "bytes32"
+        }
+      ],
+      "name": "registerSOS",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "attestor",
+          "type": "address"
+        }
+      ],
+      "name": "removeAttestor",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "valuator",
+          "type": "address"
+        }
+      ],
+      "name": "removeValuator",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "renounceOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "serviceType",
+          "type": "string"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "contractHash",
+          "type": "bytes32"
+        }
+      ],
+      "name": "requestStoryRegistryEntry",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "revenueEscrows",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "attestationId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint256",
+          "name": "pilPerRevenue",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "pilComRevenue",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "pilEntRevenue",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "totalAnnualRevenue",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "allocationPercentage",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "paymentDestination",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "timestamp",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "attestationId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "string",
+          "name": "reason",
+          "type": "string"
+        }
+      ],
+      "name": "revokeAttestation",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "auditorAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "string",
+          "name": "reason",
+          "type": "string"
+        }
+      ],
+      "name": "revokeAuditor",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "sasContractHash",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "sasRegistered",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "sasRegistrationTimestamp",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "sosContractHash",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "sosRegistered",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "sosRegistrationTimestamp",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "spvSegregationCount",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "name": "spvSegregations",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "attestationId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "string",
+          "name": "spvName",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "ein",
+          "type": "string"
+        },
+        {
+          "internalType": "address",
+          "name": "ipAssetId",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "portfolioValue",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "atRisk",
+          "type": "bool"
+        },
+        {
+          "internalType": "string",
+          "name": "riskStatus",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "timestamp",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "ucc1FilingJurisdiction",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "ucc1FilingNumber",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "ucc1FilingRecorded",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "ucc1FilingTimestamp",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "newFilingNumber",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "jurisdiction",
+          "type": "string"
+        }
+      ],
+      "name": "updateUCC1FilingNumber",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "valuationCount",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "verifyHermeticSealIntegrity",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "hasUCC1",
+          "type": "bool"
+        },
+        {
+          "internalType": "bool",
+          "name": "hasMorpho",
+          "type": "bool"
+        },
+        {
+          "internalType": "bool",
+          "name": "hasSPV",
+          "type": "bool"
+        },
+        {
+          "internalType": "bool",
+          "name": "hasValuation",
+          "type": "bool"
+        },
+        {
+          "internalType": "bool",
+          "name": "hasRevenue",
+          "type": "bool"
+        },
+        {
+          "internalType": "bool",
+          "name": "hasCorporate",
+          "type": "bool"
+        },
+        {
+          "internalType": "uint256",
+          "name": "totalAttestations",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "sealComplete",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "ipAssetId",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "requestedLoanAmount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "maxLTV",
+          "type": "uint256"
+        }
+      ],
+      "name": "verifyValuationForMorphoLending",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "approved",
+          "type": "bool"
+        },
+        {
+          "internalType": "uint256",
+          "name": "maxLoanAmount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "reason",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecodeKeccak256": "0x8df65dbd08962cca2506f4c150da965eb96e46203f3fa5cd7f3323d5f18a01aa",
+  "deployedBytecodeKeccak256": "0xa3e5b1a8fb433b231656e8198682a737e0364521e0eb2da6e5de6b242ffc5d85",
+  "abiSha256": "0x9dad5377a2025878b4be535bdd5082f90e4dd521ee1d65346c0fb2084549eb05",
+  "deployedBytecodeSize": 23342,
+  "evmLimitCheck": "PASS"
+}
