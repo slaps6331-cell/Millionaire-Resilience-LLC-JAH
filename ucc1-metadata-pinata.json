@@ -1,0 +1,150 @@
+{
+  "documentMetadata": {
+    "type": "UCC-1-FILING-SMART-CONTRACT-INTEGRATION",
+    "version": "2.0.0",
+    "timestamp": "2026-04-27T05:38:32.913Z",
+    "jurisdiction": "NEW_MEXICO_SECRETARY_OF_STATE",
+    "status": "PERFECTED",
+    "amendment": 3
+  },
+  "ucc1FilingStatement": {
+    "filingNumber": "20260000078753",
+    "filingDate": "2026-03-26",
+    "debtors": [
+      {
+        "name": "Millionaire Resilience LLC",
+        "ein": "41-3789881",
+        "state": "New Mexico",
+        "blockchainAddress": "0x5EEFF17e12401b6A8391f5257758E07c157E1e45"
+      },
+      {
+        "name": "Slaps Streaming LLC",
+        "ein": "41-4045773",
+        "state": "New Mexico",
+        "blockchainAddress": "0x5EEFF17e12401b6A8391f5257758E07c157E1e45"
+      }
+    ],
+    "securedParty": {
+      "name": "Gladiator Holdings LLC",
+      "entityId": "0008034162",
+      "state": "New Mexico",
+      "blockchainAddress": "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a"
+    },
+    "collateral": {
+      "type": "BLOCKCHAIN_SMART_CONTRACTS_AND_IP",
+      "networks": [
+        "Story Protocol (Chain 1514)",
+        "Base (Chain 8453)"
+      ],
+      "description": "All intellectual property, patent portfolios, SEP declarations, streaming revenue, and deployed smart contracts"
+    }
+  },
+  "smartContractCollateral": {
+    "safeContract": "0xd314BE0a27c73Cd057308aC4f3dd472c482acc09",
+    "multisigThreshold": "3-of-5",
+    "ucc1Contract": "0x38b9C07B88C6C383dE2B78589A6cC47A94B7e3E8",
+    "orchestrator": "0x992f9f4ea33c28b9d5fc7d92056f52a0704a2f55",
+    "deployedContracts": [
+      {
+        "contractName": "StoryAttestationService",
+        "chainId": 1514
+      },
+      {
+        "contractName": "StoryOrchestrationService",
+        "chainId": 1514
+      },
+      {
+        "contractName": "StoryAttestationBridge",
+        "chainId": 1514
+      },
+      {
+        "contractName": "UCC1FilingIntegration",
+        "chainId": 1514
+      },
+      {
+        "contractName": "SLAPSIPSpvLoan",
+        "chainId": 8453
+      },
+      {
+        "contractName": "GladiatorHoldingsSpvLoan",
+        "chainId": 8453
+      },
+      {
+        "contractName": "PILLoanEnforcement",
+        "chainId": 8453
+      },
+      {
+        "contractName": "StablecoinIPEscrow",
+        "chainId": 8453
+      },
+      {
+        "contractName": "AngelCoin",
+        "chainId": 8453
+      },
+      {
+        "contractName": "ResilienceToken",
+        "chainId": 8453
+      },
+      {
+        "contractName": "SlapsStreaming",
+        "chainId": 8453
+      },
+      {
+        "contractName": "SlapsSPV",
+        "chainId": 8453
+      }
+    ]
+  },
+  "morphoProtocol": {
+    "morphoBlue": "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
+    "baseUSDC": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+    "vaultV2Factory": "0x4501125508079A99ebBebCE205DeC9593C2b5857",
+    "morphoToken": "0x58D97B57BB95320F9a05dC918Aef65434969c2B2",
+    "markets": {
+      "BTC": {
+        "principal_USD": 5000000,
+        "apr_bps": 400,
+        "lltv": "860000000000000000"
+      },
+      "ETH": {
+        "principal_USD": 1000000,
+        "apr_bps": 600,
+        "lltv": "860000000000000000"
+      }
+    }
+  },
+  "signatures": {
+    "eip191Hash": "0x602b1b4f5a2e8bfa60aec337688b21fdccbfef6a21befe412133ddac9a2c04fb",
+    "hermeticSealHash": "0xed4bd3b5123971b5bd15fb55b0b57d543518c78b22906b45199bfeec1db7f413",
+    "thresholdMet": true,
+    "collected": [
+      {
+        "signer": "0x5EEFF17e12401b6A8391f5257758E07c157E1e45",
+        "label": "Story Protocol Deployer"
+      },
+      {
+        "signer": "0x4C7CD4eC5232589696d3fFC0D3ddaa9B59FF072A",
+        "label": "Base Authorization"
+      },
+      {
+        "signer": "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a",
+        "label": "Coinbase Wallet"
+      }
+    ]
+  },
+  "ipfsReferences": {
+    "ucc1Filing": "bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a",
+    "ucc1FinancingStatement": "bafkreidomwlsf5wabkvhvf63jq424t65mffhnftd4t6spnmhh5t64jn2bu",
+    "auxiliaryDocs": "bafybeidkp74w2idrwkg2qey66uepfaes5ekonxjqt62uztyxawii7yye7y",
+    "abiProof": "bafkreidlihfltbmbcfnq6uiupwod4rgmferre4v2o3edbi5gsst3gytpay",
+    "gateway": "https://lavender-neat-urial-76.mypinata.cloud/ipfs/"
+  },
+  "storyProtocol": {
+    "ipAssetRegistry": "0x77319B4031e6eF1250907aa00018B8B1c67a244b",
+    "mrIpAssetId": "0x98971c660ac20880b60F86Cc3113eBd979eb3aAE",
+    "mrTokenId": 15192,
+    "licensingModule": "0x04fbd8a2e56dd85CFD5500A4A4DfA955B9f1dE6f",
+    "royaltyModule": "0xD2f60c40fEbccf6311f8B47c4f2Ec6b040400086",
+    "pilLicenseTemplate": "0x2E896b0b2Fdb7457499B56AAaA4AE55BCB4Cd316"
+  }
+}

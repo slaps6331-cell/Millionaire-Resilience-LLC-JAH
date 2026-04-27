@@ -49,14 +49,18 @@
   "safeContractAddress": "0xd314BE0a27c73Cd057308aC4f3dd472c482acc09",
   "requiredSignatures": 3,
   "signatures": {
-    "signer1_coinbase": null,
+    "signer1_coinbase": "0x45cba72f008cf636506f3c69ed113f7fab60f30f34b313a414eed450a04f31a13499294066bbd08199a058abebf62beb1b537e79fd0b8b7faff2198e4120fa001c",
     "signer2_morpho": null,
-    "signer3_story": null,
-    "signer4_base": null,
+    "signer3_story": "0x591002f2d4533e07aa6c107ae96f56f25c6f4a38ae534d8f7e063941f6b86dad406d762a4a0064602d1e1726fee26fa1e6d05b476bae2dbee2f3fde93155b5361b",
+    "signer4_base": "0xb2751a0748d0b8841eb128064b97331cbec7736177a868069e4127a1979a1a7800fecb80b96df7cc0a86c3f0ffe40666be557524e7abed1b2cc23e33931d28b01c",
     "signer5_spv": null
   },
   "signatureHash": "0x973ed30208968e1a4fc831e1d89f4c67dcd5bad63d2e78d0d4379529738d710c",
   "eip191Hash": "0x602b1b4f5a2e8bfa60aec337688b21fdccbfef6a21befe412133ddac9a2c04fb",
   "generatedAt": "2026-04-12T12:54:26.936Z",
-  "updatedAt": "2026-04-13T00:00:00.000Z"
+  "updatedAt": "2026-04-13T00:00:00.000Z",
+  "signaturesValidated": true,
+  "signatureCount": 3,
+  "thresholdMet": true,
+  "validatedAt": "2026-04-27T05:36:17.756Z"
 }
