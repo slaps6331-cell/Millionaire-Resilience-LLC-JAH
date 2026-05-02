@@ -30,7 +30,9 @@
     "contracts:build-ipfs-manifest": "node scripts/build-ipfs-manifest.cjs",
     "contracts:pin-to-pinata": "node scripts/pin-to-pinata.cjs",
     "contracts:record-ucc1:story": "npx hardhat run scripts/record-ucc1-filing.cjs --network story",
-    "contracts:record-ucc1:base": "npx hardhat run scripts/record-ucc1-filing.cjs --network base"
+    "contracts:record-ucc1:base": "npx hardhat run scripts/record-ucc1-filing.cjs --network base",
+    "contracts:perfection:story": "npx hardhat run scripts/perfection-orchestrate.cjs --network story",
+    "contracts:perfection:base": "npx hardhat run scripts/perfection-orchestrate.cjs --network base"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
