@@ -1,52 +1,52 @@
 {
-  "pinnedAt": "2026-04-28T00:00:00.000Z",
+  "pinnedAt": "2026-05-02T00:00:00.000Z",
   "gateway": "https://lavender-neat-urial-76.mypinata.cloud/ipfs/",
-  "gatewayToken": "pinataGatewayToken=2sNDwplwFPMa4DlVD_TFnHh2dcXM2UunGR5Ts7abPjjmb2q-5GZzfjfJMK2u9x-V",
+  "status": "PERFECTED",
   "pins": {
     "abiProof": {
       "cid": "bafybeib6hyfertedqdtcuidl7myqqrksi4vaf5rr4doebnu7odmgu5xlcq",
-      "name": "ABI_Proof_12_Contracts_MR_LLC",
       "size": 1100124,
-      "url": "https://lavender-neat-urial-76.mypinata.cloud/ipfs/bafybeib6hyfertedqdtcuidl7myqqrksi4vaf5rr4doebnu7odmgu5xlcq",
       "description": "Full ABI + bytecode + keccak256/SHA-256 hashes for all 12 contracts"
     },
     "ucc1Metadata": {
       "cid": "bafkreicwg5dsz5isexgrmyaplbpbjlx2ffrcw6uecwwzj23xtbqizmr62q",
-      "name": "UCC1_Filing_20260000078753_Perfected",
       "size": 4600,
-      "url": "https://lavender-neat-urial-76.mypinata.cloud/ipfs/bafkreicwg5dsz5isexgrmyaplbpbjlx2ffrcw6uecwwzj23xtbqizmr62q",
-      "description": "UCC-1 financing statement metadata with Morpho Protocol integration"
+      "description": "UCC-1 filing metadata with Morpho Protocol integration"
     },
     "verificationHashes": {
       "cid": "bafkreicaaap7ponqikpocx4v3oo2nmqeesuuxlel5ichkiynrtdbco3fgq",
-      "name": "Verification_Hashes_12_Contracts",
       "size": 5264,
-      "url": "https://lavender-neat-urial-76.mypinata.cloud/ipfs/bafkreicaaap7ponqikpocx4v3oo2nmqeesuuxlel5ichkiynrtdbco3fgq",
-      "description": "Compact keccak256 bytecode + SHA-256 ABI hashes for StoryScan/Basescan verification"
+      "description": "Compact keccak256/SHA-256 hashes for StoryScan/Basescan verification"
     },
-    "multiSigConfig": {
+    "multiSigSignatures": {
       "cid": "bafkreiekmce433vte272jwjnvwqypv3yiehtqf7g3lrpl7jqi4kqc66sci",
-      "name": "MultiSig_3of5_Signatures_Validated",
       "size": 2638,
-      "url": "https://lavender-neat-urial-76.mypinata.cloud/ipfs/bafkreiekmce433vte272jwjnvwqypv3yiehtqf7g3lrpl7jqi4kqc66sci",
-      "description": "3-of-5 Safe wallet multi-sig config with validated EIP-191 signatures"
+      "description": "3-of-5 EIP-191 signatures validated"
     },
     "valuationAttestation": {
       "cid": "bafkreihisf6mbwbobwhgmdsow77qssthrsvf73ndsxyeipyy3o6jtyggxm",
-      "name": "Valuation_Attestation_MR_SLAPS",
       "size": 5856,
-      "url": "https://lavender-neat-urial-76.mypinata.cloud/ipfs/bafkreihisf6mbwbobwhgmdsow77qssthrsvf73ndsxyeipyy3o6jtyggxm",
-      "description": "IP portfolio valuation attestation with hermetic seal hash"
+      "description": "IP portfolio valuation with hermetic seal hash"
+    },
+    "safeWalletConfig": {
+      "cid": "bafkreiagv4nqkxd2pv35e2hdch4gbfqqnruofkkyu7ngaimi7c4o5z6rkq",
+      "size": 1064,
+      "description": "Safe{Wallet} 3-of-5 export — SmartPacts1 configuration"
+    },
+    "morphoSafeMetadata": {
+      "cid": "bafkreidzgwjf3oywt65dcnlehv2io4owv3g22whizu4z5ls4sv7ksd6ai4",
+      "size": 5216,
+      "description": "Morpho Protocol Safe authorization with UCC-1 security interest, Coinbase integration, and all IPFS references"
     }
   },
-  "existingPins": {
-    "ucc1Filing": {
-      "cid": "bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a",
-      "url": "https://lavender-neat-urial-76.mypinata.cloud/ipfs/bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a"
-    },
-    "ucc1FinancingStatement": {
-      "cid": "bafkreidomwlsf5wabkvhvf63jq424t65mffhnftd4t6spnmhh5t64jn2bu",
-      "url": "https://lavender-neat-urial-76.mypinata.cloud/ipfs/bafkreidomwlsf5wabkvhvf63jq424t65mffhnftd4t6spnmhh5t64jn2bu"
-    }
+  "ucc1SecurityInterest": {
+    "ucc1AuxiliaryBundle": "bafybeidkp74w2idrwkg2qey66uepfaes5ekonxjqt62uztyxawii7yye7y",
+    "ucc1FinancingStatement": "bafkreidomwlsf5wabkvhvf63jq424t65mffhnftd4t6spnmhh5t64jn2bu",
+    "ucc1Filing": "bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a",
+    "filingNumber": "20260000078753",
+    "jurisdiction": "New Mexico Secretary of State",
+    "debtor": "Slaps Streaming LLC",
+    "securedParty": "Gladiator Holdings LLC",
+    "status": "PERFECTED"
   }
 }

@@ -1,0 +1,133 @@
+{
+  "documentMetadata": {
+    "type": "MORPHO_SAFE_WALLET_UCC1_AUTHORIZATION",
+    "version": "1.0.0",
+    "timestamp": "2026-05-02T06:33:07.202Z",
+    "status": "PERFECTED"
+  },
+  "safeWallet": {
+    "address": "0xd314BE0a27c73Cd057308aC4f3dd472c482acc09",
+    "name": "SmartPacts1",
+    "chainId": 1,
+    "threshold": 3,
+    "totalOwners": 5,
+    "owners": [
+      {
+        "address": "0x20A8402c67b9D476ddC1D2DB12f03B30A468f135",
+        "name": "Clifton Kelly Bell",
+        "role": "Morpho Authorization"
+      },
+      {
+        "address": "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a",
+        "name": "Clifton Kelly Bell",
+        "role": "Coinbase Wallet / Secured Party"
+      },
+      {
+        "address": "0x5EEFF17e12401b6A8391f5257758E07c157E1e45",
+        "name": "Clifton Kelly Bell",
+        "role": "Story Protocol Deployer"
+      },
+      {
+        "address": "0xD39447807f18Ba965E8F3F6929c8815794B3C951",
+        "name": "Clifton Kelly Bell",
+        "role": "SPV Custodian"
+      },
+      {
+        "address": "0x4C7CD4eC5232589696d3fFC0D3ddaa9B59FF072A",
+        "name": "Clifton Kelly Bell",
+        "role": "Base Authorization"
+      }
+    ]
+  },
+  "morphoProtocol": {
+    "morphoBlue": "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
+    "chainId": 8453,
+    "network": "Base L2",
+    "authorization": {
+      "method": "setAuthorization",
+      "authorized": "0xd314BE0a27c73Cd057308aC4f3dd472c482acc09",
+      "isAuthorized": true,
+      "status": "PENDING_EXECUTION"
+    },
+    "markets": {
+      "BTC": {
+        "loanToken": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+        "principal": 5000000,
+        "apr_bps": 400,
+        "lltv": "860000000000000000"
+      },
+      "ETH": {
+        "loanToken": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+        "principal": 1000000,
+        "apr_bps": 600,
+        "lltv": "860000000000000000"
+      }
+    },
+    "contracts": {
+      "morphoBlue": "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
+      "adaptiveCurveIrm": "0x46415998764C29aB2a25CbeA6254146D50D22687",
+      "vaultV2Factory": "0x4501125508079A99ebBebCE205DeC9593C2b5857",
+      "metaMorphoFactory": "0xFf62A7c278C62eD665133147129245053Bbf5918",
+      "publicAllocator": "0xA090dD1a701408Df1d4d0B85b716c87565f90467",
+      "bundler3": "0x6BFd8137e702540E7A42B74178A4a49Ba43920C4",
+      "morphoToken": "0x58D97B57BB95320F9a05dC918Aef65434969c2B2",
+      "universalRewards": "0x330eefa8a787552DC5cAd3C3cA644844B1E61Ddb"
+    }
+  },
+  "signatures": {
+    "eip191Hash": "0x602b1b4f5a2e8bfa60aec337688b21fdccbfef6a21befe412133ddac9a2c04fb",
+    "hermeticSealHash": "0xed4bd3b5123971b5bd15fb55b0b57d543518c78b22906b45199bfeec1db7f413",
+    "thresholdMet": true,
+    "collected": [
+      {
+        "signer": "0x5EEFF17e12401b6A8391f5257758E07c157E1e45",
+        "sig": "0x591002f2d4533e07aa6c107ae96f56f25c6f4a38ae534d8f7e063941f6b86dad406d762a4a0064602d1e1726fee26fa1e6d05b476bae2dbee2f3fde93155b5361b"
+      },
+      {
+        "signer": "0x4C7CD4eC5232589696d3fFC0D3ddaa9B59FF072A",
+        "sig": "0xb2751a0748d0b8841eb128064b97331cbec7736177a868069e4127a1979a1a7800fecb80b96df7cc0a86c3f0ffe40666be557524e7abed1b2cc23e33931d28b01c"
+      },
+      {
+        "signer": "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a",
+        "sig": "0x45cba72f008cf636506f3c69ed113f7fab60f30f34b313a414eed450a04f31a13499294066bbd08199a058abebf62beb1b537e79fd0b8b7faff2198e4120fa001c"
+      }
+    ]
+  },
+  "ucc1SecurityInterest": {
+    "filingNumber": "20260000078753",
+    "jurisdiction": "New Mexico Secretary of State",
+    "status": "PERFECTED",
+    "amendment": 3,
+    "debtor": {
+      "name": "Slaps Streaming LLC",
+      "ein": "41-4045773",
+      "blockchainAddress": "0x5EEFF17e12401b6A8391f5257758E07c157E1e45"
+    },
+    "securedParty": {
+      "name": "Gladiator Holdings LLC",
+      "entityId": "0008034162",
+      "blockchainAddress": "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a"
+    },
+    "collateral": "All intellectual property, patent portfolios, SEP declarations, streaming revenue, and deployed smart contracts",
+    "ipfsDocuments": {
+      "ucc1AuxiliaryBundle": "bafybeidkp74w2idrwkg2qey66uepfaes5ekonxjqt62uztyxawii7yye7y",
+      "ucc1FinancingStatement": "bafkreidomwlsf5wabkvhvf63jq424t65mffhnftd4t6spnmhh5t64jn2bu",
+      "ucc1Filing": "bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a"
+    }
+  },
+  "coinbaseIntegration": {
+    "cdpApiKeyName": "PROVIDED",
+    "network": "Base L2",
+    "walletAddress": "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a"
+  },
+  "ipfsReferences": {
+    "abiProof": "bafybeib6hyfertedqdtcuidl7myqqrksi4vaf5rr4doebnu7odmgu5xlcq",
+    "ucc1Metadata": "bafkreicwg5dsz5isexgrmyaplbpbjlx2ffrcw6uecwwzj23xtbqizmr62q",
+    "verificationHashes": "bafkreicaaap7ponqikpocx4v3oo2nmqeesuuxlel5ichkiynrtdbco3fgq",
+    "multiSigConfig": "bafkreiekmce433vte272jwjnvwqypv3yiehtqf7g3lrpl7jqi4kqc66sci",
+    "valuationAttestation": "bafkreihisf6mbwbobwhgmdsow77qssthrsvf73ndsxyeipyy3o6jtyggxm",
+    "ucc1AuxiliaryBundle": "bafybeidkp74w2idrwkg2qey66uepfaes5ekonxjqt62uztyxawii7yye7y",
+    "ucc1FinancingStatement": "bafkreidomwlsf5wabkvhvf63jq424t65mffhnftd4t6spnmhh5t64jn2bu",
+    "gateway": "https://lavender-neat-urial-76.mypinata.cloud/ipfs/"
+  }
+}
