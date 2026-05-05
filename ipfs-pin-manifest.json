@@ -1,48 +1,64 @@
 {
-  "pinnedAt": "2026-05-02T00:00:00.000Z",
+  "pinnedAt": "2026-05-02T12:00:00.000Z",
   "gateway": "https://lavender-neat-urial-76.mypinata.cloud/ipfs/",
   "status": "PERFECTED",
+  "grandTotalCollateral": "$7,350,000,000",
   "pins": {
+    "nftMetadata": {
+      "cid": "bafkreic3ajesc2aktnua7hdwg22dt22ru7pskj3dty6xuy4jy5oin33yuy",
+      "description": "NFT metadata for Story Protocol IP registration — $7.35B total collateral"
+    },
     "abiProof": {
       "cid": "bafybeib6hyfertedqdtcuidl7myqqrksi4vaf5rr4doebnu7odmgu5xlcq",
-      "size": 1100124,
-      "description": "Full ABI + bytecode + keccak256/SHA-256 hashes for all 12 contracts"
+      "description": "Full ABI + bytecode for all 12 contracts"
+    },
+    "valuationReport": {
+      "cid": "bafybeigwuxx4qglzriafasm7rnvubkge4pxvgijgyqxavm4gb55oy3g32y",
+      "description": "IP Valuation Report — $7.35B portfolio (5 platforms)"
+    },
+    "storyLabsDoc": {
+      "cid": "bafkreigu767m6cfmpwlakpeh5zrdvjqbvcm4jmu4sxyj3akk7upgewlotu",
+      "description": "Story Protocol Labs documentation"
+    },
+    "ipVerificationGuide": {
+      "cid": "bafkreifqtwy7hvrebko2crtfqm46xxx23lsze5ftxy6z4dvaufmch7icui",
+      "description": "IP Licensing & ABI Verification Guide"
+    },
+    "auxiliaryManifest": {
+      "cid": "bafkreie5spkgxxhmafdqylwyfplx37jqhcjrs3es3neasgcnynzgkg5mzi",
+      "description": "Updated Auxiliary Document Manifest"
     },
     "ucc1Metadata": {
       "cid": "bafkreicwg5dsz5isexgrmyaplbpbjlx2ffrcw6uecwwzj23xtbqizmr62q",
-      "size": 4600,
-      "description": "UCC-1 filing metadata with Morpho Protocol integration"
+      "description": "UCC-1 filing metadata with Morpho integration"
     },
     "verificationHashes": {
       "cid": "bafkreicaaap7ponqikpocx4v3oo2nmqeesuuxlel5ichkiynrtdbco3fgq",
-      "size": 5264,
-      "description": "Compact keccak256/SHA-256 hashes for StoryScan/Basescan verification"
+      "description": "Compact keccak256/SHA-256 hashes for StoryScan/Basescan"
     },
     "multiSigSignatures": {
       "cid": "bafkreiekmce433vte272jwjnvwqypv3yiehtqf7g3lrpl7jqi4kqc66sci",
-      "size": 2638,
       "description": "3-of-5 EIP-191 signatures validated"
     },
     "valuationAttestation": {
       "cid": "bafkreihisf6mbwbobwhgmdsow77qssthrsvf73ndsxyeipyy3o6jtyggxm",
-      "size": 5856,
-      "description": "IP portfolio valuation with hermetic seal hash"
+      "description": "IP portfolio valuation with hermetic seal"
     },
     "safeWalletConfig": {
       "cid": "bafkreiagv4nqkxd2pv35e2hdch4gbfqqnruofkkyu7ngaimi7c4o5z6rkq",
-      "size": 1064,
-      "description": "Safe{Wallet} 3-of-5 export — SmartPacts1 configuration"
+      "description": "Safe Wallet 3-of-5 SmartPacts1"
     },
     "morphoSafeMetadata": {
       "cid": "bafkreidzgwjf3oywt65dcnlehv2io4owv3g22whizu4z5ls4sv7ksd6ai4",
-      "size": 5216,
-      "description": "Morpho Protocol Safe authorization with UCC-1 security interest, Coinbase integration, and all IPFS references"
+      "description": "Morpho Protocol Safe authorization"
     }
   },
   "ucc1SecurityInterest": {
     "ucc1AuxiliaryBundle": "bafybeidkp74w2idrwkg2qey66uepfaes5ekonxjqt62uztyxawii7yye7y",
     "ucc1FinancingStatement": "bafkreidomwlsf5wabkvhvf63jq424t65mffhnftd4t6spnmhh5t64jn2bu",
     "ucc1Filing": "bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a",
+    "slapsFinancingStatement": "bafybeih7ibt2pm46hx5q6witd7tsw6ojw7gb552toiqukfx62ixrowk3au",
+    "slapsFinancingUpdate": "bafkreiebeeywo54af757rgdx2xymu4rdupckrw2tsz45aorlbhr6hvrb64",
     "filingNumber": "20260000078753",
     "jurisdiction": "New Mexico Secretary of State",
     "debtor": "Slaps Streaming LLC",
