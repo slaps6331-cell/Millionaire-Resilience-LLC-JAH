@@ -1,0 +1,167 @@
+{
+  "documentType": "MORPHO_PROTOCOL_DUAL_CRYPTO_COLLATERALIZED_LOAN_TERMS",
+  "version": "3.0.0",
+  "date": "2026-05-05T15:15:40.748Z",
+  "status": "SIGNED_AND_PERFECTED",
+  "section1_borrower": {
+    "borrowerEntity": "Slaps Streaming LLC",
+    "borrowerEIN": "41-4045773",
+    "parentCompany": "Gladiator Holdings LLC",
+    "parentEIN": "39-2684612",
+    "parentEntityId": "0008034162",
+    "parentJurisdiction": "New Mexico Secretary of State",
+    "beneficialOwner": "Clifton Kelly Bell",
+    "governmentId": "WDL5NTZ8C53B (WA State)",
+    "borrowerWallet": "0x5EEFF17e12401b6A8391f5257758E07c157E1e45",
+    "coinbaseWallet": "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a",
+    "safeWallet": "0xd314BE0a27c73Cd057308aC4f3dd472c482acc09"
+  },
+  "section2_loanStructure": {
+    "loan1_BTC": {
+      "principal": 5000000,
+      "currency": "USDC",
+      "collateral": "WBTC",
+      "interestRate": "4.00% APR (variable)",
+      "lltv": "860000000000000000",
+      "term": "24 months",
+      "monthlyPayment": 217014
+    },
+    "loan2_ETH": {
+      "principal": 1000000,
+      "currency": "USDC",
+      "collateral": "WETH",
+      "interestRate": "6.00% APR (variable)",
+      "lltv": "860000000000000000",
+      "term": "18 months",
+      "monthlyPayment": 57778
+    },
+    "combined": {
+      "totalPrincipal": 6000000,
+      "weightedAPR": "4.33%",
+      "totalMonthly": 274792,
+      "projectedPayoff": "7-8 months",
+      "repaymentSource": "SLAPS PIL Licensing Revenue ONLY (2.3M/yr)"
+    }
+  },
+  "section3_morphoProtocol": {
+    "morphoBlue": "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
+    "chain": "Base L2 (Chain 8453)",
+    "adaptiveCurveIrm": "0x46415998764C29aB2a25CbeA6254146D50D22687",
+    "vaultV2Factory": "0x4501125508079A99ebBebCE205DeC9593C2b5857",
+    "publicAllocator": "0xA090dD1a701408Df1d4d0B85b716c87565f90467",
+    "bundler3": "0x6BFd8137e702540E7A42B74178A4a49Ba43920C4",
+    "morphoToken": "0x58D97B57BB95320F9a05dC918Aef65434969c2B2",
+    "baseUSDC": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+    "vaultCurator": "Morpho Protocol Vault Curators / Institutional Lenders"
+  },
+  "section4_collateralHierarchy": {
+    "priority1": {
+      "type": "Bitcoin (BTC)",
+      "value": 5814000,
+      "notes": "Morpho Blue market collateral"
+    },
+    "priority2": {
+      "type": "Ethereum (ETH)",
+      "value": 1163000,
+      "notes": "Morpho Blue market collateral"
+    },
+    "priority3": {
+      "type": "PIL Licensing Revenue",
+      "value": 12300000,
+      "notes": "Annual, 100% routed to repayment"
+    },
+    "priority4": {
+      "type": "SLAPS IP Portfolio",
+      "value": 75000000,
+      "notes": "Secondary - ONLY if Priority 1-3 insufficient"
+    },
+    "protectedAssets": {
+      "note": "NEVER subject to default - immutably excluded",
+      "mrSocialMedia": {
+        "value": 95000000,
+        "entity": "Millionaire Resilience LLC",
+        "status": "PROTECTED"
+      },
+      "whetstone": {
+        "value": 45000000,
+        "entity": "Millionaire Resilience LLC",
+        "status": "PROTECTED"
+      },
+      "patentSight": {
+        "value": 35000000,
+        "entity": "Millionaire Resilience LLC",
+        "status": "PROTECTED"
+      },
+      "infrastructure": {
+        "value": 50000000,
+        "entity": "Millionaire Resilience LLC",
+        "status": "PROTECTED"
+      },
+      "totalProtected": 225000000
+    },
+    "backingRatio": "15.7x"
+  },
+  "section12_signatures": {
+    "borrower": {
+      "entity": "Slaps Streaming LLC",
+      "signer": "Clifton Kelly Bell, Managing Member",
+      "wallet": "0x5EEFF17e12401b6A8391f5257758E07c157E1e45",
+      "onChainSignatureHash": "0x591002f2d4533e07aa6c107ae96f56f25c6f4a38ae534d8f7e063941f6b86dad406d762a4a0064602d1e1726fee26fa1e6d05b476bae2dbee2f3fde93155b5361b",
+      "dateSigned": "2026-05-05T15:15:40.748Z"
+    },
+    "securedParty": {
+      "entity": "Morpho Protocol Vault Curators / Institutional Lenders",
+      "morphoBlue": "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
+      "vaultCurator": "Pending Morpho DAO vault curator assignment"
+    },
+    "storyProtocolAttestation": {
+      "attestationId": "0x98971c660ac20880b60F86Cc3113eBd979eb3aAE",
+      "attestor": "Tecknos Associates LLC",
+      "attestorRole": "IP Valuation & Certification Attestor",
+      "timestamp": "2026-05-05T15:15:40.748Z",
+      "hermeticSealHash": "0xed4bd3b5123971b5bd15fb55b0b57d543518c78b22906b45199bfeec1db7f413"
+    },
+    "multiSigValidation": {
+      "eip191Hash": "0x602b1b4f5a2e8bfa60aec337688b21fdccbfef6a21befe412133ddac9a2c04fb",
+      "threshold": "3 of 5",
+      "signaturesCollected": 3,
+      "signer1": {
+        "address": "0x5EEFF17e12401b6A8391f5257758E07c157E1e45",
+        "sig": "0x591002f2d4533e07aa6c107ae96f56f25c6f4a38ae534d8f7e063941f6b86dad406d762a4a0064602d1e1726fee26fa1e6d05b476bae2dbee2f3fde93155b5361b"
+      },
+      "signer2": {
+        "address": "0x4C7CD4eC5232589696d3fFC0D3ddaa9B59FF072A",
+        "sig": "0xb2751a0748d0b8841eb128064b97331cbec7736177a868069e4127a1979a1a7800fecb80b96df7cc0a86c3f0ffe40666be557524e7abed1b2cc23e33931d28b01c"
+      },
+      "signer3": {
+        "address": "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a",
+        "sig": "0x45cba72f008cf636506f3c69ed113f7fab60f30f34b313a414eed450a04f31a13499294066bbd08199a058abebf62beb1b537e79fd0b8b7faff2198e4120fa001c"
+      }
+    }
+  },
+  "ucc1Reference": {
+    "filingNumber": "20260000078753",
+    "jurisdiction": "New Mexico Secretary of State",
+    "debtor": "Slaps Streaming LLC",
+    "securedParty": "Gladiator Holdings LLC",
+    "amendment": 3,
+    "ipfsCIDs": {
+      "ucc1Filing": "bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a",
+      "financingStatement": "bafkreidomwlsf5wabkvhvf63jq424t65mffhnftd4t6spnmhh5t64jn2bu",
+      "formationDocument": "bafybeih7ibt2pm46hx5q6witd7tsw6ojw7gb552toiqukfx62ixrowk3au",
+      "auxiliaryDocs": "bafybeidkp74w2idrwkg2qey66uepfaes5ekonxjqt62uztyxawii7yye7y",
+      "slapsUpdate": "bafkreiebeeywo54af757rgdx2xymu4rdupckrw2tsz45aorlbhr6hvrb64"
+    }
+  },
+  "pilScheduling": {
+    "policy": "SLAPS_SPV_ONLY",
+    "connectedToMorpho": [
+      "SLAPSIPSpvLoan",
+      "SlapsStreaming",
+      "SlapsSPV"
+    ],
+    "isolatedFromMorpho": [
+      "All other 9 contracts - staking only"
+    ]
+  }
+}
