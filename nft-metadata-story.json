@@ -1,9 +1,18 @@
 {
-  "name": "Gladiator Holdings LLC — Multi-SPV IP Portfolio",
-  "description": "Parent holding company IP portfolio. Combined 5 platforms: Millionaire Resilience ($95M PV), SLAPS Streaming ($75M PV), Whetstone Developer Platform ($45M PV), IP Legal Monitoring ($35M PV), Shared Infrastructure ($50M PV). Grand Total Collateral: $7.35B (10-year). UCC-1 Filing #20260000078753 (NM SOS). Secured by 3-of-5 Gnosis Safe multi-sig.",
-  "image": "ipfs://bafybeiba2j4g34bizjjm26qznc2pf4upgotffrcwjtkw6lj3qa6squrzpu",
+  "name": "Millionaire Resilience: Killer Instinct — IP Portfolio NFT",
+  "description": "Soulbound NFT representing the intellectual property portfolio of Gladiator Holdings LLC. Encompasses: Millionaire Resilience Killer Instinct (eBook by Clifton Bell), SLAPS Streaming IP, Resilience Blockchain Whetstone, IP Legal Monitoring, and Shared Infrastructure IP. Grand Total Collateral: $7.35B (10-year). UCC-1 Filing #20260000078753 (NM SOS). PIL licensing at $12.3M/yr. Secured by Gnosis Safe 3-of-5 multi-sig.",
+  "image": "ipfs://bafybeibodqtpaobazdnvaeip4mupjjmbunrphlzlfbb6tdfvxcnl2tirvm",
   "external_url": "https://lavender-neat-urial-76.mypinata.cloud/ipfs/bafybeib6hyfertedqdtcuidl7myqqrksi4vaf5rr4doebnu7odmgu5xlcq",
+  "animation_url": null,
   "attributes": [
+    {
+      "trait_type": "Title",
+      "value": "Millionaire Resilience: Killer Instinct"
+    },
+    {
+      "trait_type": "Author",
+      "value": "Clifton Bell"
+    },
     {
       "trait_type": "Entity",
       "value": "Gladiator Holdings LLC"
@@ -15,10 +24,6 @@
     {
       "trait_type": "UCC-1 Filing",
       "value": "20260000078753"
-    },
-    {
-      "trait_type": "Jurisdiction",
-      "value": "New Mexico Secretary of State"
     },
     {
       "trait_type": "Status",
@@ -33,189 +38,96 @@
       "value": "$7,350,000,000"
     },
     {
+      "trait_type": "Annual PIL Revenue",
+      "value": "$12,300,000"
+    },
+    {
+      "trait_type": "Morpho Loan Total",
+      "value": "$6,000,000 USDC"
+    },
+    {
+      "trait_type": "Projected Payoff",
+      "value": "7-8 months"
+    },
+    {
       "trait_type": "Safe Wallet",
       "value": "0xd314BE0a27c73Cd057308aC4f3dd472c482acc09"
     },
     {
-      "trait_type": "Multi-Sig Threshold",
+      "trait_type": "Multi-Sig",
       "value": "3 of 5"
-    },
-    {
-      "trait_type": "Morpho Blue",
-      "value": "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb"
     },
     {
       "trait_type": "Story IP ID",
       "value": "0xD22750Ca1C3Cd1f7B18a2c70Af98914c291d632F"
     },
     {
-      "trait_type": "Story IP Contract",
-      "value": "0x98971c660ac20880b60F86Cc3113eBd979eb3aAE"
+      "trait_type": "Hermetic Seal",
+      "value": "0xed4bd3b5123971b5bd15fb55b0b57d543518c78b22906b45199bfeec1db7f413"
     },
     {
-      "trait_type": "Token ID",
-      "value": "15192"
-    },
-    {
-      "trait_type": "Patent Count (MR)",
-      "value": "75"
-    },
-    {
-      "trait_type": "Patent Count (SLAPS)",
-      "value": "45"
-    },
-    {
-      "trait_type": "SEP Declarations",
-      "value": "42"
+      "trait_type": "Token Standard",
+      "value": "ERC-721 Soulbound"
     },
     {
       "trait_type": "Smart Contracts",
       "value": "12"
     },
     {
-      "trait_type": "Hermetic Seal",
-      "value": "0xed4bd3b5123971b5bd15fb55b0b57d543518c78b22906b45199bfeec1db7f413"
+      "trait_type": "IP At Risk",
+      "value": "SLAPS Streaming LLC ONLY"
+    },
+    {
+      "trait_type": "Protected IP",
+      "value": "$225,000,000 (isolated)"
     }
   ],
   "properties": {
-    "ipPortfolio": {
-      "platforms": [
-        {
-          "name": "Millionaire Resilience Platform",
-          "pv": 95000000,
-          "fv5y": 480000000,
-          "fv10y": 1600000000,
-          "combined": 2175000000,
-          "status": "PROTECTED"
-        },
-        {
-          "name": "SLAPS Streaming Platform",
-          "pv": 75000000,
-          "fv5y": 400000000,
-          "fv10y": 1350000000,
-          "combined": 1825000000,
-          "status": "AT_RISK"
-        },
-        {
-          "name": "Resilience Blockchain Whetstone",
-          "pv": 45000000,
-          "fv5y": 250000000,
-          "fv10y": 850000000,
-          "combined": 1145000000,
-          "status": "PROTECTED"
-        },
-        {
-          "name": "IP Legal Monitoring Platform",
-          "pv": 35000000,
-          "fv5y": 180000000,
-          "fv10y": 600000000,
-          "combined": 815000000,
-          "status": "PROTECTED"
-        },
-        {
-          "name": "Shared Infrastructure & Foundational IP",
-          "pv": 50000000,
-          "fv5y": 290000000,
-          "fv10y": 1050000000,
-          "combined": 1390000000,
-          "status": "PROTECTED"
-        }
-      ],
-      "totalPresentValue": 300000000,
-      "grandTotalCollateral": 7350000000,
-      "spiritualGuerrilla": {
-        "name": "Spiritual Guerilla Platform",
-        "status": "IN_DEVELOPMENT",
-        "token": "SG888",
-        "maxSupply": 888000000
+    "coverArt": {
+      "cid": "bafybeibodqtpaobazdnvaeip4mupjjmbunrphlzlfbb6tdfvxcnl2tirvm",
+      "gateway": "https://lavender-neat-urial-76.mypinata.cloud/ipfs/bafybeibodqtpaobazdnvaeip4mupjjmbunrphlzlfbb6tdfvxcnl2tirvm"
+    },
+    "signatures": {
+      "eip191Hash": "0x602b1b4f5a2e8bfa60aec337688b21fdccbfef6a21befe412133ddac9a2c04fb",
+      "signer1": {
+        "address": "0x5EEFF17e12401b6A8391f5257758E07c157E1e45",
+        "sig": "0x591002f2d4533e07aa6c107ae96f56f25c6f4a38ae534d8f7e063941f6b86dad406d762a4a0064602d1e1726fee26fa1e6d05b476bae2dbee2f3fde93155b5361b"
+      },
+      "signer2": {
+        "address": "0x4C7CD4eC5232589696d3fFC0D3ddaa9B59FF072A",
+        "sig": "0xb2751a0748d0b8841eb128064b97331cbec7736177a868069e4127a1979a1a7800fecb80b96df7cc0a86c3f0ffe40666be557524e7abed1b2cc23e33931d28b01c"
+      },
+      "signer3": {
+        "address": "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a",
+        "sig": "0x45cba72f008cf636506f3c69ed113f7fab60f30f34b313a414eed450a04f31a13499294066bbd08199a058abebf62beb1b537e79fd0b8b7faff2198e4120fa001c"
       }
     },
-    "tokens": {
-      "resilienceToken": {
-        "symbol": "RSIL",
-        "pv": 15000000,
-        "fv5y": 85000000,
-        "fv10y": 250000000
-      },
-      "angelCoin": {
-        "symbol": "ANGEL",
-        "pv": 5000000,
-        "fv5y": 35000000,
-        "fv10y": 120000000
-      },
-      "sg888": {
-        "symbol": "SG888",
-        "maxSupply": 888000000,
-        "status": "PRE_DEPLOYMENT"
-      }
+    "ipfsDocuments": {
+      "abiProof": "bafybeib6hyfertedqdtcuidl7myqqrksi4vaf5rr4doebnu7odmgu5xlcq",
+      "ucc1Metadata": "bafkreighs42gi545oujhlsmuqyniwq5za2hqh5lc2yif6ywpmqe3lse4lu",
+      "loanTerms": "bafkreigdd6kho6ylra3n5o6cncnpfa3td4s4mvhwch4lebg4uu3shclt2a",
+      "formationDoc": "bafybeih7ibt2pm46hx5q6witd7tsw6ojw7gb552toiqukfx62ixrowk3au",
+      "financingStatement": "bafkreidomwlsf5wabkvhvf63jq424t65mffhnftd4t6spnmhh5t64jn2bu",
+      "slapsFinancing": "bafybeih7ibt2pm46hx5q6witd7tsw6ojw7gb552toiqukfx62ixrowk3au"
     },
-    "loanStructure": {
+    "morpho": {
+      "morphoBlue": "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
+      "baseUSDC": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
       "btcLoan": {
         "principal": 5000000,
-        "currency": "USDC",
-        "collateral": "WBTC",
-        "ltv": "86%",
         "apr": "4%",
         "term": "24 months"
       },
       "ethLoan": {
         "principal": 1000000,
-        "currency": "USDC",
-        "collateral": "WETH",
-        "ltv": "86%",
         "apr": "6%",
         "term": "18 months"
-      },
-      "totalLoan": 6000000,
-      "repaymentSource": "100% PIL Licensing Revenue ($12.3M/yr)",
-      "projectedPayoff": "7-8 months"
-    },
-    "entities": [
-      {
-        "name": "Gladiator Holdings LLC",
-        "ein": "39-2684612",
-        "entityId": "0008034162",
-        "role": "Parent Holding Company"
-      },
-      {
-        "name": "Millionaire Resilience LLC",
-        "ein": "41-3789881",
-        "role": "UCC-1 Filing Debtor"
-      },
-      {
-        "name": "Slaps Streaming LLC",
-        "ein": "41-4045773",
-        "role": "Secondary IP Collateral"
-      },
-      {
-        "name": "Resilience Blockchain Whetstone LLC",
-        "role": "Developer Platform"
-      },
-      {
-        "name": "Spiritual Guerilla IP Holdings Inc.",
-        "role": "Content Platform"
       }
-    ],
-    "signatures": {
-      "eip191Hash": "0x602b1b4f5a2e8bfa60aec337688b21fdccbfef6a21befe412133ddac9a2c04fb",
-      "hermeticSealHash": "0xed4bd3b5123971b5bd15fb55b0b57d543518c78b22906b45199bfeec1db7f413",
-      "thresholdMet": true,
-      "signers": [
-        "0x5EEFF17e12401b6A8391f5257758E07c157E1e45",
-        "0x4C7CD4eC5232589696d3fFC0D3ddaa9B59FF072A",
-        "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a"
-      ]
     },
-    "ipfsDocuments": {
-      "abiProof": "bafybeib6hyfertedqdtcuidl7myqqrksi4vaf5rr4doebnu7odmgu5xlcq",
-      "ucc1Filing": "bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a",
-      "ucc1FinancingStatement": "bafkreidomwlsf5wabkvhvf63jq424t65mffhnftd4t6spnmhh5t64jn2bu",
-      "slapsFinancingStatement": "bafybeih7ibt2pm46hx5q6witd7tsw6ojw7gb552toiqukfx62ixrowk3au",
-      "slapsFinancingUpdate": "bafkreiebeeywo54af757rgdx2xymu4rdupckrw2tsz45aorlbhr6hvrb64",
-      "auxiliaryBundle": "bafybeidkp74w2idrwkg2qey66uepfaes5ekonxjqt62uztyxawii7yye7y",
-      "safeWalletConfig": "bafkreiagv4nqkxd2pv35e2hdch4gbfqqnruofkkyu7ngaimi7c4o5z6rkq",
-      "morphoSafeMetadata": "bafkreidzgwjf3oywt65dcnlehv2io4owv3g22whizu4z5ls4sv7ksd6ai4",
-      "gateway": "https://lavender-neat-urial-76.mypinata.cloud/ipfs/"
+    "storyProtocol": {
+      "ipAssetRegistry": "0x77319B4031e6eF1250907aa00018B8B1c67a244b",
+      "licensingModule": "0x04fbd8a2e56dd85CFD5500A4A4DfA955B9f1dE6f",
+      "royaltyModule": "0xD2f60c40fEbccf6311f8B47c4f2Ec6b040400086"
     }
   }
 }
