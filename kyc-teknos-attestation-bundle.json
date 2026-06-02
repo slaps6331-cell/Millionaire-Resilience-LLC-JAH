@@ -1,0 +1,191 @@
+{
+  "documentType": "KYC_TEKNOS_ATTESTATION_BUNDLE",
+  "version": "1.0.0",
+  "generatedAt": "2026-06-02T05:05:08.009Z",
+  "status": "SIGNED_AND_REFERENCED",
+  "storyProtocol": {
+    "chainId": 1514,
+    "ipId": "0xD22750Ca1C3Cd1f7B18a2c70Af98914c291d632F",
+    "ipNft": "0x98971c660ac20880b60F86Cc3113eBd979eb3aAE",
+    "tokenId": 15192,
+    "explorer": "https://www.storyscan.io"
+  },
+  "entity": {
+    "parent": {
+      "name": "Gladiator Holdings LLC",
+      "entityId": "0008034162",
+      "ein": "39-2684612",
+      "jurisdiction": "New Mexico"
+    },
+    "spv1": {
+      "name": "Slaps Streaming LLC",
+      "ein": "41-4045773",
+      "role": "SOLE_DEBTOR_AT_RISK"
+    },
+    "spv2": {
+      "name": "Millionaire Resilience LLC",
+      "status": "PROTECTED_ISOLATED"
+    },
+    "spv3": {
+      "name": "Resilience Blockchain Whetstone LLC",
+      "status": "PROTECTED_ISOLATED"
+    },
+    "beneficialOwner": {
+      "name": "Clifton Kelly Bell",
+      "role": "Managing Member / Sole Beneficial Owner"
+    }
+  },
+  "kycDocuments": {
+    "formation": {
+      "gladiatorCertOfOrg": "bafybeiba2j4g34bizjjm26qznc2pf4upgotffrcwjtkw6lj3qa6squrzpu",
+      "gladiatorNoticeOfFiling": "bafkreifbikc26xs2cu2mvsghzlrginwm6icqotdp4ntsvq3sn6h4flrhhm",
+      "mrArticlesOfIncorporation": "bafkreifxiesrze736sxhvsa5op64q6f3ddvv3rismnvd75wi3yfqilu4py",
+      "slapsArticles": "bafkreic3n6bdf25tobljqbjxzvzkbch6s7xkqq5yehmyt3zju4de7ey52u"
+    },
+    "irsApprovals": {
+      "mrEinLetter": "bafkreihz5zpp33pimzckaey64mht2vezlbzngoxe46urrfctzqvjvsdboe",
+      "slapsEinLetter": "bafkreifnuwchbvbolmhbgionvsltdi3edzasfqytd4zzqlvu42m5m4jhei",
+      "rbwEinLetter": "bafkreid77fuxwqtwyku5syp3dswmy75rymvxh6v3tf7rfrzqbrizoutxtu"
+    },
+    "governmentReceipts": {
+      "nmSosReceipt": "bafkreigjsqx6d47sgqwkjxgtt3qrjnoz3hdth4hqk7qnxflqog2ikjs2kq"
+    },
+    "beneficialOwnerId": {
+      "cid": "bafkreie5spkgxxhmafdqylwyfplx37jqhcjrs3es3neasgcnynzgkg5mzi",
+      "note": "Pre-existing pin from earlier KYC submission — raw ID never re-hashed in this fork (PII safety policy)."
+    }
+  },
+  "teknosAttestation": {
+    "attestor": "Teknos Associates LLC",
+    "role": "IP Valuation & Certification Attestor",
+    "attestationId": "0x98971c660ac20880b60F86Cc3113eBd979eb3aAE",
+    "storyProtocolAttestationTypeId": "0x537b145ce6e67185955db6e27e4f2692ae3c538f0fef75eaffed7d2e6ad6a258",
+    "valuationReports": {
+      "lexisNexisPatentSight": {
+        "portfolio": "bafkreibxqnmhir5iifpboxdv5ndltm5vnbplso4ndtcuzfnanykudrwdbu",
+        "millionaireResilience": "bafkreihls2yoi265uxzmcmh7wzk2ytyo5yvopmb4jib4blw4nptlchivqm",
+        "slapsStreaming": "bafkreiflmhdsflvv53e24mo2woafdgecpkvfljcbm5heafnzdxzbj5ct4i",
+        "sepDeclaration": "bafkreiej7wfskl53hxo4j47g55bxjkyyulihovjjtpjvtf264kfoddxc5i"
+      },
+      "gladiatorValuationReport": "QmYgT6SfbBbjJvX1AgzCa5TcnQMf5MPkpgNSZBHz5ETZVt",
+      "onChainAttestationCid": "bafkreihisf6mbwbobwhgmdsow77qssthrsvf73ndsxyeipyy3o6jtyggxm"
+    },
+    "timestamp": "2026-05-05T15:15:40.748Z",
+    "hermeticSealHash": "0xed4bd3b5123971b5bd15fb55b0b57d543518c78b22906b45199bfeec1db7f413"
+  },
+  "smartContractAttestorField": {
+    "contracts": [
+      "StoryAttestationService",
+      "StoryOrchestrationService",
+      "StoryAttestationBridge",
+      "SLAPSIPSpvLoan",
+      "GladiatorHoldingsSpvLoan",
+      "PILLoanEnforcement",
+      "StablecoinIPEscrow",
+      "AngelCoin",
+      "ResilienceToken",
+      "SlapsStreaming",
+      "SlapsSPV",
+      "UCC1FilingIntegration",
+      "StoryIPTokenBoundAccount",
+      "StoryIPSafeProxyFactory"
+    ],
+    "attestorFieldName": "teknosAttestor",
+    "attestorAddress": "0x98971c660ac20880b60F86Cc3113eBd979eb3aAE",
+    "note": "Attestation type IP_VALUATION_ATTESTATION = 0x537b145ce6e67185955db6e27e4f2692ae3c538f0fef75eaffed7d2e6ad6a258 — recorded inside each contract's attestation registry."
+  },
+  "ucc1Reference": {
+    "filingNumber": "20260000078753",
+    "jurisdiction": "New Mexico Secretary of State",
+    "amendment": 3,
+    "ucc1Filing": "bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a",
+    "ucc1FinancingStatement": "bafkreidomwlsf5wabkvhvf63jq424t65mffhnftd4t6spnmhh5t64jn2bu"
+  },
+  "newArtifactHashes": {
+    "ipValuationReportFull": {
+      "file": "Try.pdf",
+      "keccak256": "0xd2523b456533c90c9529a96dfd8bf15f84d6103adf013fd418dd450d0777ff0b",
+      "sha256": "0x2e80aff65e0bf2dc511eb37e31e8ff2ef06893a9bbb1803fb9986dad8640c81f",
+      "bytes": 839196
+    },
+    "pinataDepositGuide": {
+      "file": "IPLA.pdf",
+      "keccak256": "0x17315f054c0c5245d087670cd159aeb6be679f6aee0c4506ddd6f2cbfc850f9d",
+      "sha256": "0xb09db1f3d6240a9da146658339ebdefadae59274b3be3d9e0ea0a15823fd02a2",
+      "bytes": 190365
+    },
+    "storyPortalRegistrationGuide": {
+      "file": "StorLa.pdf",
+      "keccak256": "0xb54fee98f5ae03abc08a77dbc8738bd520acf924f736e96712f235d29b736ee2",
+      "sha256": "0xd4ffbecf08ac7d96053c87ee623aa601a899c4b29c95f09d814afd1e62596e9d",
+      "bytes": 51018
+    },
+    "auxiliaryDocumentManifest": {
+      "file": "AuxiliaryDocumentManifest.json",
+      "keccak256": "0x75de45b0ea3302f244586e007052f00c4a9eb869fe40161f544fdc12428663ce",
+      "sha256": "0x9d93d46bdcec01470c2ed82bd77dfd303893196c92db4809184dc372651bacca",
+      "bytes": 19208
+    },
+    "safeWalletExportFull": {
+      "file": "safe-2026-05-02.json",
+      "keccak256": "0x5f6080ebdd0ce4eb5a01a271b316241dcfcce0e809b1d904276ce4013826a3b3",
+      "sha256": "0x06af1b055c7a7d77d268e311f86096106c68e2a958a7da602188f8b8eee7d154",
+      "bytes": 1064
+    }
+  },
+  "newArtifactCids": {
+    "ipValuationReportFull": "QmYgT6SfbBbjJvX1AgzCa5TcnQMf5MPkpgNSZBHz5ETZVt",
+    "pinataDepositGuide": "QmZoyw7xJPTqgKFoqEAHnQZa9SwMFw5mrVYYJTTbiBYdbe",
+    "storyPortalRegistrationGuide": "QmXbUiYnrkZ47EfmaeVBigvbL6U89rvcb6cGchMY9vgaTF",
+    "auxiliaryDocumentManifest": "QmRUZP6wTJY1YBpcUmA5Ma6aUZ3ykoLkG4MsXqKoBcgjgv",
+    "safeWalletExportFull": "QmUCQhfbeExgVKBD1GMvuARy6zHV4AA4nDLQuUP8qBquZG"
+  },
+  "multiSigAttestation": {
+    "threshold": "3 of 5",
+    "eip191Hash": "0x602b1b4f5a2e8bfa60aec337688b21fdccbfef6a21befe412133ddac9a2c04fb",
+    "hermeticSealHash": "0xed4bd3b5123971b5bd15fb55b0b57d543518c78b22906b45199bfeec1db7f413",
+    "signer": "Clifton Kelly Bell",
+    "signaturesValidated": true,
+    "signatureCount": 3,
+    "thresholdMet": true,
+    "validatedAt": "2026-04-27T05:36:17.756Z",
+    "signatures": {
+      "signer_story": {
+        "address": "0x5EEFF17e12401b6A8391f5257758E07c157E1e45",
+        "sig": "0x591002f2d4533e07aa6c107ae96f56f25c6f4a38ae534d8f7e063941f6b86dad406d762a4a0064602d1e1726fee26fa1e6d05b476bae2dbee2f3fde93155b5361b"
+      },
+      "signer_base": {
+        "address": "0x4C7CD4eC5232589696d3fFC0D3ddaa9B59FF072A",
+        "sig": "0xb2751a0748d0b8841eb128064b97331cbec7736177a868069e4127a1979a1a7800fecb80b96df7cc0a86c3f0ffe40666be557524e7abed1b2cc23e33931d28b01c"
+      },
+      "signer_coinbase": {
+        "address": "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a",
+        "sig": "0x45cba72f008cf636506f3c69ed113f7fab60f30f34b313a414eed450a04f31a13499294066bbd08199a058abebf62beb1b537e79fd0b8b7faff2198e4120fa001c"
+      }
+    }
+  },
+  "storyScanCompliance": {
+    "hashAlgorithm": "keccak256",
+    "chainId": 1514,
+    "storyFoundation": "0x597856e93f19877a399f686D2F43b298e2268618"
+  },
+  "morphoLoan": {
+    "safe": "0xd314BE0a27c73Cd057308aC4f3dd472c482acc09",
+    "morphoBlue": "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
+    "chain": "Base 8453",
+    "totalPrincipal_USDC": 6000000,
+    "btcMarket": {
+      "principal": 5000000,
+      "apr": "4%",
+      "ltv": "86%",
+      "term": "24 months"
+    },
+    "ethMarket": {
+      "principal": 1000000,
+      "apr": "6%",
+      "ltv": "86%",
+      "term": "18 months"
+    },
+    "repaymentSource": "100% of PIL licensing revenue ($12.3M/yr) routed through IP-Safe → Morpho.repay() until repaid"
+  }
+}

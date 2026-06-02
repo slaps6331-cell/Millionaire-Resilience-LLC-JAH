@@ -1,0 +1,94 @@
+{
+  "documentType": "ERC6551_TBA_SAFE_PROXY_VERIFICATION_PROOF",
+  "version": "1.0.0",
+  "generatedAt": "2026-06-01T23:21:03.395Z",
+  "status": "SIGNED_BY_CLIFTON_KELLY_BELL_3OF5_QUORUM",
+  "entity": {
+    "name": "Gladiator Holdings LLC",
+    "entityId": "0008034162",
+    "jurisdiction": "New Mexico Secretary of State",
+    "beneficialOwner": "Clifton Kelly Bell"
+  },
+  "storyProtocol": {
+    "chainId": 1514,
+    "ipId": "0xD22750Ca1C3Cd1f7B18a2c70Af98914c291d632F",
+    "ipNft": "0x98971c660ac20880b60F86Cc3113eBd979eb3aAE",
+    "tokenId": 15192,
+    "storyFoundation": "0x597856e93f19877a399f686D2F43b298e2268618",
+    "explorer": "https://www.storyscan.io"
+  },
+  "erc6551": {
+    "registry": "0x000000006551c19487814612e58FE06813775758",
+    "accountImplementation": "0x55266d75D1a14E4572138116aF39863Ed6596E7F",
+    "boundNft": "0x98971c660ac20880b60F86Cc3113eBd979eb3aAE",
+    "boundTokenId": 15192,
+    "salt": 0
+  },
+  "safeProxy": {
+    "proxyFactory": "0x4e1DCf7AD4e460CfD30791CCC4F9c8a4f820ec67",
+    "singleton": "0x41675C099F32341bf84BFc5382aF534df5C7461a",
+    "threshold": 1,
+    "ownerType": "ERC6551_TBA"
+  },
+  "morphoOnboarding": {
+    "morphoBlue": "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
+    "chain": "Base 8453",
+    "authorized": "0x597856e93f19877a399f686D2F43b298e2268618"
+  },
+  "artifactHashes": {
+    "erc6551TBASource": {
+      "file": "contracts/StoryIPTokenBoundAccount.sol",
+      "keccak256": "0xd7496778d7ba1fbd8205704857db2248908968a541671eaac36c1feaec25346f",
+      "sha256": "0x01c7ac0d50d1cd40063515f11cf6181bd5b4dbe715bcf896dc5edee917d1be94",
+      "bytes": 3031
+    },
+    "storyIPSafeProxyFactorySource": {
+      "file": "contracts/StoryIPSafeProxyFactory.sol",
+      "keccak256": "0x306b9e585d1830ff8e2c5a2c946991832f6e3cfd8d915d450d96403c0438161c",
+      "sha256": "0x6ecd0e067ede4d49fbc1631d8631353b09654bd80dcbd45aab2d8ba31376a166",
+      "bytes": 4731
+    },
+    "tbaSafeWorkflowDoc": {
+      "file": "docs/STORY_IP_TBA_SAFE_PROXY_WORKFLOW.md",
+      "keccak256": "0x3994406911c33b6157730e412e8037451ab06d930461d61d6647dece23d31879",
+      "sha256": "0x80bedd08c388254e77089a167482dfdc7ac29666f42dadcdc4e915021f33ca28",
+      "bytes": 8870
+    },
+    "tbaSafeCalldataPayloads": {
+      "file": "tba-safe-payloads.json",
+      "keccak256": "0x257e344f439ed69b05effb031581e0a2994f906a8cafd0a08dda0d09bd27c094",
+      "sha256": "0x2a88ebc0a2bcc272d3b078f4dc1a3917880074f17675e27ebd377c6a9bb68067",
+      "bytes": 4500
+    }
+  },
+  "multiSigAttestation": {
+    "threshold": "3 of 5",
+    "eip191Hash": "0x602b1b4f5a2e8bfa60aec337688b21fdccbfef6a21befe412133ddac9a2c04fb",
+    "hermeticSealHash": "0xed4bd3b5123971b5bd15fb55b0b57d543518c78b22906b45199bfeec1db7f413",
+    "signer": "Clifton Kelly Bell",
+    "signaturesValidated": true,
+    "signatureCount": 3,
+    "thresholdMet": true,
+    "validatedAt": "2026-04-27T05:36:17.756Z",
+    "signatures": {
+      "signer_story": {
+        "address": "0x5EEFF17e12401b6A8391f5257758E07c157E1e45",
+        "sig": "0x591002f2d4533e07aa6c107ae96f56f25c6f4a38ae534d8f7e063941f6b86dad406d762a4a0064602d1e1726fee26fa1e6d05b476bae2dbee2f3fde93155b5361b"
+      },
+      "signer_base": {
+        "address": "0x4C7CD4eC5232589696d3fFC0D3ddaa9B59FF072A",
+        "sig": "0xb2751a0748d0b8841eb128064b97331cbec7736177a868069e4127a1979a1a7800fecb80b96df7cc0a86c3f0ffe40666be557524e7abed1b2cc23e33931d28b01c"
+      },
+      "signer_coinbase": {
+        "address": "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a",
+        "sig": "0x45cba72f008cf636506f3c69ed113f7fab60f30f34b313a414eed450a04f31a13499294066bbd08199a058abebf62beb1b537e79fd0b8b7faff2198e4120fa001c"
+      }
+    }
+  },
+  "storyScanCompliance": {
+    "hashAlgorithm": "keccak256",
+    "bytecodeFormat": "EVM solidity 0.8.26+commit.8a97fa7a",
+    "chainId": 1514,
+    "note": "All artifact hashes are keccak256 of the canonical file bytes; signatures are EIP-191 personal_sign over the SmartPacts1 Safe transaction hash already validated on-chain."
+  }
+}

@@ -51,6 +51,59 @@
     "morphoSafeMetadata": {
       "cid": "bafkreidzgwjf3oywt65dcnlehv2io4owv3g22whizu4z5ls4sv7ksd6ai4",
       "description": "Morpho Protocol Safe authorization"
+    },
+    "erc6551TBASource": {
+      "cid": "QmXV9aPLTHoHUzE9u439KsFhKwSg5pwSnHsBLY4XeaqSQR",
+      "localPath": "contracts/StoryIPTokenBoundAccount.sol",
+      "description": "ERC-6551 Token Bound Account implementation bound to Story IP NFT"
+    },
+    "storyIPSafeProxyFactorySource": {
+      "cid": "QmYLJzWkbvHE6m7UH1sjRXYSL41EURVX6gtk8UaFWLLrY1",
+      "localPath": "contracts/StoryIPSafeProxyFactory.sol",
+      "description": "Factory deploying Safe Proxies owned by the Story IP ERC-6551 TBA"
+    },
+    "tbaSafeWorkflowDoc": {
+      "cid": "QmbjkkGfhcKwWS1WJ9ETmPPF6RhFrGHPuyrEAvnNHGCRLP",
+      "localPath": "docs/STORY_IP_TBA_SAFE_PROXY_WORKFLOW.md",
+      "description": "Story IP ► TBA ► Safe ► Morpho 10-step operational workflow"
+    },
+    "tbaSafeCalldataPayloads": {
+      "cid": "QmPt7dxhwo8GK9bKLJaUm5rzAWnQYMRScHgRrfgS23fzoq",
+      "localPath": "tba-safe-payloads.json",
+      "description": "Pre-built calldata for ERC-6551, Safe Proxy, and Morpho onboarding txs (story.foundation)"
+    },
+    "tbaVerificationProof": {
+      "cid": "QmPzJmkz8JPJsBjbhcpVS5MXBQhj6xN4PGQmF5NNn95sKM",
+      "description": "Signed ERC-6551/Safe/Morpho verification proof — Clifton Kelly Bell 3-of-5 quorum"
+    },
+    "ipValuationReportFull": {
+      "cid": "QmYgT6SfbBbjJvX1AgzCa5TcnQMf5MPkpgNSZBHz5ETZVt",
+      "description": "Gladiator IP Valuation Report + UCC-1 + Security Agreement (Try.pdf)"
+    },
+    "pinataDepositGuide": {
+      "cid": "QmZoyw7xJPTqgKFoqEAHnQZa9SwMFw5mrVYYJTTbiBYdbe",
+      "description": "Pinata IPFS Deposit Guide (ABI + UCC-1) (IPLA.pdf)"
+    },
+    "storyPortalRegistrationGuide": {
+      "cid": "QmXbUiYnrkZ47EfmaeVBigvbL6U89rvcb6cGchMY9vgaTF",
+      "description": "Story Protocol IP Portal Registration Guide (StorLa.pdf)"
+    },
+    "auxiliaryDocumentManifest": {
+      "cid": "QmRUZP6wTJY1YBpcUmA5Ma6aUZ3ykoLkG4MsXqKoBcgjgv",
+      "description": "Auxiliary Document Manifest"
+    },
+    "safeWalletExportFull": {
+      "cid": "QmUCQhfbeExgVKBD1GMvuARy6zHV4AA4nDLQuUP8qBquZG",
+      "description": "Safe wallet export (2026-05-02)"
+    },
+    "kycTeknosAttestationBundle": {
+      "cid": "QmcdNTp9SSDYvbqpWeWNd7CZaLmSnd5MPPwWiso4vG8KuU",
+      "description": "Signed KYC + Teknos & Associates + LexisNexis valuation bundle — Clifton Kelly Bell 3-of-5 quorum"
+    },
+    "safeProxyDeployOnboardingGuide": {
+      "cid": "QmZ4Csp3APjAfK7GKdNQ2ZaEeCJqNEkFPgZV9ahPjXgXqB",
+      "keccak256": "0xcc655070901479de991f62150b8c552e765e4ca355688f09e38e6962d3ae96f0",
+      "description": "Step-by-step Safe Proxy Factory deployment of 12 contracts + Steakhouse Prime USDC v2 Morpho onboarding"
     }
   },
   "ucc1SecurityInterest": {
