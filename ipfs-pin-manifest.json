@@ -104,6 +104,51 @@
       "cid": "QmZ4Csp3APjAfK7GKdNQ2ZaEeCJqNEkFPgZV9ahPjXgXqB",
       "keccak256": "0xcc655070901479de991f62150b8c552e765e4ca355688f09e38e6962d3ae96f0",
       "description": "Step-by-step Safe Proxy Factory deployment of 12 contracts + Steakhouse Prime USDC v2 Morpho onboarding"
+    },
+    "abiProofRefreshed": {
+      "cid": "QmZ72gmkXFhUpBXL2qcvykAo4Cyq54sKVrNUzGRDcQsfG8",
+      "description": "ABI Proof — All 12 + 2 new (StoryIP TBA & Safe Proxy) refreshed",
+      "keccak256": "0x9e4b30a847219ad2b9e84f4fa03c3d4168eadd65f938e15efe58de49e5436545"
+    },
+    "valuationAttestationRefreshed": {
+      "cid": "QmeZEskEPw4nKpKyieBf3LYkfNCqMx1ivqk6S2Lq6UpiKG",
+      "description": "Valuation Attestation refreshed",
+      "keccak256": "0xc7125aade966c187b61fd2d0f7d00befde247b41a5d0655a3eaf7a3eecc9e256"
+    },
+    "signatureMorphoConfigRefreshed": {
+      "cid": "Qmcc1dEmwEeSVPFTmN6yii7STerRx7R2UTwY8Xck9uW72k",
+      "description": "Signature/Morpho Config refreshed",
+      "keccak256": "0x9bc913de0b597645181d2fc19bbc6a04c194d1e7c826040e52df949e1e7feffe"
+    },
+    "morphoLoanTermsSignedRefreshed": {
+      "cid": "QmUuw7AWdiXXQE2WsWDeJ782oWeGwE3b1RQ3bfDdhPLwL9",
+      "description": "Morpho Loan Terms (signed) refreshed",
+      "keccak256": "0x25da87470b40d5c8306fb00ebc45bf909f84e4557669f7dcbe6a7c052359822d"
+    },
+    "morphoSafeMetadataRefreshed": {
+      "cid": "QmNhcL7rPdeN6bwadURTwhcPDh8VrU3dbZBfjHUpXnbKuH",
+      "description": "Morpho Safe Metadata refreshed",
+      "keccak256": "0x3cafdb9c9581f09f8d7b78c3e0c5c2619f2b510de58c6e133850890267017cda"
+    },
+    "ucc1MetadataPinataRefreshed": {
+      "cid": "QmT3rPWXmvkzsdyPDhGD5rvcn2H4H72Gck9XoYuRnJ8sMz",
+      "description": "UCC-1 Metadata (Pinata, Amendment 3) refreshed",
+      "keccak256": "0xaa0d41a95c618ce67897b4fd41118585af25286c7ea83e5a6268fade9441f9fb"
+    },
+    "pinataVerificationHashesRefreshed": {
+      "cid": "QmYJswSr42nWf9S3vhMqAvDBLrG46cVAVszmCAu3fqAEvx",
+      "description": "Pinata Verification Hashes (keccak256/sha256) refreshed",
+      "keccak256": "0x52f4188c07b0f060affdeae8c3cadcfcea776fe0304e6d7654d21bebdb5484f1"
+    },
+    "deploymentRegistryRefreshed": {
+      "cid": "QmQQUZ74rkNQxUrJx2KvEZKexYkCB8EehzBTdhLTj7b5JJ",
+      "description": "Deployment Registry refreshed",
+      "keccak256": "0xc42ef1f0177033179d2e08822fffe4473c3b27f3b3e2e830947a6f25788cb0b7"
+    },
+    "steakhouseOnboardingSigned": {
+      "cid": "QmUT3vandLL4zhCJLfHdYNP1DvMRX8eSvhVBCuRXtJD6Rm",
+      "description": "UCC-1 + Morpho Steakhouse Prime USDC v2 Onboarding (signed)",
+      "keccak256": "0x89b26a985fb9ecac22cdde00325c4e3b0d1afddce6083b50a63399828233adf2"
     }
   },
   "ucc1SecurityInterest": {

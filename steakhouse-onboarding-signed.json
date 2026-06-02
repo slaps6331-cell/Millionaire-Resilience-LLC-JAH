@@ -1,0 +1,156 @@
+{
+  "documentType": "UCC1_MORPHO_STEAKHOUSE_PRIME_USDC_ONBOARDING_SIGNED",
+  "version": "1.0.0",
+  "generatedAt": "2026-06-02T08:36:13.338Z",
+  "status": "SIGNED_BY_CLIFTON_KELLY_BELL_3OF5",
+  "curator": {
+    "name": "Steakhouse Financial",
+    "vaultName": "Steakhouse Prime USDC",
+    "vaultAddress": "0xBEEFE94c8aD530842bfE7d8B397938fFc1cb83b2",
+    "curatorMultiSig": "Steakhouse 2-of-3",
+    "morphoApp": "https://app.morpho.org/base/vault/0xBEEFE94c8aD530842bfE7d8B397938fFc1cb83b2/steakhouse-prime-usdc",
+    "chain": "Base 8453"
+  },
+  "safe": {
+    "address": "0xd314BE0a27c73Cd057308aC4f3dd472c482acc09",
+    "threshold": "3 of 5",
+    "owner": "Clifton Kelly Bell"
+  },
+  "ucc1Reference": {
+    "filingNumber": "20260000078753",
+    "jurisdiction": "New Mexico Secretary of State",
+    "amendment": 3,
+    "ucc1Filing": "bafkreialofdl6qhrgyomohyo6giijf7stzl26r6sbvq6gnwakgqpbqoe4a",
+    "ucc1FinancingStatement": "bafkreidomwlsf5wabkvhvf63jq424t65mffhnftd4t6spnmhh5t64jn2bu"
+  },
+  "onChainCalldata": {
+    "tx1_authorizeStoryFoundation": {
+      "to": "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
+      "chain": "Base 8453",
+      "data": "0xeecea000000000000000000000000000597856e93f19877a399f686d2f43b298e22686180000000000000000000000000000000000000000000000000000000000000001"
+    },
+    "tx2_authorizeSteakhouseVault": {
+      "to": "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
+      "chain": "Base 8453",
+      "data": "0xeecea000000000000000000000000000beefe94c8ad530842bfe7d8b397938ffc1cb83b20000000000000000000000000000000000000000000000000000000000000001"
+    },
+    "tx3_approveSteakhouseSpendUSDC": {
+      "to": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+      "chain": "Base 8453",
+      "data": "0x095ea7b3000000000000000000000000beefe94c8ad530842bfe7d8b397938ffc1cb83b200000000000000000000000000000000000000000000000000000574fbde6000"
+    }
+  },
+  "loanTerms": {
+    "btc": {
+      "principal": 5000000,
+      "currency": "USDC",
+      "collateral": "WBTC",
+      "lltv": "86%",
+      "apr": "4%",
+      "term": "24 months"
+    },
+    "eth": {
+      "principal": 1000000,
+      "currency": "USDC",
+      "collateral": "WETH",
+      "lltv": "86%",
+      "apr": "6%",
+      "term": "18 months"
+    },
+    "repaymentSource": "100% of SLAPS PIL licensing revenue routed through SmartPacts1 until repaid"
+  },
+  "storyAttester": {
+    "attester": "Story Attestation Service",
+    "contract": "StoryAttestationService",
+    "chainId": 1514,
+    "attestationTypeIds": {
+      "CORPORATE_VERIFICATION": "0x908b874ceda681a131aff726b1b5c42ff40514be54505fd27602bc763adf38ad",
+      "IP_VALUATION_ATTESTATION": "0x537b145ce6e67185955db6e27e4f2692ae3c538f0fef75eaffed7d2e6ad6a258",
+      "UCC1_BRIDGE_ATTESTATION": "0x0cf7f46400094294ea1e3d3741656bc826f486d6ad593c41525e9a8d22672db3",
+      "LOAN_COLLATERAL_ATTESTATION": "0xd2a93ed375b28631f806632b55b922ddb4bf2e5a6fe51e92581e8906d47d57ae",
+      "MORPHO_MARKET_ATTESTATION": "0x01b118b286562fc6cfdce780c5d9e22ad2fd8ee3941d3aba1e4de05ba7021d54",
+      "SPV_SEGREGATION_ATTESTATION": "0xa27e025efd455bf7687dd74e2e8adb215791b761d5f3565f61d22c2798b2dffd"
+    },
+    "teknosAssociates": {
+      "role": "IP Valuation & Certification Attestor",
+      "attestationId": "0x98971c660ac20880b60F86Cc3113eBd979eb3aAE",
+      "hermeticSealHash": "0xed4bd3b5123971b5bd15fb55b0b57d543518c78b22906b45199bfeec1db7f413"
+    }
+  },
+  "multiSigAttestation": {
+    "threshold": "3 of 5",
+    "eip191Hash": "0x602b1b4f5a2e8bfa60aec337688b21fdccbfef6a21befe412133ddac9a2c04fb",
+    "hermeticSealHash": "0xed4bd3b5123971b5bd15fb55b0b57d543518c78b22906b45199bfeec1db7f413",
+    "signaturesValidated": true,
+    "signatureCount": 3,
+    "thresholdMet": true,
+    "signatures": {
+      "signer_story": {
+        "address": "0x5EEFF17e12401b6A8391f5257758E07c157E1e45",
+        "sig": "0x591002f2d4533e07aa6c107ae96f56f25c6f4a38ae534d8f7e063941f6b86dad406d762a4a0064602d1e1726fee26fa1e6d05b476bae2dbee2f3fde93155b5361b"
+      },
+      "signer_base": {
+        "address": "0x4C7CD4eC5232589696d3fFC0D3ddaa9B59FF072A",
+        "sig": "0xb2751a0748d0b8841eb128064b97331cbec7736177a868069e4127a1979a1a7800fecb80b96df7cc0a86c3f0ffe40666be557524e7abed1b2cc23e33931d28b01c"
+      },
+      "signer_coinbase": {
+        "address": "0xDc2aFCd0a97c1e878FdD64497806E52Cc530f02a",
+        "sig": "0x45cba72f008cf636506f3c69ed113f7fab60f30f34b313a414eed450a04f31a13499294066bbd08199a058abebf62beb1b537e79fd0b8b7faff2198e4120fa001c"
+      }
+    }
+  },
+  "abiBytecodeReference": {
+    "abiProofCid": "bafybeib6hyfertedqdtcuidl7myqqrksi4vaf5rr4doebnu7odmgu5xlcq",
+    "verificationHashesCid": "bafkreicaaap7ponqikpocx4v3oo2nmqeesuuxlel5ichkiynrtdbco3fgq",
+    "contractHashes": {
+      "StoryAttestationService": {
+        "deployedBytecodeKeccak256": "0xa3e5b1a8fb433b231656e8198682a737e0364521e0eb2da6e5de6b242ffc5d85",
+        "abiSha256": "0x9dad5377a2025878b4be535bdd5082f90e4dd521ee1d65346c0fb2084549eb05"
+      },
+      "StoryOrchestrationService": {
+        "deployedBytecodeKeccak256": "0xe1945219332b1807544822b4cdbd745001150f027a5110e5e6466a3a1f813d02",
+        "abiSha256": "0x1d7ac972b62012670a86c35d8ae86f9ba043ab7ef0d16b2a8d784224786a6185"
+      },
+      "StoryAttestationBridge": {
+        "deployedBytecodeKeccak256": "0x345f6feb62dea7eacd5aa09ab9c2a799318293b591ed54280bcab8646bf5939e",
+        "abiSha256": "0x42763e590650422d7a5e93c26b3e49871b56c39e1869380e19b92e543bca1ada"
+      },
+      "SLAPSIPSpvLoan": {
+        "deployedBytecodeKeccak256": "0x9f5c804d4a5d98a7ae2163ed3e7fdcf7c39586b03cea6819d59b5351f4947c30",
+        "abiSha256": "0xc7539acbdd0482cd7e81b75808f05bb865246839946dcf9b4b82986db3801349"
+      },
+      "GladiatorHoldingsSpvLoan": {
+        "deployedBytecodeKeccak256": "0xb65b6ad1596d92f17e5ec96f86d3f88591776daf778bcc225b8e8de40fdee850",
+        "abiSha256": "0xb7c81fcdcc44a54fa0bd12d7fc8183c87c64f489b0b33e1074826bfafeb3d7d6"
+      },
+      "PILLoanEnforcement": {
+        "deployedBytecodeKeccak256": "0x046e1d794991dcb2c92ac9ae70bdf7950fbcb83cfbcf886a61548d9aae7b9c0a",
+        "abiSha256": "0x2942e2ebd0a6bcb6b4592b4707c3e174f7e264d35e9570bc7fca7268a15094a4"
+      },
+      "StablecoinIPEscrow": {
+        "deployedBytecodeKeccak256": "0x9369e53e73790998a6c249e1f807d10060a548920d2a64e34a52de0bec483634",
+        "abiSha256": "0x8c1f31c333fabedc719e9cef8f4b554223e488b6936962c89567f766e85fdfb2"
+      },
+      "AngelCoin": {
+        "deployedBytecodeKeccak256": "0x9be0712e4e59c7226b17b20ddcaea298e2d992af05f330d8776dacdb78e90dc4",
+        "abiSha256": "0x92c6b4152d67a78f8e164ac0ceb6bd8f36f04a7a8e485a60fb99ddb0e4933e54"
+      },
+      "ResilienceToken": {
+        "deployedBytecodeKeccak256": "0xf3000f7ec324feab4497ca6a7a25abacf2c98b0aad337babde01a959d604de0f",
+        "abiSha256": "0x96a654d6925340dc3ed0c5c77f8beea6082b5e9b54674aa48ae96937cd299e9d"
+      },
+      "SlapsStreaming": {
+        "deployedBytecodeKeccak256": "0x7e773dd024bc97bad616b7726c260f084b4a4fe3494910e1ed07e5ae9ce92211",
+        "abiSha256": "0x28b0a5bdc9da1195b6ca21431d578bb0dc822d2992ab4812ebdbe2fffdc374fb"
+      },
+      "SlapsSPV": {
+        "deployedBytecodeKeccak256": "0xf5189d910dae1ead2e30774c04ac9d7a906d13028df558c4bd7ad462560fbf78",
+        "abiSha256": "0x4f04e33fa7fc609a69be1e33849d9f2400446e8ec3d0386941c3938b4e5b458a"
+      },
+      "UCC1FilingIntegration": {
+        "deployedBytecodeKeccak256": "0x8c427d4379b38eb2f3777163cc3e69f6d69c13b7d3fa25389dc28dd36ea32b0e",
+        "abiSha256": "0xfba2d0d1c937e185408c18c53b7c64e9e0a0b3d324d753d92a780665f058e3d8"
+      }
+    }
+  }
+}
