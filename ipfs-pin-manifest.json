@@ -149,6 +149,16 @@
       "cid": "QmUT3vandLL4zhCJLfHdYNP1DvMRX8eSvhVBCuRXtJD6Rm",
       "description": "UCC-1 + Morpho Steakhouse Prime USDC v2 Onboarding (signed)",
       "keccak256": "0x89b26a985fb9ecac22cdde00325c4e3b0d1afddce6083b50a63399828233adf2"
+    },
+    "portfolioAbiBundle": {
+      "cid": "QmS7EbXxfaDdVbgnWVhzpH3pica3tBzfpnKMsCNhF3LRiq",
+      "description": "Consolidated ABI Bundle (15 contracts: MR-LLC-JAH + SG888)",
+      "keccak256": "0xdbe1725f0b31dc9f5afe113e89d117012306322a8d8074853adbd26dd77496ba"
+    },
+    "portfolioInventory": {
+      "cid": "QmPH9ZfrcsCBfDKnquREgut1V7jm5KRFPNSRh5X6KScHNB",
+      "description": "IP Portfolio Inventory + Valuation Index (LexisNexis + IPlytics)",
+      "keccak256": "0x58632cf9c734e4b7327801c3f59566d725e43d7b1c8dea430d8ef8fd0c06b401"
     }
   },
   "ucc1SecurityInterest": {

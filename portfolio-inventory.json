@@ -1,0 +1,188 @@
+{
+  "documentType": "IP_PORTFOLIO_INVENTORY_AND_VALUATION_INDEX",
+  "version": "1.0.0",
+  "generatedAt": "2026-06-02T20:13:25.424Z",
+  "parentEntity": {
+    "name": "Gladiator Holdings LLC",
+    "entityId": "0008034162",
+    "jurisdiction": "New Mexico"
+  },
+  "valuationStandard": "WIPO DCF + LexisNexis PatentSight+ + IPlytics SEP",
+  "grandTotalCollateral_USD": 7350000000,
+  "presentIPPortfolioValue_USD": 300000000,
+  "totalProtectedValue_USD": 225000000,
+  "atRiskValue_USD": 75000000,
+  "repositories": {
+    "Millionaire-Resilience-LLC-JAH": {
+      "githubUrl": "https://github.com/slaps6331-cell/Millionaire-Resilience-LLC-JAH",
+      "role": "PARENT_ORCHESTRATION_REPO",
+      "assets": {
+        "intellectualProperty": [
+          {
+            "name": "Millionaire Resilience: Killer Instinct (eBook)",
+            "author": "Clifton Kelly Bell",
+            "ipId": "0xD22750Ca1C3Cd1f7B18a2c70Af98914c291d632F",
+            "ipNft": "0x98971c660ac20880b60F86Cc3113eBd979eb3aAE",
+            "tokenId": 15192,
+            "presentValue_USD": 95000000,
+            "status": "PROTECTED",
+            "patentSightScore": 92,
+            "sepCount": 42,
+            "valuationDataHash": "0x748cc0dbf1a1a51ff1edfbfab0a79f600b5904a3c5476acaca9adac6c2f5beb3"
+          },
+          {
+            "name": "SLAPS Streaming IP Portfolio",
+            "presentValue_USD": 75000000,
+            "status": "AT_RISK",
+            "patentSightScore": 78,
+            "sepCount": 18,
+            "valuationDataHash": "0x49988b157b3375869c3ef3dbe8c3dbbcffb4acf3644495c7c0b27bfe1e122b53"
+          },
+          {
+            "name": "Resilience Blockchain Whetstone (Developer IP)",
+            "presentValue_USD": 45000000,
+            "status": "PROTECTED"
+          },
+          {
+            "name": "IP Legal Monitoring Platform (LexisNexis)",
+            "presentValue_USD": 35000000,
+            "status": "PROTECTED"
+          },
+          {
+            "name": "Shared Infrastructure IP",
+            "presentValue_USD": 50000000,
+            "status": "PROTECTED"
+          }
+        ],
+        "tradeSecrets": [
+          "MR Royalty distribution algorithm (DCF + PatentSight+ weighting)",
+          "SLAPS streaming codec optimisation",
+          "Resilience Whetstone developer-incentive curve",
+          "PIL licensing rev-share waterfall (3-tier)",
+          "Smart-contract attestation Hermetic Seal protocol"
+        ],
+        "brandedAssets": [
+          {
+            "brand": "Millionaire Resilience",
+            "trademarkStatus": "USPTO filed"
+          },
+          {
+            "brand": "Killer Instinct (sub-brand)",
+            "trademarkStatus": "USPTO filed"
+          },
+          {
+            "brand": "SLAPS Streaming",
+            "trademarkStatus": "USPTO filed"
+          },
+          {
+            "brand": "Resilience Blockchain Whetstone",
+            "trademarkStatus": "USPTO filed"
+          }
+        ],
+        "smartContracts": [
+          "StoryAttestationService",
+          "StoryOrchestrationService",
+          "StoryAttestationBridge",
+          "SLAPSIPSpvLoan",
+          "GladiatorHoldingsSpvLoan",
+          "PILLoanEnforcement",
+          "StablecoinIPEscrow",
+          "AngelCoin",
+          "ResilienceToken",
+          "SlapsStreaming",
+          "SlapsSPV",
+          "UCC1FilingIntegration",
+          "StoryIPTokenBoundAccount",
+          "StoryIPSafeProxyFactory"
+        ],
+        "ipfsValuationReports": {
+          "patentSightPortfolio": "bafkreibxqnmhir5iifpboxdv5ndltm5vnbplso4ndtcuzfnanykudrwdbu",
+          "patentSightMR": "bafkreihls2yoi265uxzmcmh7wzk2ytyo5yvopmb4jib4blw4nptlchivqm",
+          "patentSightSLAPS": "bafkreiflmhdsflvv53e24mo2woafdgecpkvfljcbm5heafnzdxzbj5ct4i",
+          "iplyticsSEPDeclaration": "bafkreiej7wfskl53hxo4j47g55bxjkyyulihovjjtpjvtf264kfoddxc5i",
+          "gladiatorValuationReport_TryPdf": "QmYgT6SfbBbjJvX1AgzCa5TcnQMf5MPkpgNSZBHz5ETZVt"
+        }
+      }
+    },
+    "SpiritualGuerrilla888": {
+      "githubUrl": "https://github.com/slaps6331-cell/SpiritualGuerrilla888",
+      "role": "EXTERNAL_TOKEN_SPV",
+      "entity": "Spiritual Guerilla IP Holdings Inc.",
+      "assets": {
+        "intellectualProperty": [
+          {
+            "name": "SpiritualGuerrilla888 (SG888) — ERC-20",
+            "standard": "ERC-20",
+            "symbol": "SG888",
+            "maxSupply": "888,000,000",
+            "presentValue_USD": 12000000,
+            "status": "TOKEN_UTILITY_LAYER",
+            "note": "External token; NOT pledged as Morpho collateral. Forms part of cross-platform incentive layer."
+          }
+        ],
+        "tradeSecrets": [
+          "Token emission curve + cap structure",
+          "Spiritual Guerrilla utility scheduling"
+        ],
+        "brandedAssets": [
+          {
+            "brand": "Spiritual Guerrilla 888",
+            "trademarkStatus": "USPTO pending"
+          }
+        ],
+        "smartContracts": [
+          "SpiritualGuerrilla888"
+        ]
+      }
+    }
+  },
+  "valuationHashes": {
+    "millionaireResilience": {
+      "ipAsset": "0x98971c660ac20880b60F86Cc3113eBd979eb3aAE",
+      "portfolioName": "Millionaire Resilience IP Portfolio",
+      "presentValue_USD": 95000000,
+      "projectedValue5Y_USD": 500000000,
+      "projectedValue10Y_USD": 1700000000,
+      "patentSightScore": 92,
+      "sepCount": 42,
+      "methodology": "DCF + PatentSight+ PAI",
+      "status": "PROTECTED",
+      "valuationDataHash": "0x748cc0dbf1a1a51ff1edfbfab0a79f600b5904a3c5476acaca9adac6c2f5beb3",
+      "note": "dataHash computed without block.timestamp — final on-chain hash will differ by timestamp only"
+    },
+    "slapsStreaming": {
+      "ipAsset": "0x0000000000000000000000000000000000000000",
+      "portfolioName": "SLAPS Streaming IP Portfolio",
+      "presentValue_USD": 75000000,
+      "projectedValue5Y_USD": 300000000,
+      "projectedValue10Y_USD": 900000000,
+      "patentSightScore": 78,
+      "sepCount": 18,
+      "methodology": "DCF + PatentSight+ PAI",
+      "status": "AT_RISK (secondary collateral only)",
+      "valuationDataHash": "0x49988b157b3375869c3ef3dbe8c3dbbcffb4acf3644495c7c0b27bfe1e122b53",
+      "note": "ipAsset uses ZeroAddress placeholder — update to actual Story Protocol IPID once assigned. dataHash also omits block.timestamp."
+    },
+    "combinedPortfolioValue_USD": 300000000,
+    "whetstone_USD": 45000000,
+    "infrastructure_USD": 50000000,
+    "lexisNexisPatentSight_USD": 35000000,
+    "totalProtected_USD": 225000000
+  },
+  "hermeticSealHash": "0xed4bd3b5123971b5bd15fb55b0b57d543518c78b22906b45199bfeec1db7f413",
+  "storyAttester": {
+    "contract": "StoryAttestationService",
+    "chainId": 1514,
+    "attestor": "Teknos Associates LLC",
+    "attestationId": "0x98971c660ac20880b60F86Cc3113eBd979eb3aAE",
+    "attestationTypeIds": {
+      "CORPORATE_VERIFICATION": "0x908b874ceda681a131aff726b1b5c42ff40514be54505fd27602bc763adf38ad",
+      "IP_VALUATION_ATTESTATION": "0x537b145ce6e67185955db6e27e4f2692ae3c538f0fef75eaffed7d2e6ad6a258",
+      "UCC1_BRIDGE_ATTESTATION": "0x0cf7f46400094294ea1e3d3741656bc826f486d6ad593c41525e9a8d22672db3",
+      "LOAN_COLLATERAL_ATTESTATION": "0xd2a93ed375b28631f806632b55b922ddb4bf2e5a6fe51e92581e8906d47d57ae",
+      "REVENUE_ESCROW_ATTESTATION": "0xa009d1f0783160ccbe5ad218fa5104d73b48b2703298ffc2494c20a1d32d82dd",
+      "MORPHO_MARKET_ATTESTATION": "0x01b118b286562fc6cfdce780c5d9e22ad2fd8ee3941d3aba1e4de05ba7021d54",
+      "SPV_SEGREGATION_ATTESTATION": "0xa27e025efd455bf7687dd74e2e8adb215791b761d5f3565f61d22c2798b2dffd"
+    }
+  }
+}
