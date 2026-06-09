@@ -1,0 +1,70 @@
+{
+  "documentType": "DCF_VALUATION_ATTESTATION",
+  "subject": "Baby Spiritual Guerilla IP Holdings Inc. (formerly Spiritual Guerilla 888)",
+  "version": "2.0.0",
+  "generatedAt": "2026-06-09T00:00:00.000Z",
+  "umbrellaTrust": "Gladiator Holdings LLC",
+  "valuationStandard": "WIPO DCF + LexisNexis PatentSight+ + IPlytics SEP",
+  "discountRate_WACC_pct": 12.0,
+  "projectionHorizon_years": 7,
+  "comparableTransactionsSource": ["USPTO PatentView", "WIPO PatentSight+"],
+  "patentSightAuthorityIndex": {
+    "score": 92,
+    "scale": "0-100",
+    "percentileRank": "top 5% of all IP holdings",
+    "components": {
+      "technologyRelevance": 0.94,
+      "marketCoverage": 0.97
+    }
+  },
+  "tokenInstrumentChange": {
+    "from": {
+      "standard": "ERC-20",
+      "contract": "contracts/SpiritualGuerrilla888.sol (legacy, deprecated)",
+      "repo": "https://github.com/slaps6331-cell/SpiritualGuerrilla888"
+    },
+    "to": {
+      "standard": "ERC-6551 Token Bound Account",
+      "contract": "contracts/SpiritualGuerrilla888TBA.sol",
+      "repo": "https://github.com/slaps6331-cell/Millionaire-Resilience-LLC-JAH",
+      "anchorNFT": {
+        "chainId": 1514,
+        "tokenContract": "0x98971c660ac20880b60F86Cc3113eBd979eb3aAE",
+        "tokenId": 15192,
+        "ipId": "0xD22750Ca1C3Cd1f7B18a2c70Af98914c291d632F",
+        "registry": "0x000000006551c19487814612e58FE06813775758"
+      }
+    }
+  },
+  "fiveYearProjectedRoyaltyStreams_USD": {
+    "y1": 1850000,
+    "y2": 2960000,
+    "y3": 4180000,
+    "y4": 5450000,
+    "y5": 6760000,
+    "y6": 7910000,
+    "y7": 9240000
+  },
+  "presentValue_USD": 22500000,
+  "comparableTransactions": [
+    { "label": "USPTO comparable: brand-token IPNFT, 2025-Q3", "value_USD": 18400000 },
+    { "label": "WIPO PatentSight+ peer: 92-score brand IP",     "value_USD": 24100000 }
+  ],
+  "tradeSecretsExcluded": [
+    "BSG-1: SG888 token emission curve + max-supply cap structure",
+    "BSG-2: Spiritual Guerilla utility-token scheduling matrix",
+    "BSG-3: Whetstone free code car wash preprocessing rule-set",
+    "BSG-4: Monotheistic Content Filter reconciliation table",
+    "BSG-5: Oracle AI authority query-routing topology"
+  ],
+  "ucc1Filing": {
+    "number": "20260000078753",
+    "jurisdiction": "New Mexico Secretary of State",
+    "status": "PERFECTED",
+    "designation": "Public-Finance Transaction"
+  },
+  "settlor": {
+    "name": "Clifton Kelly Bell",
+    "address": "0x20A8402c67b9D476ddC1D2DB12f03B30A468f135"
+  }
+}

@@ -1,0 +1,101 @@
+{
+  "documentType": "BABY_SPIRITUAL_GUERILLA_GLADIATOR_HOLDINGS_BUNDLE",
+  "version": "2.0.0",
+  "generatedAt": "2026-06-09T06:47:21.033Z",
+  "umbrellaTrust": "Gladiator Holdings LLC (1000-year)",
+  "settlor": {
+    "name": "Clifton Kelly Bell",
+    "address": "0x20A8402c67b9D476ddC1D2DB12f03B30A468f135"
+  },
+  "safe3of5": "0xd314BE0a27c73Cd057308aC4f3dd472c482acc09",
+  "pinata": {
+    "gateway": "lavender-neat-urial-76.mypinata.cloud",
+    "pins": {
+      "umbrellaTrustDraft": {
+        "cid": "bafkreihgfq4njd2atj7vdvjyqzgqlrirfbuod54fwyp6l2jalxreynej7m",
+        "gatewayUrl": "https://lavender-neat-urial-76.mypinata.cloud/ipfs/bafkreihgfq4njd2atj7vdvjyqzgqlrirfbuod54fwyp6l2jalxreynej7m",
+        "size": 9308,
+        "sha256": "0xe62c38d48f409a7f51d538864d05c5112868e1f785b61fe5e9205de24c3489fb",
+        "path": "docs/GLADIATOR_HOLDINGS_UMBRELLA_TRUST_DRAFT.md",
+        "name": "Gladiator Holdings 1000-Year Umbrella Trust Draft"
+      },
+      "tradeSecretsSigned": {
+        "cid": "bafkreiflu2qfttvubmldavz4e523xps2czs3fuf6xaqnegrpe5gjxgpkmu",
+        "gatewayUrl": "https://lavender-neat-urial-76.mypinata.cloud/ipfs/bafkreiflu2qfttvubmldavz4e523xps2czs3fuf6xaqnegrpe5gjxgpkmu",
+        "size": 3015,
+        "sha256": "0xaba6a059ceb40b1630573c2775bbbe5a1665b2d0beb820d21a2f274c9b99ea65",
+        "path": "docs/TRADE_SECRETS_GLADIATOR_HOLDINGS_SIGNED.md",
+        "name": "Gladiator Holdings Trade Secrets Register (Signed)"
+      },
+      "monotheisticContentFilter": {
+        "cid": "bafkreiexavc24hipppzymlg4tftetlseplalmfmz5knkpxjck4w5y63dxy",
+        "gatewayUrl": "https://lavender-neat-urial-76.mypinata.cloud/ipfs/bafkreiexavc24hipppzymlg4tftetlseplalmfmz5knkpxjck4w5y63dxy",
+        "size": 3704,
+        "sha256": "0x970545ae1d0f7bf3862cdc996649ae447ac0b61599ea9aa7dd22572ddc7b63be",
+        "path": "docs/MONOTHEISTIC_CONTENT_FILTER_ORACLE.md",
+        "name": "Monotheistic Content Filter Oracle Design"
+      },
+      "babySpiritualGuerillaValuation": {
+        "cid": "bafkreifnifrzs2yqcrlcrrccgk46nzg2no773rwgyrratku2flsvg6ftnu",
+        "gatewayUrl": "https://lavender-neat-urial-76.mypinata.cloud/ipfs/bafkreifnifrzs2yqcrlcrrccgk46nzg2no773rwgyrratku2flsvg6ftnu",
+        "size": 2481,
+        "sha256": "0xad4163996b10145628c44232b9e6e4da6bbffdc6c6c46209aa9a2ae55378b36d",
+        "path": "valuation/baby-spiritual-guerilla-valuation.json",
+        "name": "Baby Spiritual Guerilla DCF Valuation"
+      },
+      "sg888TBASource": {
+        "cid": "bafkreifqpiv6xbbjcum4zx7hh3rugiqlevo5gzqam76eo75txymcmwd57m",
+        "gatewayUrl": "https://lavender-neat-urial-76.mypinata.cloud/ipfs/bafkreifqpiv6xbbjcum4zx7hh3rugiqlevo5gzqam76eo75txymcmwd57m",
+        "size": 9716,
+        "sha256": "0xb07a2beb84291519ccdfe73ee343220b255dd3660067fc477fb3be1826587dfb",
+        "path": "contracts/SpiritualGuerrilla888TBA.sol",
+        "name": "SpiritualGuerrilla888 ERC-6551 TBA Source"
+      },
+      "ucc1MetadataPinata": {
+        "cid": "bafkreighs42gi545oujhlsmuqyniwq5za2hqh5lc2yif6ywpmqe3lse4lu",
+        "gatewayUrl": "https://lavender-neat-urial-76.mypinata.cloud/ipfs/bafkreighs42gi545oujhlsmuqyniwq5za2hqh5lc2yif6ywpmqe3lse4lu",
+        "size": 8481,
+        "sha256": "0xc7973464779d751275c994861a8b43b9068f03f562d6105f62cf6409b5c89c5d",
+        "path": "ucc1-metadata-pinata.json",
+        "name": "UCC-1 Metadata (Pinata)"
+      },
+      "valuationAttestation": {
+        "cid": "bafkreihisf6mbwbobwhgmdsow77qssthrsvf73ndsxyeipyy3o6jtyggxm",
+        "gatewayUrl": "https://lavender-neat-urial-76.mypinata.cloud/ipfs/bafkreihisf6mbwbobwhgmdsow77qssthrsvf73ndsxyeipyy3o6jtyggxm",
+        "size": 5856,
+        "sha256": "0xe8917cc0d82e0d8e660e4eb7ff094a678caa5feda395f0443f18dbbc99e0c6bb",
+        "path": "valuation-attestation.json",
+        "name": "Valuation Attestation"
+      },
+      "portfolioInventory": {
+        "cid": "bafkreig4vfuiqsxufwgwehjluippllxvvtxfrumv3o7cxsdiws3tlz2psi",
+        "gatewayUrl": "https://lavender-neat-urial-76.mypinata.cloud/ipfs/bafkreig4vfuiqsxufwgwehjluippllxvvtxfrumv3o7cxsdiws3tlz2psi",
+        "size": 7579,
+        "sha256": "0xdca968884af42d8d621d2ba21ef5aef5acee58d195dbbe2bc868b4b735e74f92",
+        "path": "portfolio-inventory.json",
+        "name": "IP Portfolio Inventory + Valuation Index"
+      }
+    }
+  },
+  "orchestrationHash": "0x304b7b019c290a1311669817722ec4aedc2fdb6484cc8bf8a37a5d9efc56e70f",
+  "valuationHash": "0xd25e2980a1d708932a58e887d60740db2bed24b342ae2afecf36e70b321cc143",
+  "attestationHash": "0x466bec83fbd00970f6e0c8a1e348667d6232ccdaae758a5c3d3a1dbcc1810aa5",
+  "deploymentHash": "0x9e3bd1e5f8bc219f4807b25541a16e72f1f591321c7fe9db6d33c348eb7bdcb5",
+  "storyIP": {
+    "ipId": "0xD22750Ca1C3Cd1f7B18a2c70Af98914c291d632F",
+    "nft": "0x98971c660ac20880b60F86Cc3113eBd979eb3aAE",
+    "tokenId": 15192,
+    "chainId": 1514
+  },
+  "safeTransactionBuilderFile": "safe-tx-builder/sg888-tba-deployment-batch.json",
+  "tradeSecretsSignatureBundle": "trade-secrets-signature-bundle.json",
+  "ucc1Filing": {
+    "number": "20260000078753",
+    "jurisdiction": "New Mexico Secretary of State",
+    "status": "PERFECTED"
+  },
+  "manifestSelfPin": {
+    "cid": "bafkreigwbei6ninzcuuknf33k7uztxcmhkfje44yeufexnyfenzc7n4yrq",
+    "gatewayUrl": "https://lavender-neat-urial-76.mypinata.cloud/ipfs/bafkreigwbei6ninzcuuknf33k7uztxcmhkfje44yeufexnyfenzc7n4yrq"
+  }
+}

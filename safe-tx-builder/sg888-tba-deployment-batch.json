@@ -1,0 +1,151 @@
+{
+  "version": "1.0",
+  "chainId": "1514",
+  "createdAt": 1780987641032,
+  "meta": {
+    "name": "Baby Spiritual Guerilla — SG888 TBA Deployment + UCC-1 Hand-off",
+    "description": "Records the NM SOS UCC-1 filing 20260000078753 on-chain, registers the new SpiritualGuerrilla888TBA (ERC-6551) implementation as collateral, creates the deterministic Token Bound Account for the Story IP NFT, and refreshes the Hermetic Seal tier hashes pinned at Pinata IPFS.",
+    "txBuilderVersion": "1.16.5",
+    "createdFromSafeAddress": "0xd314BE0a27c73Cd057308aC4f3dd472c482acc09",
+    "createdFromOwnerAddress": "0x20A8402c67b9D476ddC1D2DB12f03B30A468f135",
+    "checksum": "0x71591f338ce56c66a31cda0868c5ae6d00261224d309f6a50a7a61d6636e15de"
+  },
+  "transactions": [
+    {
+      "to": "0x0000000000000000000000000000000000000000",
+      "value": "0",
+      "data": null,
+      "contractMethod": {
+        "name": "recordPrimaryFiling",
+        "payable": false,
+        "inputs": [
+          {
+            "name": "_hermeticSealTiers",
+            "type": "bytes32[]",
+            "internalType": "bytes32[]"
+          }
+        ]
+      },
+      "contractInputsValues": {
+        "_hermeticSealTiers": "[\"0x304b7b019c290a1311669817722ec4aedc2fdb6484cc8bf8a37a5d9efc56e70f\",\"0xd25e2980a1d708932a58e887d60740db2bed24b342ae2afecf36e70b321cc143\",\"0x466bec83fbd00970f6e0c8a1e348667d6232ccdaae758a5c3d3a1dbcc1810aa5\",\"0x9e3bd1e5f8bc219f4807b25541a16e72f1f591321c7fe9db6d33c348eb7bdcb5\"]"
+      }
+    },
+    {
+      "to": "0x0000000000000000000000000000000000000000",
+      "value": "0",
+      "data": null,
+      "contractMethod": {
+        "name": "registerCollateralContract",
+        "payable": false,
+        "inputs": [
+          {
+            "name": "_contractName",
+            "type": "string",
+            "internalType": "string"
+          },
+          {
+            "name": "_contractAddr",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "_chainId",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "_bytecodeHash",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "_abiHash",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          }
+        ]
+      },
+      "contractInputsValues": {
+        "_contractName": "SpiritualGuerrilla888TBA",
+        "_contractAddr": "0x0000000000000000000000000000000000000000",
+        "_chainId": "1514",
+        "_bytecodeHash": "0x9e3bd1e5f8bc219f4807b25541a16e72f1f591321c7fe9db6d33c348eb7bdcb5",
+        "_abiHash": "0x304b7b019c290a1311669817722ec4aedc2fdb6484cc8bf8a37a5d9efc56e70f"
+      }
+    },
+    {
+      "to": "0x000000006551c19487814612e58FE06813775758",
+      "value": "0",
+      "data": null,
+      "contractMethod": {
+        "name": "createAccount",
+        "payable": false,
+        "inputs": [
+          {
+            "name": "implementation",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "salt",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "chainId",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "tokenContract",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "tokenId",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "initData",
+            "type": "bytes",
+            "internalType": "bytes"
+          }
+        ]
+      },
+      "contractInputsValues": {
+        "implementation": "0x0000000000000000000000000000000000000000",
+        "salt": "0",
+        "chainId": "1514",
+        "tokenContract": "0x98971c660ac20880b60F86Cc3113eBd979eb3aAE",
+        "tokenId": "15192",
+        "initData": "0x"
+      }
+    },
+    {
+      "to": "0x0000000000000000000000000000000000000000",
+      "value": "0",
+      "data": null,
+      "contractMethod": {
+        "name": "updateHermeticSeal",
+        "payable": false,
+        "inputs": [
+          {
+            "name": "_filingHash",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "_newSealTiers",
+            "type": "bytes32[]",
+            "internalType": "bytes32[]"
+          }
+        ]
+      },
+      "contractInputsValues": {
+        "_filingHash": "0x304b7b019c290a1311669817722ec4aedc2fdb6484cc8bf8a37a5d9efc56e70f",
+        "_newSealTiers": "[\"0x304b7b019c290a1311669817722ec4aedc2fdb6484cc8bf8a37a5d9efc56e70f\",\"0xd25e2980a1d708932a58e887d60740db2bed24b342ae2afecf36e70b321cc143\",\"0x466bec83fbd00970f6e0c8a1e348667d6232ccdaae758a5c3d3a1dbcc1810aa5\",\"0x9e3bd1e5f8bc219f4807b25541a16e72f1f591321c7fe9db6d33c348eb7bdcb5\"]"
+      }
+    }
+  ]
+}
